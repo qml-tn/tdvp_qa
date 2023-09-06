@@ -82,7 +82,9 @@ class AnnealingModel(CouplingMPOModel):
       self.add_onsite_term(strength=B*hz[i],i=i,op='Sz',category=f'Sz_{i}',plus_hc=False)
 
     for ij in Jz:
-      self.add_coupling_term(strength=B*Jz[ij],i=ij[0],j=ij[1],op1='Sz',op2='Sz',op_string="Id",category=f'Sz_{ij[0]} Sz_{ij[1]}', plus_hc=False)
+      i = ij[0]-1
+      j = ij[1]-1
+      self.add_coupling_term(strength=B*Jz[ij],i=i,j=j,op1='Sz',op2='Sz',op_string="Id",category=f'Sz_{ij[0]} Sz_{ij[1]}', plus_hc=False)
   # done
 
 
