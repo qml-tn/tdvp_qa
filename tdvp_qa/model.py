@@ -75,16 +75,16 @@ class AnnealingModel(CouplingMPOModel):
 
     # H_0
     for i in range(len(hx)):
-      self.add_onsite_term(strength=-A*hx[i],i=i,op='Sx',category=f'Sx_{i}',plus_hc=False)
+      self.add_onsite_term(strength=-A*hx[i],i=i,op='Sigmax',category=f'Sigmax_{i}',plus_hc=False)
 
     # H_1
     for i in range(len(hz)):
-      self.add_onsite_term(strength=B*hz[i],i=i,op='Sz',category=f'Sz_{i}',plus_hc=False)
+      self.add_onsite_term(strength=B*hz[i],i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
 
     for ij in Jz:
       i = np.min(ij)
       j = np.max(ij)
-      self.add_coupling_term(strength=B*Jz[ij],i=i,j=j,op_i='Sz',op_j='Sz',op_string="Id",category=f'Sz_{ij[0]} Sz_{ij[1]}', plus_hc=False)
+      self.add_coupling_term(strength=B*Jz[ij],i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{ij[0]} Sigmaz_{ij[1]}', plus_hc=False)
   # done
 
 
@@ -184,13 +184,13 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
   eng = tdvp.TimeDependentSingleSiteTDVP(psi, M, tdvp_params)
   
   def measurement(eng, data):
-    keys = ['t', 'entropy','energy','sx']
+    keys = ['t', 'entropy','energy','sigmax']
     if data is None:
       data = dict([(k, []) for k in keys])
     data['t'].append(eng.evolved_time)
     data['entropy'].append(psi.entanglement_entropy(bonds=[L//2])[0])
     data['energy'].append(eng.model.H_MPO.expectation_value(psi))
-    data['sx'].append(psi.expectation_value('Sx'))
+    data['sigmax'].append(psi.expectation_value('Sigmax'))
     return data
 
   data = measurement(eng, None)
