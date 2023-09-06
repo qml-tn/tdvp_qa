@@ -17,7 +17,9 @@ from tenpy.tools.params import asConfig
 
 tenpy.tools.misc.setup_logging(to_stdout="ERROR")
 
-excel_file = 'annealing_data/schedule.xlsx'  # Replace with the path to your Excel file
+module_dir = os.path.dirname(__file__)
+
+excel_file = os.path.join(module_dir, 'annealing_data','schedule.xlsx')  # Replace with the path to your Excel file
 df = pd.read_excel(excel_file)
 
 scale = 10**9*10**(-6) # GHz * millisecond
