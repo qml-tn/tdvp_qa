@@ -75,16 +75,16 @@ class AnnealingModel(CouplingMPOModel):
 
     # H_0
     for i in range(len(hx)):
-      self.add_onsite_term(strength=-A*hx[i],i=i,op='Sigmax',category=f'Sigmax_{i}',plus_hc=False)
+      self.add_onsite_term(strength=-A*hx[i]/2.,i=i,op='Sigmax',category=f'Sigmax_{i}',plus_hc=False)
 
     # H_1
     for i in range(len(hz)):
-      self.add_onsite_term(strength=B*hz[i],i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
+      self.add_onsite_term(strength=B*hz[i]/2.,i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
 
     for ij in Jz:
       i = np.min(ij)
       j = np.max(ij)
-      self.add_coupling_term(strength=B*Jz[ij],i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{ij[0]} Sigmaz_{ij[1]}', plus_hc=False)
+      self.add_coupling_term(strength=B*Jz[ij]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{ij[0]} Sigmaz_{ij[1]}', plus_hc=False)
   # done
 
 
