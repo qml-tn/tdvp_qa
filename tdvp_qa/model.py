@@ -22,7 +22,7 @@ module_dir = os.path.dirname(__file__)
 excel_file = os.path.join(module_dir, 'annealing_data','schedule.xlsx')  # Replace with the path to your Excel file
 df = pd.read_excel(excel_file)
 
-scale = 10**9*10**(-6) # GHz * millisecond
+scale = 10**9*10**(-6) # GHz * microsecond
 
 # Time here is measured in milliseconds
 funcA = interp1d(np.array(df['s']), np.array(df['A'])*scale, kind='linear')
@@ -65,7 +65,7 @@ class AnnealingModel(CouplingMPOModel):
 
   def init_terms(self, model_params):
     t = model_params.get('time',0.)
-    tmax = model_params.get("tmax",1.)
+    tmax = model_params.get("tmax",0.5)
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
     A = funcA(s)
     B = funcB(s)
@@ -81,7 +81,7 @@ class AnnealingModel(CouplingMPOModel):
     for i in range(len(hz)):
       self.add_onsite_term(strength=B*hz[i]/2.,i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
 
-    for ij in Jz:
+    for ij in Jz.keys():
       i = np.min(ij)
       j = np.max(ij)
       self.add_coupling_term(strength=B*Jz[ij]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{ij[0]} Sigmaz_{ij[1]}', plus_hc=False)
