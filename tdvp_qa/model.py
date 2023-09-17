@@ -195,5 +195,13 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
     return data
 
   data = measurement(eng, None)
-  return eng, data, measurement
+
+
+  # DMRG
+  dmrg_params = {
+    "chi_max": Dmax,
+  }
+  eng_DMRG = tenpy.algorithms.dmrg.SingleSiteDMRGEngine(psi,M)
+
+  return eng, data, measurement, eng_DMRG
   
