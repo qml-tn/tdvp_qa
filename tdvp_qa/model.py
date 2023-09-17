@@ -8,7 +8,7 @@ from scipy.interpolate import interp1d
 np.set_printoptions(precision=5, suppress=True, linewidth=120)
 
 import tenpy
-from tenpy.algorithms import tdvp
+from tenpy.algorithms import tdvp, dmrg
 from tenpy.networks.mps import MPS
 
 from tenpy.networks.site import SpinHalfSite
@@ -201,7 +201,7 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
   dmrg_params = {
     "chi_max": Dmax,
   }
-  eng_DMRG = tenpy.algorithms.dmrg.SingleSiteDMRGEngine(psi,M)
+  eng_DMRG = dmrg.SingleSiteDMRGEngine(psi,M)
 
   return eng, data, measurement, eng_DMRG
   
