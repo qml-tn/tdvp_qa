@@ -201,7 +201,8 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
   dmrg_params = {
     "chi_max": Dmax,
   }
-  eng_DMRG = dmrg.SingleSiteDMRGEngine(psi,M)
+  
+  eng_DMRG = dmrg.SingleSiteDMRGEngine(psi,M,dmrg_params)
 
   return eng, data, measurement, eng_DMRG
   
