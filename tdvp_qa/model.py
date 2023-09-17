@@ -3,17 +3,15 @@ import argparse
 import os
 import pandas as pd
 
-from tqdm import tqdm
 from scipy.interpolate import interp1d
 np.set_printoptions(precision=5, suppress=True, linewidth=120)
 
 import tenpy
-from tenpy.algorithms import tdvp, dmrg
+from tenpy.algorithms import tdvp
 from tenpy.networks.mps import MPS
 
 from tenpy.networks.site import SpinHalfSite
 from tenpy.models.model import CouplingMPOModel
-from tenpy.tools.params import asConfig
 
 tenpy.tools.misc.setup_logging(to_stdout="ERROR")
 
@@ -196,13 +194,5 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
 
   data = measurement(eng, None)
 
-
-  # DMRG
-  dmrg_params = {
-    "chi_max": Dmax,
-  }
-  
-  eng_DMRG = dmrg.SingleSiteDMRGEngine(psi,M,dmrg_params)
-
-  return eng, data, measurement, eng_DMRG
+  return eng, data, measurement
   
