@@ -58,6 +58,7 @@ target/
 
 # Working
 notebooks/
+figures/
 data/
 dataset/
 **/__pycache__/
