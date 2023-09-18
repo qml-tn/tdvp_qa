@@ -26,10 +26,10 @@ scale = 10**9*10**(-6) # GHz * microsecond
 funcA = interp1d(np.array(df['s']), np.array(df['A'])*scale, kind='linear')
 funcB = interp1d(np.array(df['s']), np.array(df['B'])*scale, kind='linear')
 
-def funcRA(s):
+def funcRB(s):
   return s
 
-def funcRB(s):
+def funcRA(s):
   return 2*(0.5**2-(s-0.5)**2)
 
 def funcRC(s):
