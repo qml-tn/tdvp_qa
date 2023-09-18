@@ -138,6 +138,8 @@ class ReverseAnnealingModel(CouplingMPOModel):
     tmax = model_params.get("tmax",0.5)
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
 
+    A0 = model_params.get('A0',1.)
+    B0 = model_params.get('B0',1.)
     C0 = model_params.get('C0',1.)
 
     A = funcRA(s) * A0
