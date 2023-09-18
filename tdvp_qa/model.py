@@ -26,11 +26,11 @@ scale = 10**9*10**(-6) # GHz * microsecond
 funcA = interp1d(np.array(df['s']), np.array(df['A'])*scale, kind='linear')
 funcB = interp1d(np.array(df['s']), np.array(df['B'])*scale, kind='linear')
 
-def funcRB(s):
-  return s
-
 def funcRA(s):
   return 2*(0.5**2-(s-0.5)**2)
+
+def funcRB(s):
+  return s
 
 def funcRC(s):
   return 1-s
@@ -140,8 +140,8 @@ class ReverseAnnealingModel(CouplingMPOModel):
 
     C0 = model_params.get('C0',1.)
 
-    A = funcRA(s)
-    B = funcRB(s)
+    A = funcRA(s) * A0
+    B = funcRB(s) * B0
     C = funcRC(s) * C0
 
     hx = model_params.get('hx',[1])
@@ -308,7 +308,7 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
   return eng, data, measurement
 
 # Preparing the annealing engine
-def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1,C0=1.):
+def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1,A0=1,B0=1,C0=1.):
   '''
     Main function that prepares the initial product state with bond dimension D for the reversed annealing process with tenpy
     and creates the Hamiltonian associated with the couplings J and onsite potential h
@@ -332,6 +332,8 @@ def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1,C0=1.):
       'hz': hz,
       'hx': hx,
       'hz0': hz0,
+      'A0': A0,
+      'B0': B0,
       'C0': C0,
       'tmax': tmax,
       'bc_MPS': 'finite',
