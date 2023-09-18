@@ -124,7 +124,7 @@ class ReverseAnnealingModel(CouplingMPOModel):
   -------
   .. cfg:config :: CouplingMPOModel
       n : int (number of spins in the model)
-      A, B, C: float
+      A, B, C, C0: float
       hx, hz, hz0  : array
       Jz : dict
           Coupling as defined for the Hamiltonian above.
@@ -137,14 +137,18 @@ class ReverseAnnealingModel(CouplingMPOModel):
     t = model_params.get('time',0.)
     tmax = model_params.get("tmax",0.5)
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
+
+    C0 = model_params.get('C0',1.)
+
     A = funcRA(s)
     B = funcRB(s)
-    C = funcRC(s)
+    C = funcRC(s) * C0
 
     hx = model_params.get('hx',[1])
     hz = model_params.get('hz',[1])
     hz0 = model_params.get('hz0',[1])
     Jz = model_params.get('Jz',{})
+
 
     # H_0
     for i in range(len(hx)):
@@ -304,7 +308,7 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
   return eng, data, measurement
 
 # Preparing the annealing engine
-def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1):
+def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1,C0=1.):
   '''
     Main function that prepares the initial product state with bond dimension D for the reversed annealing process with tenpy
     and creates the Hamiltonian associated with the couplings J and onsite potential h
@@ -328,6 +332,7 @@ def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1):
       'hz': hz,
       'hx': hx,
       'hz0': hz0,
+      'C0': C0,
       'tmax': tmax,
       'bc_MPS': 'finite',
       'L': L,
@@ -348,7 +353,6 @@ def PrepareReverseTDVP(hx,hz,Jz,hz0,Dmax,tmax,dt=0.1):
     'dt': dt,
     'preserve_norm': True,
     'start_time': 0,
-    # 'trunc_params': {'chi_max': 16}
   }
 
   eng = tdvp.TimeDependentSingleSiteTDVP(psi, M, tdvp_params)
