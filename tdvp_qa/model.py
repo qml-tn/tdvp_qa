@@ -23,17 +23,28 @@ df = pd.read_excel(excel_file)
 scale = 10**9*10**(-6) # GHz * microsecond
 
 # Time here is measured in milliseconds
-funcA = interp1d(np.array(df['s']), np.array(df['A'])*scale, kind='linear')
-funcB = interp1d(np.array(df['s']), np.array(df['B'])*scale, kind='linear')
+def get_funcA(annealing_schedule):
+  if annealing_schedule=="dwave":
+    return interp1d(np.array(df['s']), np.array(df['A'])*scale, kind='linear')
+  elif annealing_schedule=="linear":
+    return lambda s: np.clip(1-s,0,1)
+  elif annealing_schedule=="ra":
+      return lambda s: 2*(0.5**2-(s-0.5)**2)
+  raise Exception(f"Annealing schedule {annealing_schedule} not implemented.")
 
-def funcRA(s):
-  return 2*(0.5**2-(s-0.5)**2)
+def get_funcB(annealing_schedule):
+  if annealing_schedule=="dwave":
+    return interp1d(np.array(df['s']), np.array(df['B'])*scale, kind='linear')
+  elif annealing_schedule=="linear":
+    return lambda s: np.clip(s,0,1)
+  elif annealing_schedule=="ra":
+    return lambda s: np.clip(s,0,1)
+  raise Exception(f"Annealing schedule {annealing_schedule} not implemented.")
 
-def funcRB(s):
-  return s
-
-def funcRC(s):
-  return 1-s
+def get_funcC(annealing_schedule):
+  if annealing_schedule=="ra":
+      return lambda s: np.clip(1-s,0,1)
+  raise Exception(f"Annealing schedule {annealing_schedule} not implemented.")
 
 
 # Hamiltonian model
@@ -74,7 +85,11 @@ class AnnealingModel(CouplingMPOModel):
   def init_terms(self, model_params):
     t = model_params.get('time',0.)
     tmax = model_params.get("tmax",0.5)
+    annealing_schedule = model_params.get("annealing_schedule","dwave")
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
+
+    funcA = get_funcA(annealing_schedule)
+    funcB = get_funcB(annealing_schedule)
     A = funcA(s)
     B = funcB(s)
     hx = model_params.get('hx',[1])
@@ -142,9 +157,14 @@ class ReverseAnnealingModel(CouplingMPOModel):
     B0 = model_params.get('B0',1.)
     C0 = model_params.get('C0',1.)
 
-    A = funcRA(s) * A0
-    B = funcRB(s) * B0
-    C = funcRC(s) * C0
+    annealing_schedule = "ra"
+    funcA = get_funcA(annealing_schedule)
+    funcB = get_funcB(annealing_schedule)
+    funcC = get_funcC(annealing_schedule)
+
+    A = funcA(s) * A0
+    B = funcB(s) * B0
+    C = funcC(s) * C0
 
     hx = model_params.get('hx',[1])
     hz = model_params.get('hz',[1])
@@ -247,7 +267,7 @@ def initial_state_RA(hz0,Dmax):
   return Bs, SVs, dims
 
 # Preparing the annealing engine
-def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
+def PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,tmax,dt=0.1):
   '''
     Main function that prepares the initial product state with bond dimension D for the annealing process with tenpy
     and creates the Hamiltonian associated with the couplings J and onsite potential h
@@ -256,6 +276,7 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
     - hx       : onsite magnetic field along x
     - hz       : onsite magnetic field along z
     - Jz       : couplings between sites
+    - annealing_schedule: annealing schedule
     - Dmax     : maximum bond dimension
     - tmax     : annealing time
   '''
@@ -272,6 +293,7 @@ def PrepareTDVP(hx,hz,Jz,Dmax,tmax,dt=0.1):
       'tmax': tmax,
       'bc_MPS': 'finite',
       'L': L,
+      'annealing_schedule': annealing_schedule,
   }
 
   M = AnnealingModel(model_params)
