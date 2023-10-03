@@ -316,15 +316,20 @@ def PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,tmax,dt=0.1):
 
   eng = tdvp.TimeDependentSingleSiteTDVP(psi, M, tdvp_params)
   
-  def measurement(eng, data):
-    keys = ['t', 'entropy','energy','xmean','zmean']
+  def measurement(eng, data, dmrg_energy=False):
+    keys = ['t', 'entropy','energy','dmrg_energy','xmean','zmean']
+    
     if data is None:
       data = dict([(k, []) for k in keys])
-    data['t'].append(eng.evolved_time)
-    data['entropy'].append(psi.entanglement_entropy(bonds=[L//2])[0])
-    data['energy'].append(eng.model.H_MPO.expectation_value(psi))
-    data['xmean'].append(np.mean(np.abs(psi.expectation_value('Sigmax'))))
-    data['zmean'].append(np.mean(np.abs(psi.expectation_value('Sigmaz'))))
+    
+    if dmrg_energy:
+      data['dmrg_energy'].append(eng.model.H_MPO.expectation_value(psi))
+    else:    
+      data['t'].append(eng.evolved_time)
+      data['entropy'].append(psi.entanglement_entropy(bonds=[L//2])[0])
+      data['energy'].append(eng.model.H_MPO.expectation_value(psi))
+      data['xmean'].append(np.mean(np.abs(psi.expectation_value('Sigmax'))))
+      data['zmean'].append(np.mean(np.abs(psi.expectation_value('Sigmaz'))))
     return data
 
   data = measurement(eng, None)
