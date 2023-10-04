@@ -88,7 +88,7 @@ if __name__ == "__main__":
     N_edges = args_dict['n_edges']
     REGULAR = args_dict['regular']  #Set TRUE to generate regular graph of degree d
     d = args_dict['d'] # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
-    path  = args_dict['path']
+    global_path  = args_dict['path']
     seed = args_dict['seed'] # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm 
 
     # TDVP annealing parameters
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     dt = args_dict["dt"]
     Dmax = args_dict["dmax"]  
 
-    Jz, loc_fields, connect = generate_graph(N_verts,N_edges, seed = seed, REGULAR=REGULAR, d=d, path=path) 
+    Jz, loc_fields, connect = generate_graph(N_verts,N_edges, seed = seed, REGULAR=REGULAR, d=d, global_path=global_path) 
 
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
     
@@ -114,8 +114,8 @@ if __name__ == "__main__":
         t = eng.evolved_time
         data = measurement(eng, data)
 
-    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, connect, REGULAR, d, path)
-    export_graphs(Jz, loc_fields, N_verts, N_edges, seed, connect, REGULAR, d, path)
+    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, connect, REGULAR, d, global_path)
+    export_graphs(Jz, loc_fields, N_verts, N_edges, seed, connect, REGULAR, d, global_path)
 
 
 

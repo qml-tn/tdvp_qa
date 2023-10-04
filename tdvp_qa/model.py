@@ -110,10 +110,10 @@ class AnnealingModel(CouplingMPOModel):
         j = np.max(ij)
         self.add_coupling_term(strength=B*Jz[ij]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
     elif type(Jz) == np.ndarray:
-      for k in len(Jz):
+      for k in range(len(Jz)):
         ij = Jz[k,:2]
-        i = np.min(ij)
-        j = np.max(ij)
+        i = int(np.min(ij))
+        j = int(np.max(ij))
         self.add_coupling_term(strength=B*Jz[k,2]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
   # done
 
