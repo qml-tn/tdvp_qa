@@ -45,7 +45,7 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
     for i in range(N_verts): local_fields[i] = (i, h_i[i])  
     
     if no_local_fields:
-        h_i[:,1] = 0
+        local_fields[:,1] = 0
 
     connect = nx.node_connectivity(graph)
     return weight_matrix, local_fields, connect
