@@ -1,600 +1,192 @@
-graph_1; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=0
-graph_2; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=1
-graph_3; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=2
-graph_4; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=3
-graph_5; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=4
-graph_6; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=5
-graph_7; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=6
-graph_8; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=7
-graph_9; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=8
-graph_10; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=5 --dt=0.02 --seed=9
-graph_11; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=0
-graph_12; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=1
-graph_13; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=2
-graph_14; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=3
-graph_15; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=4
-graph_16; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=5
-graph_17; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=6
-graph_18; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=7
-graph_19; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=8
-graph_20; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=2--annealing_time=10 --dt=0.02 --seed=9
-graph_21; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=0
-graph_22; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=1
-graph_23; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=2
-graph_24; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=3
-graph_25; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=4
-graph_26; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=5
-graph_27; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=6
-graph_28; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=7
-graph_29; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=8
-graph_30; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=5 --dt=0.02 --seed=9
-graph_31; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=0
-graph_32; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=1
-graph_33; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=2
-graph_34; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=3
-graph_35; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=4
-graph_36; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=5
-graph_37; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=6
-graph_38; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=7
-graph_39; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=8
-graph_40; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=2--annealing_time=10 --dt=0.02 --seed=9
-graph_41; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=0
-graph_42; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=1
-graph_43; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=2
-graph_44; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=3
-graph_45; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=4
-graph_46; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=5
-graph_47; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=6
-graph_48; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=7
-graph_49; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=8
-graph_50; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=5 --dt=0.02 --seed=9
-graph_51; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=0
-graph_52; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=1
-graph_53; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=2
-graph_54; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=3
-graph_55; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=4
-graph_56; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=5
-graph_57; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=6
-graph_58; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=7
-graph_59; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=8
-graph_60; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4--annealing_time=10 --dt=0.02 --seed=9
-graph_61; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=0
-graph_62; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=1
-graph_63; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=2
-graph_64; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=3
-graph_65; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=4
-graph_66; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=5
-graph_67; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=6
-graph_68; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=7
-graph_69; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=8
-graph_70; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=5 --dt=0.02 --seed=9
-graph_71; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=0
-graph_72; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=1
-graph_73; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=2
-graph_74; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=3
-graph_75; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=4
-graph_76; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=5
-graph_77; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=6
-graph_78; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=7
-graph_79; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=8
-graph_80; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4--annealing_time=10 --dt=0.02 --seed=9
-graph_81; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=0
-graph_82; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=1
-graph_83; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=2
-graph_84; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=3
-graph_85; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=4
-graph_86; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=5
-graph_87; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=6
-graph_88; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=7
-graph_89; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=8
-graph_90; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=5 --dt=0.02 --seed=9
-graph_91; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=0
-graph_92; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=1
-graph_93; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=2
-graph_94; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=3
-graph_95; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=4
-graph_96; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=5
-graph_97; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=6
-graph_98; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=7
-graph_99; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=8
-graph_100; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=6--annealing_time=10 --dt=0.02 --seed=9
-graph_101; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=0
-graph_102; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=1
-graph_103; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=2
-graph_104; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=3
-graph_105; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=4
-graph_106; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=5
-graph_107; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=6
-graph_108; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=7
-graph_109; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=8
-graph_110; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=5 --dt=0.02 --seed=9
-graph_111; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=0
-graph_112; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=1
-graph_113; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=2
-graph_114; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=3
-graph_115; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=4
-graph_116; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=5
-graph_117; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=6
-graph_118; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=7
-graph_119; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=8
-graph_120; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=6--annealing_time=10 --dt=0.02 --seed=9
-graph_121; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=0
-graph_122; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=1
-graph_123; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=2
-graph_124; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=3
-graph_125; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=4
-graph_126; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=5
-graph_127; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=6
-graph_128; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=7
-graph_129; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=8
-graph_130; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=5 --dt=0.02 --seed=9
-graph_131; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=0
-graph_132; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=1
-graph_133; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=2
-graph_134; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=3
-graph_135; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=4
-graph_136; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=5
-graph_137; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=6
-graph_138; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=7
-graph_139; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=8
-graph_140; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8--annealing_time=10 --dt=0.02 --seed=9
-graph_141; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=0
-graph_142; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=1
-graph_143; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=2
-graph_144; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=3
-graph_145; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=4
-graph_146; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=5
-graph_147; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=6
-graph_148; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=7
-graph_149; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=8
-graph_150; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=5 --dt=0.02 --seed=9
-graph_151; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=0
-graph_152; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=1
-graph_153; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=2
-graph_154; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=3
-graph_155; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=4
-graph_156; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=5
-graph_157; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=6
-graph_158; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=7
-graph_159; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=8
-graph_160; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8--annealing_time=10 --dt=0.02 --seed=9
-graph_161; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=0
-graph_162; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=1
-graph_163; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=2
-graph_164; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=3
-graph_165; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=4
-graph_166; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=5
-graph_167; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=6
-graph_168; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=7
-graph_169; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=8
-graph_170; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=5 --dt=0.02 --seed=9
-graph_171; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=0
-graph_172; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=1
-graph_173; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=2
-graph_174; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=3
-graph_175; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=4
-graph_176; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=5
-graph_177; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=6
-graph_178; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=7
-graph_179; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=8
-graph_180; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=10--annealing_time=10 --dt=0.02 --seed=9
-graph_181; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=0
-graph_182; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=1
-graph_183; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=2
-graph_184; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=3
-graph_185; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=4
-graph_186; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=5
-graph_187; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=6
-graph_188; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=7
-graph_189; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=8
-graph_190; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=5 --dt=0.02 --seed=9
-graph_191; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=0
-graph_192; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=1
-graph_193; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=2
-graph_194; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=3
-graph_195; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=4
-graph_196; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=5
-graph_197; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=6
-graph_198; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=7
-graph_199; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=8
-graph_200; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=10--annealing_time=10 --dt=0.02 --seed=9
-graph_201; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=0
-graph_202; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=1
-graph_203; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=2
-graph_204; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=3
-graph_205; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=4
-graph_206; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=5
-graph_207; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=6
-graph_208; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=7
-graph_209; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=8
-graph_210; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=5 --dt=0.02 --seed=9
-graph_211; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=0
-graph_212; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=1
-graph_213; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=2
-graph_214; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=3
-graph_215; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=4
-graph_216; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=5
-graph_217; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=6
-graph_218; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=7
-graph_219; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=8
-graph_220; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12--annealing_time=10 --dt=0.02 --seed=9
-graph_221; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=0
-graph_222; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=1
-graph_223; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=2
-graph_224; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=3
-graph_225; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=4
-graph_226; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=5
-graph_227; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=6
-graph_228; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=7
-graph_229; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=8
-graph_230; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=5 --dt=0.02 --seed=9
-graph_231; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=0
-graph_232; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=1
-graph_233; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=2
-graph_234; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=3
-graph_235; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=4
-graph_236; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=5
-graph_237; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=6
-graph_238; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=7
-graph_239; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=8
-graph_240; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12--annealing_time=10 --dt=0.02 --seed=9
-graph_241; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=0
-graph_242; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=1
-graph_243; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=2
-graph_244; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=3
-graph_245; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=4
-graph_246; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=5
-graph_247; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=6
-graph_248; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=7
-graph_249; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=8
-graph_250; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=5 --dt=0.02 --seed=9
-graph_251; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=0
-graph_252; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=1
-graph_253; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=2
-graph_254; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=3
-graph_255; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=4
-graph_256; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=5
-graph_257; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=6
-graph_258; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=7
-graph_259; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=8
-graph_260; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=14--annealing_time=10 --dt=0.02 --seed=9
-graph_261; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=0
-graph_262; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=1
-graph_263; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=2
-graph_264; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=3
-graph_265; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=4
-graph_266; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=5
-graph_267; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=6
-graph_268; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=7
-graph_269; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=8
-graph_270; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=5 --dt=0.02 --seed=9
-graph_271; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=0
-graph_272; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=1
-graph_273; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=2
-graph_274; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=3
-graph_275; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=4
-graph_276; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=5
-graph_277; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=6
-graph_278; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=7
-graph_279; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=8
-graph_280; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=14--annealing_time=10 --dt=0.02 --seed=9
-graph_281; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=0
-graph_282; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=1
-graph_283; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=2
-graph_284; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=3
-graph_285; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=4
-graph_286; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=5
-graph_287; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=6
-graph_288; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=7
-graph_289; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=8
-graph_290; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=5 --dt=0.02 --seed=9
-graph_291; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=0
-graph_292; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=1
-graph_293; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=2
-graph_294; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=3
-graph_295; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=4
-graph_296; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=5
-graph_297; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=6
-graph_298; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=7
-graph_299; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=8
-graph_300; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16--annealing_time=10 --dt=0.02 --seed=9
-graph_301; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=0
-graph_302; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=1
-graph_303; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=2
-graph_304; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=3
-graph_305; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=4
-graph_306; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=5
-graph_307; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=6
-graph_308; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=7
-graph_309; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=8
-graph_310; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=5 --dt=0.02 --seed=9
-graph_311; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=0
-graph_312; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=1
-graph_313; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=2
-graph_314; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=3
-graph_315; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=4
-graph_316; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=5
-graph_317; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=6
-graph_318; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=7
-graph_319; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=8
-graph_320; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16--annealing_time=10 --dt=0.02 --seed=9
-graph_321; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=0
-graph_322; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=1
-graph_323; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=2
-graph_324; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=3
-graph_325; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=4
-graph_326; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=5
-graph_327; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=6
-graph_328; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=7
-graph_329; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=8
-graph_330; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=5 --dt=0.02 --seed=9
-graph_331; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=0
-graph_332; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=1
-graph_333; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=2
-graph_334; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=3
-graph_335; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=4
-graph_336; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=5
-graph_337; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=6
-graph_338; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=7
-graph_339; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=8
-graph_340; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=18--annealing_time=10 --dt=0.02 --seed=9
-graph_341; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=0
-graph_342; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=1
-graph_343; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=2
-graph_344; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=3
-graph_345; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=4
-graph_346; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=5
-graph_347; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=6
-graph_348; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=7
-graph_349; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=8
-graph_350; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=5 --dt=0.02 --seed=9
-graph_351; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=0
-graph_352; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=1
-graph_353; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=2
-graph_354; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=3
-graph_355; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=4
-graph_356; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=5
-graph_357; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=6
-graph_358; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=7
-graph_359; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=8
-graph_360; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=18--annealing_time=10 --dt=0.02 --seed=9
-graph_361; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=0
-graph_362; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=1
-graph_363; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=2
-graph_364; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=3
-graph_365; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=4
-graph_366; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=5
-graph_367; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=6
-graph_368; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=7
-graph_369; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=8
-graph_370; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=5 --dt=0.02 --seed=9
-graph_371; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=0
-graph_372; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=1
-graph_373; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=2
-graph_374; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=3
-graph_375; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=4
-graph_376; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=5
-graph_377; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=6
-graph_378; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=7
-graph_379; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=8
-graph_380; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20--annealing_time=10 --dt=0.02 --seed=9
-graph_381; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=0
-graph_382; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=1
-graph_383; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=2
-graph_384; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=3
-graph_385; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=4
-graph_386; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=5
-graph_387; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=6
-graph_388; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=7
-graph_389; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=8
-graph_390; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=5 --dt=0.02 --seed=9
-graph_391; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=0
-graph_392; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=1
-graph_393; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=2
-graph_394; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=3
-graph_395; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=4
-graph_396; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=5
-graph_397; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=6
-graph_398; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=7
-graph_399; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=8
-graph_400; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20--annealing_time=10 --dt=0.02 --seed=9
-graph_401; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=0
-graph_402; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=1
-graph_403; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=2
-graph_404; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=3
-graph_405; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=4
-graph_406; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=5
-graph_407; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=6
-graph_408; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=7
-graph_409; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=8
-graph_410; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=5 --dt=0.02 --seed=9
-graph_411; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=0
-graph_412; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=1
-graph_413; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=2
-graph_414; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=3
-graph_415; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=4
-graph_416; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=5
-graph_417; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=6
-graph_418; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=7
-graph_419; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=8
-graph_420; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=22--annealing_time=10 --dt=0.02 --seed=9
-graph_421; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=0
-graph_422; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=1
-graph_423; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=2
-graph_424; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=3
-graph_425; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=4
-graph_426; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=5
-graph_427; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=6
-graph_428; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=7
-graph_429; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=8
-graph_430; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=5 --dt=0.02 --seed=9
-graph_431; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=0
-graph_432; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=1
-graph_433; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=2
-graph_434; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=3
-graph_435; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=4
-graph_436; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=5
-graph_437; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=6
-graph_438; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=7
-graph_439; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=8
-graph_440; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=22--annealing_time=10 --dt=0.02 --seed=9
-graph_441; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=0
-graph_442; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=1
-graph_443; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=2
-graph_444; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=3
-graph_445; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=4
-graph_446; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=5
-graph_447; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=6
-graph_448; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=7
-graph_449; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=8
-graph_450; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=5 --dt=0.02 --seed=9
-graph_451; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=0
-graph_452; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=1
-graph_453; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=2
-graph_454; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=3
-graph_455; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=4
-graph_456; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=5
-graph_457; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=6
-graph_458; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=7
-graph_459; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=8
-graph_460; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24--annealing_time=10 --dt=0.02 --seed=9
-graph_461; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=0
-graph_462; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=1
-graph_463; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=2
-graph_464; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=3
-graph_465; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=4
-graph_466; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=5
-graph_467; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=6
-graph_468; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=7
-graph_469; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=8
-graph_470; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=5 --dt=0.02 --seed=9
-graph_471; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=0
-graph_472; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=1
-graph_473; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=2
-graph_474; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=3
-graph_475; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=4
-graph_476; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=5
-graph_477; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=6
-graph_478; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=7
-graph_479; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=8
-graph_480; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24--annealing_time=10 --dt=0.02 --seed=9
-graph_481; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=0
-graph_482; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=1
-graph_483; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=2
-graph_484; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=3
-graph_485; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=4
-graph_486; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=5
-graph_487; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=6
-graph_488; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=7
-graph_489; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=8
-graph_490; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=5 --dt=0.02 --seed=9
-graph_491; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=0
-graph_492; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=1
-graph_493; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=2
-graph_494; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=3
-graph_495; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=4
-graph_496; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=5
-graph_497; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=6
-graph_498; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=7
-graph_499; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=8
-graph_500; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=26--annealing_time=10 --dt=0.02 --seed=9
-graph_501; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=0
-graph_502; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=1
-graph_503; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=2
-graph_504; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=3
-graph_505; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=4
-graph_506; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=5
-graph_507; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=6
-graph_508; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=7
-graph_509; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=8
-graph_510; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=5 --dt=0.02 --seed=9
-graph_511; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=0
-graph_512; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=1
-graph_513; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=2
-graph_514; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=3
-graph_515; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=4
-graph_516; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=5
-graph_517; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=6
-graph_518; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=7
-graph_519; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=8
-graph_520; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=26--annealing_time=10 --dt=0.02 --seed=9
-graph_521; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=0
-graph_522; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=1
-graph_523; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=2
-graph_524; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=3
-graph_525; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=4
-graph_526; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=5
-graph_527; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=6
-graph_528; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=7
-graph_529; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=8
-graph_530; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=5 --dt=0.02 --seed=9
-graph_531; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=0
-graph_532; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=1
-graph_533; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=2
-graph_534; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=3
-graph_535; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=4
-graph_536; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=5
-graph_537; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=6
-graph_538; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=7
-graph_539; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=8
-graph_540; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28--annealing_time=10 --dt=0.02 --seed=9
-graph_541; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=0
-graph_542; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=1
-graph_543; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=2
-graph_544; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=3
-graph_545; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=4
-graph_546; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=5
-graph_547; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=6
-graph_548; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=7
-graph_549; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=8
-graph_550; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=5 --dt=0.02 --seed=9
-graph_551; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=0
-graph_552; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=1
-graph_553; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=2
-graph_554; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=3
-graph_555; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=4
-graph_556; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=5
-graph_557; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=6
-graph_558; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=7
-graph_559; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=8
-graph_560; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28--annealing_time=10 --dt=0.02 --seed=9
-graph_561; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=0
-graph_562; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=1
-graph_563; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=2
-graph_564; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=3
-graph_565; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=4
-graph_566; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=5
-graph_567; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=6
-graph_568; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=7
-graph_569; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=8
-graph_570; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=5 --dt=0.02 --seed=9
-graph_571; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=0
-graph_572; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=1
-graph_573; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=2
-graph_574; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=3
-graph_575; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=4
-graph_576; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=5
-graph_577; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=6
-graph_578; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=7
-graph_579; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=8
-graph_580; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=30--annealing_time=10 --dt=0.02 --seed=9
-graph_581; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=0
-graph_582; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=1
-graph_583; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=2
-graph_584; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=3
-graph_585; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=4
-graph_586; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=5
-graph_587; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=6
-graph_588; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=7
-graph_589; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=8
-graph_590; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=5 --dt=0.02 --seed=9
-graph_591; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=0
-graph_592; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=1
-graph_593; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=2
-graph_594; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=3
-graph_595; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=4
-graph_596; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=5
-graph_597; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=6
-graph_598; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=7
-graph_599; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=8
-graph_600; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=30--annealing_time=10 --dt=0.02 --seed=9
+graph_1; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=50 --dt=0.2 --seed=0
+graph_2; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=50 --dt=0.2 --seed=1
+graph_3; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=100 --dt=0.2 --seed=0
+graph_4; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=100 --dt=0.2 --seed=1
+graph_5; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=200 --dt=0.2 --seed=0
+graph_6; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=200 --dt=0.2 --seed=1
+graph_7; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=400 --dt=0.2 --seed=0
+graph_8; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=4 --annealing_time=400 --dt=0.2 --seed=1
+graph_9; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=50 --dt=0.2 --seed=0
+graph_10; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=50 --dt=0.2 --seed=1
+graph_11; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=100 --dt=0.2 --seed=0
+graph_12; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=100 --dt=0.2 --seed=1
+graph_13; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=200 --dt=0.2 --seed=0
+graph_14; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=200 --dt=0.2 --seed=1
+graph_15; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=400 --dt=0.2 --seed=0
+graph_16; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=4 --annealing_time=400 --dt=0.2 --seed=1
+graph_17; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=50 --dt=0.2 --seed=0
+graph_18; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=50 --dt=0.2 --seed=1
+graph_19; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=100 --dt=0.2 --seed=0
+graph_20; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=100 --dt=0.2 --seed=1
+graph_21; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=200 --dt=0.2 --seed=0
+graph_22; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=200 --dt=0.2 --seed=1
+graph_23; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=400 --dt=0.2 --seed=0
+graph_24; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=4 --annealing_time=400 --dt=0.2 --seed=1
+graph_25; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=50 --dt=0.2 --seed=0
+graph_26; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=50 --dt=0.2 --seed=1
+graph_27; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=100 --dt=0.2 --seed=0
+graph_28; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=100 --dt=0.2 --seed=1
+graph_29; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=200 --dt=0.2 --seed=0
+graph_30; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=200 --dt=0.2 --seed=1
+graph_31; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=400 --dt=0.2 --seed=0
+graph_32; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=8 --annealing_time=400 --dt=0.2 --seed=1
+graph_33; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=50 --dt=0.2 --seed=0
+graph_34; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=50 --dt=0.2 --seed=1
+graph_35; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=100 --dt=0.2 --seed=0
+graph_36; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=100 --dt=0.2 --seed=1
+graph_37; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=200 --dt=0.2 --seed=0
+graph_38; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=200 --dt=0.2 --seed=1
+graph_39; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=400 --dt=0.2 --seed=0
+graph_40; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=8 --annealing_time=400 --dt=0.2 --seed=1
+graph_41; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=50 --dt=0.2 --seed=0
+graph_42; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=50 --dt=0.2 --seed=1
+graph_43; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=100 --dt=0.2 --seed=0
+graph_44; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=100 --dt=0.2 --seed=1
+graph_45; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=200 --dt=0.2 --seed=0
+graph_46; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=200 --dt=0.2 --seed=1
+graph_47; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=400 --dt=0.2 --seed=0
+graph_48; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=8 --annealing_time=400 --dt=0.2 --seed=1
+graph_49; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=50 --dt=0.2 --seed=0
+graph_50; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=50 --dt=0.2 --seed=1
+graph_51; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=100 --dt=0.2 --seed=0
+graph_52; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=100 --dt=0.2 --seed=1
+graph_53; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=200 --dt=0.2 --seed=0
+graph_54; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=200 --dt=0.2 --seed=1
+graph_55; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=400 --dt=0.2 --seed=0
+graph_56; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=12 --annealing_time=400 --dt=0.2 --seed=1
+graph_57; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=50 --dt=0.2 --seed=0
+graph_58; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=50 --dt=0.2 --seed=1
+graph_59; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=100 --dt=0.2 --seed=0
+graph_60; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=100 --dt=0.2 --seed=1
+graph_61; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=200 --dt=0.2 --seed=0
+graph_62; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=200 --dt=0.2 --seed=1
+graph_63; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=400 --dt=0.2 --seed=0
+graph_64; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=12 --annealing_time=400 --dt=0.2 --seed=1
+graph_65; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=50 --dt=0.2 --seed=0
+graph_66; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=50 --dt=0.2 --seed=1
+graph_67; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=100 --dt=0.2 --seed=0
+graph_68; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=100 --dt=0.2 --seed=1
+graph_69; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=200 --dt=0.2 --seed=0
+graph_70; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=200 --dt=0.2 --seed=1
+graph_71; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=400 --dt=0.2 --seed=0
+graph_72; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=12 --annealing_time=400 --dt=0.2 --seed=1
+graph_73; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=50 --dt=0.2 --seed=0
+graph_74; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=50 --dt=0.2 --seed=1
+graph_75; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=100 --dt=0.2 --seed=0
+graph_76; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=100 --dt=0.2 --seed=1
+graph_77; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=200 --dt=0.2 --seed=0
+graph_78; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=200 --dt=0.2 --seed=1
+graph_79; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=400 --dt=0.2 --seed=0
+graph_80; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=16 --annealing_time=400 --dt=0.2 --seed=1
+graph_81; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=50 --dt=0.2 --seed=0
+graph_82; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=50 --dt=0.2 --seed=1
+graph_83; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=100 --dt=0.2 --seed=0
+graph_84; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=100 --dt=0.2 --seed=1
+graph_85; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=200 --dt=0.2 --seed=0
+graph_86; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=200 --dt=0.2 --seed=1
+graph_87; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=400 --dt=0.2 --seed=0
+graph_88; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=16 --annealing_time=400 --dt=0.2 --seed=1
+graph_89; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=50 --dt=0.2 --seed=0
+graph_90; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=50 --dt=0.2 --seed=1
+graph_91; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=100 --dt=0.2 --seed=0
+graph_92; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=100 --dt=0.2 --seed=1
+graph_93; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=200 --dt=0.2 --seed=0
+graph_94; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=200 --dt=0.2 --seed=1
+graph_95; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=400 --dt=0.2 --seed=0
+graph_96; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=16 --annealing_time=400 --dt=0.2 --seed=1
+graph_97; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=50 --dt=0.2 --seed=0
+graph_98; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=50 --dt=0.2 --seed=1
+graph_99; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=100 --dt=0.2 --seed=0
+graph_100; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=100 --dt=0.2 --seed=1
+graph_101; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=200 --dt=0.2 --seed=0
+graph_102; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=200 --dt=0.2 --seed=1
+graph_103; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=400 --dt=0.2 --seed=0
+graph_104; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=20 --annealing_time=400 --dt=0.2 --seed=1
+graph_105; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=50 --dt=0.2 --seed=0
+graph_106; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=50 --dt=0.2 --seed=1
+graph_107; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=100 --dt=0.2 --seed=0
+graph_108; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=100 --dt=0.2 --seed=1
+graph_109; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=200 --dt=0.2 --seed=0
+graph_110; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=200 --dt=0.2 --seed=1
+graph_111; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=400 --dt=0.2 --seed=0
+graph_112; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=20 --annealing_time=400 --dt=0.2 --seed=1
+graph_113; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=50 --dt=0.2 --seed=0
+graph_114; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=50 --dt=0.2 --seed=1
+graph_115; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=100 --dt=0.2 --seed=0
+graph_116; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=100 --dt=0.2 --seed=1
+graph_117; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=200 --dt=0.2 --seed=0
+graph_118; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=200 --dt=0.2 --seed=1
+graph_119; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=400 --dt=0.2 --seed=0
+graph_120; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=20 --annealing_time=400 --dt=0.2 --seed=1
+graph_121; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=50 --dt=0.2 --seed=0
+graph_122; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=50 --dt=0.2 --seed=1
+graph_123; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=100 --dt=0.2 --seed=0
+graph_124; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=100 --dt=0.2 --seed=1
+graph_125; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=200 --dt=0.2 --seed=0
+graph_126; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=200 --dt=0.2 --seed=1
+graph_127; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=400 --dt=0.2 --seed=0
+graph_128; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=24 --annealing_time=400 --dt=0.2 --seed=1
+graph_129; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=50 --dt=0.2 --seed=0
+graph_130; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=50 --dt=0.2 --seed=1
+graph_131; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=100 --dt=0.2 --seed=0
+graph_132; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=100 --dt=0.2 --seed=1
+graph_133; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=200 --dt=0.2 --seed=0
+graph_134; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=200 --dt=0.2 --seed=1
+graph_135; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=400 --dt=0.2 --seed=0
+graph_136; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=24 --annealing_time=400 --dt=0.2 --seed=1
+graph_137; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=50 --dt=0.2 --seed=0
+graph_138; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=50 --dt=0.2 --seed=1
+graph_139; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=100 --dt=0.2 --seed=0
+graph_140; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=100 --dt=0.2 --seed=1
+graph_141; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=200 --dt=0.2 --seed=0
+graph_142; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=200 --dt=0.2 --seed=1
+graph_143; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=400 --dt=0.2 --seed=0
+graph_144; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=24 --annealing_time=400 --dt=0.2 --seed=1
+graph_145; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=50 --dt=0.2 --seed=0
+graph_146; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=50 --dt=0.2 --seed=1
+graph_147; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=100 --dt=0.2 --seed=0
+graph_148; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=100 --dt=0.2 --seed=1
+graph_149; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=200 --dt=0.2 --seed=0
+graph_150; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=200 --dt=0.2 --seed=1
+graph_151; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=400 --dt=0.2 --seed=0
+graph_152; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=28 --annealing_time=400 --dt=0.2 --seed=1
+graph_153; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=50 --dt=0.2 --seed=0
+graph_154; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=50 --dt=0.2 --seed=1
+graph_155; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=100 --dt=0.2 --seed=0
+graph_156; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=100 --dt=0.2 --seed=1
+graph_157; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=200 --dt=0.2 --seed=0
+graph_158; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=200 --dt=0.2 --seed=1
+graph_159; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=400 --dt=0.2 --seed=0
+graph_160; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=28 --annealing_time=400 --dt=0.2 --seed=1
+graph_161; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=50 --dt=0.2 --seed=0
+graph_162; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=50 --dt=0.2 --seed=1
+graph_163; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=100 --dt=0.2 --seed=0
+graph_164; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=100 --dt=0.2 --seed=1
+graph_165; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=200 --dt=0.2 --seed=0
+graph_166; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=200 --dt=0.2 --seed=1
+graph_167; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=400 --dt=0.2 --seed=0
+graph_168; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=28 --annealing_time=400 --dt=0.2 --seed=1
+graph_169; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=50 --dt=0.2 --seed=0
+graph_170; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=50 --dt=0.2 --seed=1
+graph_171; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=100 --dt=0.2 --seed=0
+graph_172; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=100 --dt=0.2 --seed=1
+graph_173; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=200 --dt=0.2 --seed=0
+graph_174; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=200 --dt=0.2 --seed=1
+graph_175; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=400 --dt=0.2 --seed=0
+graph_176; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=16 --n_edges=40 --dmax=32 --annealing_time=400 --dt=0.2 --seed=1
+graph_177; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=50 --dt=0.2 --seed=0
+graph_178; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=50 --dt=0.2 --seed=1
+graph_179; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=100 --dt=0.2 --seed=0
+graph_180; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=100 --dt=0.2 --seed=1
+graph_181; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=200 --dt=0.2 --seed=0
+graph_182; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=200 --dt=0.2 --seed=1
+graph_183; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=400 --dt=0.2 --seed=0
+graph_184; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=20 --n_edges=100 --dmax=32 --annealing_time=400 --dt=0.2 --seed=1
+graph_185; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=50 --dt=0.2 --seed=0
+graph_186; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=50 --dt=0.2 --seed=1
+graph_187; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=100 --dt=0.2 --seed=0
+graph_188; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=100 --dt=0.2 --seed=1
+graph_189; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=200 --dt=0.2 --seed=0
+graph_190; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=200 --dt=0.2 --seed=1
+graph_191; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=400 --dt=0.2 --seed=0
+graph_192; cpu; 2; 2; cpu; python random_ising.py --path=/ceph/hpc/home/bojanz/data/tdvp_qa/random_graph --n_verts=100 --n_edges=1000 --dmax=32 --annealing_time=400 --dt=0.2 --seed=1
