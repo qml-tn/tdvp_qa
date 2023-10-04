@@ -45,7 +45,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 #SBATCH --job-name=${NAME}
 #SBATCH --output=output/${NAME}
 
-cd /ceph/hpc/home/bojanz/tdvp/qmps/lib
+cd /ceph/hpc/home/bojanz/tdvp_qa/bin
 
 module load SciPy-bundle/2022.05-intel-2022a
 
