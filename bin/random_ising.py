@@ -118,7 +118,7 @@ if __name__ == "__main__":
     hx = np.ones(N_verts)
     eng, data, measurement = PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,annealing_time,dt=dt)
     
-    print(f"MPO CHI = {np.max(eng.model.H_MPO.chi)}")
+    # print(f"MPO CHI = {np.max(eng.model.H_MPO.chi)}")
     
     total = int(annealing_time/dt)
     t = 0
