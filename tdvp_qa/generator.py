@@ -6,11 +6,11 @@ import networkx as nx
 
 GRAPHS_PATH = 'graphs/'
 
-def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = None, global_path=None):
+def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = None, no_local_fields=False, global_path=None):
 
     if global_path:
         path = os.path.join(global_path,GRAPHS_PATH)
-        postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
+        postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed, no_local_fields)    
         filename_wm = os.path.join(path,'weight_matrix'+postfix+'.dat')
         filename_lf = os.path.join(path,'local_fields'+postfix+'.dat')
 
@@ -44,6 +44,9 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
     local_fields = np.zeros((N_verts, 2))
     for i in range(N_verts): local_fields[i] = (i, h_i[i])  
     
+    if no_local_fields:
+        h_i[:,1] = 0
+
     connect = nx.node_connectivity(graph)
     return weight_matrix, local_fields, connect
     
@@ -71,6 +74,7 @@ def generate_postfix(REGULAR,N_verts,N_edges,d,seed, no_local_fields):
         postfix = '_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)
     if no_local_fields:
         postfix += "_hi=0"
+    return postfix
   
     
     

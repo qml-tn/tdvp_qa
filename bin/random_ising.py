@@ -106,14 +106,11 @@ if __name__ == "__main__":
     dt = args_dict["dt"]
     Dmax = args_dict["dmax"]  
 
-    Jz, loc_fields, connect = generate_graph(N_verts,N_edges, seed = seed, REGULAR=REGULAR, d=d, global_path=global_path) 
+    Jz, loc_fields, connect = generate_graph(N_verts,N_edges, seed = seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path) 
 
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
     
     hz = loc_fields[:,1]
-    if no_local_fields:
-        hz = np.zeros(N_verts)
-
     hx = np.ones(N_verts)
     eng, data, measurement = PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,annealing_time,dt=dt)
     
