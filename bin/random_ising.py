@@ -60,7 +60,7 @@ if __name__ == "__main__":
                         help='Annealing time.')
     parser.add_argument('--dt',
                         type=float,
-                        default=0.1,
+                        default=0.02,
                         help='Time step for the simulation.')
     parser.add_argument('--distr',
                         type=str,
