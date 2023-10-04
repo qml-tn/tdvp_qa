@@ -92,7 +92,7 @@ if __name__ == "__main__":
     global_path  = args_dict['path']
     seed = args_dict['seed'] # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm 
 
-    if not seed:
+    if seed is None:
         seed = np.random.randint(10000)
         print(f"Using a random seed {seed}.")
 
