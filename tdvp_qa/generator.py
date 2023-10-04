@@ -19,8 +19,6 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
             local_fields = np.loadtxt(filename_lf)
             print("Loaded generated models.")
             return weight_matrix, local_fields, True
-        
-        print("Files could not be loaded proceed with new generation.")
 
     assert not (REGULAR and not d),  'Please specify the degree of the graph.'
     assert not (d and not REGULAR),  'The specified degree is not implemented as REGULAR option is not activated.'

@@ -8,7 +8,7 @@ from tenpy.tools.hdf5_io import Hdf5Saver
 from tdvp_qa.generator import generate_graph, export_graphs, generate_postfix
 from tdvp_qa.model import PrepareTDVP
 
-def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path=None):
+def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path):
     if global_path is None:
         global_path = os.getcwd()
     path_mps = os.path.join(global_path,'mps/')
@@ -17,14 +17,13 @@ def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path=
     if not os.path.exists(path_data):os.makedirs(path_data)
         
     postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
-    filename_data = os.path.join(path_data,'weight_matrix'+postfix+'.pkl')
+    filename_data = os.path.join(path_data,'data'+postfix+'.pkl')
     filename_mps = os.path.join(path_mps,'mps'+postfix+'.hdf5')
     
     # Saving the final state
-    mpsfile = h5py.File(filename_mps,'w')
-    hd5saver = Hdf5Saver(mpsfile)
-    mps.save_hdf5(hd5saver,mpsfile,"/")
-    mpsfile.close()
+    with h5py.File(filename_mps,'w') as f:
+        hd5saver = Hdf5Saver(f)
+        mps.save_hdf5(hd5saver,f,"/")
 
     # Saving the evolution data
     with open(filename_data, 'wb') as f:
@@ -91,6 +90,10 @@ if __name__ == "__main__":
     global_path  = args_dict['path']
     seed = args_dict['seed'] # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm 
 
+    if not seed:
+        seed = np.random.randint(10000)
+        print(f"Using a random seed {seed}.")
+
     # TDVP annealing parameters
     annealing_schedule = args_dict["annealing_schedule"]
     annealing_time = args_dict["annealing_time"]
@@ -114,7 +117,7 @@ if __name__ == "__main__":
         t = eng.evolved_time
         data = measurement(eng, data)
 
-    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, connect, REGULAR, d, global_path)
+    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, REGULAR, d, global_path)
     export_graphs(Jz, loc_fields, N_verts, N_edges, seed, connect, REGULAR, d, global_path)
 
 
