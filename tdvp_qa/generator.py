@@ -4,9 +4,24 @@ import networkx as nx
 
 #import time
 
+GRAPHS_PATH = 'graphs/'
 
-def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = None, distr = 'Uniform'):
-    
+def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = None, global_path=None):
+
+    if global_path:
+        path = os.path.join(global_path,GRAPHS_PATH)
+        postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
+        filename_wm = os.path.join(path,'weight_matrix'+postfix+'.dat')
+        filename_lf = os.path.join(path,'local_fields'+postfix+'.dat')
+
+        if os.path.exists(filename_wm) and os.path.exists(filename_lf):
+            weight_matrix = np.loadtxt(filename_wm)
+            local_fields = np.loadtxt(filename_lf)
+            print("Loaded generated models.")
+            return weight_matrix, local_fields, True
+        
+        print("Files could not be loaded proceed with new generation.")
+
     assert not (REGULAR and not d),  'Please specify the degree of the graph.'
     assert not (d and not REGULAR),  'The specified degree is not implemented as REGULAR option is not activated.'
     assert not (REGULAR and N_edges), 'The number of edges of a regular graph is fixed and equal to dN/2.'
@@ -23,14 +38,7 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
         edges = np.array(sorted(graph.edges, key=lambda x: x[1]))
     
     Jij = np.random.rand(N_edges) #Samples the couplings from uniform distribution between 0 and 1
-
-    if distr == 'Uniform':
-        h_i = (np.random.rand(N_verts) - 0.5) #Samples the local fields from uniform distribution between -0.5 and 0.5
-    
-    elif distr == 'Normal':
-        h_i = np.random.normal(loc = 0, scale = 1., size = N_verts)  #Samples the local fields from normal distribution mu=0 and sigma=1
-
-    else: print("Distribution not available")
+    h_i = (np.random.rand(N_verts) - 0.5) #Samples the local fields from uniform distribution between -0.5 and 0.5
     
     weight_matrix = np.zeros((N_edges, 3))
     for i in range(N_edges): weight_matrix[i] = (edges.T[0,i], edges.T[1,i], Jij[i])  
@@ -41,24 +49,27 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
     connect = nx.node_connectivity(graph)
     return weight_matrix, local_fields, connect
     
-def export_files(wm, lf, N_verts, N_edges, seed, cnct, distr, REGULAR, d, path=None):
-    if path is None:
-        path = os.getcwd()
-    path = os.path.join(path,'Graphs/')
+def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, global_path=None):
+    if global_path is None:
+        global_path = os.getcwd()
+    path = os.path.join(global_path,GRAPHS_PATH)
     if not os.path.exists(path):os.makedirs(path)
-        
-    if REGULAR:
-        filename_wm = path+'weight_matrix_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)+'.dat'
-        filename_lf = path+'local_fields_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)+'.dat'
-    else:
-        filename_wm = path+'weight_matrix_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)+'.dat'
-        filename_lf = path+'local_fields_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)+'.dat'
+
+    postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
+    filename_wm = os.path.join(path,'weight_matrix'+postfix+'.dat')
+    filename_lf = os.path.join(path,'local_fields'+postfix+'.dat')
 
     header_wm = 'i // j // Jij --- connectivity='+str(cnct)
-    header_lf = 'i // hi --- connectivity='+str(cnct)+' hi_distribution='+distr
+    header_lf = 'i // hi --- connectivity='+str(cnct)
     
     np.savetxt(filename_wm, wm, header = header_wm)
     np.savetxt(filename_lf, lf, header = header_lf)
+
+def generate_postfix(REGULAR,N_verts,N_edges,d,seed):
+    if REGULAR:
+        return '_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)
+    else:
+        return '_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)
     
   
     

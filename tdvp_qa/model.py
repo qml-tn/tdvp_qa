@@ -104,10 +104,17 @@ class AnnealingModel(CouplingMPOModel):
     for i in range(len(hz)):
       self.add_onsite_term(strength=B*hz[i]/2.,i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
 
-    for ij in Jz.keys():
-      i = np.min(ij)
-      j = np.max(ij)
-      self.add_coupling_term(strength=B*Jz[ij]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{ij[0]} Sigmaz_{ij[1]}', plus_hc=False)
+    if type(Jz) == dict:
+      for ij in Jz.keys():
+        i = np.min(ij)
+        j = np.max(ij)
+        self.add_coupling_term(strength=B*Jz[ij]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
+    elif type(Jz) == np.ndarray:
+      for k in len(Jz):
+        ij = Jz[k,:2]
+        i = np.min(ij)
+        j = np.max(ij)
+        self.add_coupling_term(strength=B*Jz[k,2]/2.,i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
   # done
 
 
@@ -275,7 +282,7 @@ def PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,tmax,dt=0.1):
     Parameters:
     - hx       : onsite magnetic field along x
     - hz       : onsite magnetic field along z
-    - Jz       : couplings between sites
+    - Jz       : couplings between sites either a dict or an np.array
     - annealing_schedule: annealing schedule
     - Dmax     : maximum bond dimension
     - tmax     : annealing time
