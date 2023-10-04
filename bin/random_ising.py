@@ -17,7 +17,7 @@ def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path,
     if not os.path.exists(path_data):os.makedirs(path_data)
         
     postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
-    postfix += f"{annealing_schedule}_D_{Dmax}_t_{annealing_time}_dt_{dt}" 
+    postfix += f"_{annealing_schedule}_D_{Dmax}_t_{annealing_time}_dt_{dt}" 
 
     filename_data = os.path.join(path_data,'data'+postfix+'.pkl')
     filename_mps = os.path.join(path_mps,'mps'+postfix+'.hdf5')
