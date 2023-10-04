@@ -50,7 +50,7 @@ if __name__ == "__main__":
                         help='Number of vertices in the graph.')
     parser.add_argument('--n_edges',
                         type=int,
-                        default=40,
+                        action="store",
                         help='Number of edges.')
     parser.add_argument('--dmax',
                         type=int,
@@ -90,6 +90,10 @@ if __name__ == "__main__":
     # Model generator parameters
     N_verts = args_dict['n_verts']
     N_edges = args_dict['n_edges']
+    if N_edges is None:
+        N_edges = int(N_verts*(N_verts - 1)/2);
+
+
     REGULAR = args_dict['regular']  #Set TRUE to generate regular graph of degree d
     d = args_dict['d'] # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path  = args_dict['path']
