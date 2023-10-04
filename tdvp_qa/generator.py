@@ -47,13 +47,13 @@ def generate_graph(N_verts, N_edges = None, seed = None, REGULAR = False, d = No
     connect = nx.node_connectivity(graph)
     return weight_matrix, local_fields, connect
     
-def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, global_path=None):
+def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, no_local_fields, global_path=None):
     if global_path is None:
         global_path = os.getcwd()
     path = os.path.join(global_path,GRAPHS_PATH)
     if not os.path.exists(path):os.makedirs(path)
 
-    postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
+    postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed,no_local_fields)    
     filename_wm = os.path.join(path,'weight_matrix'+postfix+'.dat')
     filename_lf = os.path.join(path,'local_fields'+postfix+'.dat')
 
@@ -63,12 +63,14 @@ def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, global_path=
     np.savetxt(filename_wm, wm, header = header_wm)
     np.savetxt(filename_lf, lf, header = header_lf)
 
-def generate_postfix(REGULAR,N_verts,N_edges,d,seed):
+def generate_postfix(REGULAR,N_verts,N_edges,d,seed, no_local_fields):
+    postfix = ""
     if REGULAR:
-        return '_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)
+        postfix = '_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)
     else:
-        return '_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)
-    
+        postfix = '_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)
+    if no_local_fields:
+        postfix += "_hi=0"
   
     
     

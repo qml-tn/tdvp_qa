@@ -8,7 +8,7 @@ from tenpy.tools.hdf5_io import Hdf5Saver
 from tdvp_qa.generator import generate_graph, export_graphs, generate_postfix
 from tdvp_qa.model import PrepareTDVP
 
-def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path, annealing_schedule,Dmax,annealing_time,dt):
+def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule,Dmax,annealing_time,dt):
     if global_path is None:
         global_path = os.getcwd()
     path_mps = os.path.join(global_path,'mps/')
@@ -16,7 +16,7 @@ def export_tdvp_data(data, mps, N_verts, N_edges, seed, REGULAR, d, global_path,
     path_data = os.path.join(global_path,'evolution_data/')
     if not os.path.exists(path_data):os.makedirs(path_data)
         
-    postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed)    
+    postfix = generate_postfix(REGULAR,N_verts,N_edges,d,seed, no_local_fields)    
     postfix += f"_{annealing_schedule}_D_{Dmax}_t_{annealing_time}_dt_{dt}" 
 
     filename_data = os.path.join(path_data,'data'+postfix+'.pkl')
@@ -126,8 +126,8 @@ if __name__ == "__main__":
         t = eng.evolved_time
         data = measurement(eng, data)
 
-    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, REGULAR, d, global_path, annealing_schedule,Dmax,annealing_time,dt)
-    export_graphs(Jz, loc_fields, N_verts, N_edges, seed, connect, REGULAR, d, global_path)
+    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule,Dmax,annealing_time,dt)
+    export_graphs(Jz, loc_fields, N_verts, N_edges, seed, connect, REGULAR, d, no_local_fields, global_path)
 
 
 
