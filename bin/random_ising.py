@@ -76,6 +76,9 @@ if __name__ == "__main__":
                         type=int,
                         action="store",
                         help='Seed for the graph generator.')
+    parser.add_argument('--no_local_fields', 
+                        action='store_true',
+                        help='If set we set all hi to zero.')
     
     parse_args, unknown = parser.parse_known_args()
 
@@ -91,6 +94,7 @@ if __name__ == "__main__":
     d = args_dict['d'] # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path  = args_dict['path']
     seed = args_dict['seed'] # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm 
+    no_local_fields = args_dict['no_local_fields']
 
     if seed is None:
         seed = np.random.randint(10000)
@@ -107,7 +111,10 @@ if __name__ == "__main__":
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
     
     hz = loc_fields[:,1]
-    hx = np.ones(len(hz))
+    if no_local_fields:
+        hz = np.zeros(N_verts)
+
+    hx = np.ones(N_verts)
     eng, data, measurement = PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,annealing_time,dt=dt)
     
     print(f"MPO CHI = {np.max(eng.model.H_MPO.chi)}")
