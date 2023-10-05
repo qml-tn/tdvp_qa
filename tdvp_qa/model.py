@@ -48,6 +48,56 @@ def get_funcC(annealing_schedule):
 
 
 # Hamiltonian model
+class IsingModel(CouplingMPOModel):
+  """ Implementation of the Ising model which is H_1 in the annealing model without the 1/2 prefactor
+  The Hamiltonian reads:
+
+  .. math ::
+      H_1 = \sum_{i<j} \mathtt{Jz}_{i,j} S^z_i S^z_j
+            + \sum_i (\mathtt{hz}_i S^z_i)
+
+  All parameters are collected in a single dictionary `model_params`, which
+  is turned into a :class:`~tenpy.tools.params.Config` object.
+
+  Parameters
+  ----------
+  model_params : :class:`~tenpy.tools.params.Config`
+      Parameters for the model. See :cfg:config:`SpinModel` below.
+
+  Options
+  -------
+  .. cfg:config :: CouplingMPOModel
+      n : int (number of spins in the model)
+      hz  : array
+      Jz : dict
+          Coupling as defined for the Hamiltonian above.
+  """
+  def init_sites(self, model_params):
+    site = SpinHalfSite(conserve = 'None')
+    return site
+
+  def init_terms(self, model_params):
+    hz = model_params.get('hz',[1])
+    Jz = model_params.get('Jz',{})
+
+    # H_1
+    for i in range(len(hz)):
+      self.add_onsite_term(strength=hz[i],i=i,op='Sigmaz',category=f'Sigmaz_{i}',plus_hc=False)
+
+    if type(Jz) == dict:
+      for ij in Jz.keys():
+        i = np.min(ij)
+        j = np.max(ij)
+        self.add_coupling_term(strength=Jz[ij],i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
+    elif type(Jz) == np.ndarray:
+      for k in range(len(Jz)):
+        ij = Jz[k,:2]
+        i = int(np.min(ij))
+        j = int(np.max(ij))
+        self.add_coupling_term(strength=Jz[k,2],i=i,j=j,op_i='Sigmaz',op_j='Sigmaz',op_string="Id",category=f'Sigmaz_{i} Sigmaz_{j}', plus_hc=False)
+  # done
+
+
 class AnnealingModel(CouplingMPOModel):
   """ Implementation of the annealing model H = A H_0 + B H H_1
   H_0 is a model with either a local x field hx which can be in a positive direction or random. 
@@ -200,7 +250,7 @@ class ReverseAnnealingModel(CouplingMPOModel):
 
 
 
-  # Construction of the initial state
+# Construction of the initial state
 # Helper functions
 def bond_dimensions(n,d,Dmax):
   '''
