@@ -133,7 +133,8 @@ class AnnealingModel(CouplingMPOModel):
     return site
 
   def init_terms(self, model_params):
-    t = model_params.get('time',0.)
+    dt = model_params.get('dt',0.05)
+    t = model_params.get('time',0.) + dt/2.0
     tmax = model_params.get("tmax",0.5)
     annealing_schedule = model_params.get("annealing_schedule","dwave")
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
@@ -206,7 +207,8 @@ class ReverseAnnealingModel(CouplingMPOModel):
     return site
 
   def init_terms(self, model_params):
-    t = model_params.get('time',0.)
+    dt = model_params.get('dt',0.05)
+    t = model_params.get('time',0.) + dt/2.0
     tmax = model_params.get("tmax",0.5)
     s = np.clip(t/tmax,0,1) # We use a standard linear schedule
 
@@ -351,6 +353,7 @@ def PrepareTDVP(hx,hz,Jz,annealing_schedule,Dmax,tmax,dt=0.1):
       'bc_MPS': 'finite',
       'L': L,
       'annealing_schedule': annealing_schedule,
+      'dt': dt,
   }
 
   M = AnnealingModel(model_params)
