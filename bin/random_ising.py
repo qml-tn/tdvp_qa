@@ -1,10 +1,31 @@
 import argparse
 import numpy as np
 from tqdm import tqdm
-from tdvp_qa.generator import generate_graph, export_graphs
-from tdvp_qa.model import PrepareTDVP, export_tdvp_data
+import os
 import time
 from GracefulKiller import GracefulKiller
+
+from tdvp_qa.generator import generate_graph, export_graphs
+from tdvp_qa.model import PrepareTDVP, export_tdvp_data, generate_postfix
+
+
+def generate_tdvp_filenames(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, annealing_time, dt):
+    if global_path is None:
+        global_path = os.getcwd()
+    path_mps = os.path.join(global_path, 'mps/')
+    if not os.path.exists(path_mps):
+        os.makedirs(path_mps)
+    path_data = os.path.join(global_path, 'evolution_data/')
+    if not os.path.exists(path_data):
+        os.makedirs(path_data)
+
+    postfix = generate_postfix(
+        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+    postfix += f"_{annealing_schedule}_D_{Dmax}_t_{annealing_time}_dt_{dt}"
+
+    filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
+    filename_mps = os.path.join(path_mps, 'mps'+postfix+'.hdf5')
+    return filename_data, filename_mps
 
 
 if __name__ == "__main__":
@@ -98,14 +119,19 @@ if __name__ == "__main__":
 
     hz = loc_fields[:, 1]
     hx = np.ones(N_verts)
-    eng, data, measurement = PrepareTDVP(hx, hz, Jz, N_verts, N_edges, seed, REGULAR,
-                                         d, no_local_fields, global_path, annealing_schedule, Dmax, annealing_time, dt)
+
+    filename_data, filename_mps = generate_tdvp_filenames(
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, annealing_time, dt)
+
+    eng, data, measurement = PrepareTDVP(
+        hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filename_data, filename_mps)
 
     total = int(np.round(annealing_time/dt))
     t = eng.evolved_time
     init_step = int(np.round(t/dt))
 
     for step in tqdm(range(init_step, total), position=0, leave=True):
+        # print(step, total, eng.model.options.get('time', None), eng.evolved_time)
         eng.run()
         t = eng.evolved_time
         data = measurement(eng, data)
@@ -114,7 +140,6 @@ if __name__ == "__main__":
             print(f"Killing program after {int(tcurrent-tstart)} seconds.")
             break
 
-    export_tdvp_data(data, eng.psi, N_verts, N_edges, seed, REGULAR, d,
-                     no_local_fields, global_path, annealing_schedule, Dmax, annealing_time, dt)
+    export_tdvp_data(data, eng.psi, filename_data, filename_mps)
     export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
                   connect, REGULAR, d, no_local_fields, global_path)
