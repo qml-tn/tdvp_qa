@@ -130,16 +130,17 @@ if __name__ == "__main__":
     t = eng.evolved_time
     init_step = int(np.round(t/dt))
 
-    for step in tqdm(range(init_step, total), position=0, leave=True):
-        # print(step, total, eng.model.options.get('time', None), eng.evolved_time)
-        eng.run()
-        t = eng.evolved_time
-        data = measurement(eng, data)
-        tcurrent = time.time()
-        if tcurrent-tstart > 3600*47 or killer.kill_now:
-            print(f"Killing program after {int(tcurrent-tstart)} seconds.")
-            break
+    if init_step < total:
+        for step in tqdm(range(init_step, total), position=0, leave=True):
+            # print(step, total, eng.model.options.get('time', None), eng.evolved_time)
+            eng.run()
+            t = eng.evolved_time
+            data = measurement(eng, data)
+            tcurrent = time.time()
+            if tcurrent-tstart > 3600*47 or killer.kill_now:
+                print(f"Killing program after {int(tcurrent-tstart)} seconds.")
+                break
 
-    export_tdvp_data(data, eng.psi, filename_data, filename_mps)
-    export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                  connect, REGULAR, d, no_local_fields, global_path)
+        export_tdvp_data(data, eng.psi, filename_data, filename_mps)
+        export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
+                      connect, REGULAR, d, no_local_fields, global_path)
