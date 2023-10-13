@@ -406,7 +406,7 @@ def PrepareTDVP(hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filena
         'dt': dt,
         'preserve_norm': True,
         'start_time': start_time,
-        # 'lanczos_options' : {'P_tol': 1e-16, 'min_gap': 1e-14}
+        'lanczos_options' : {'P_tol': 1e-16, 'min_gap': 1e-15}
         # 'trunc_params': {'chi_max': 16}
     }
 
