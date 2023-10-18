@@ -7,7 +7,7 @@ import networkx as nx
 GRAPHS_PATH = 'graphs/'
 
 
-def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None):
+def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None, recalculate=False):
 
     if global_path:
         path = os.path.join(global_path, GRAPHS_PATH)
@@ -16,7 +16,7 @@ def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_l
         filename_wm = os.path.join(path, 'weight_matrix'+postfix+'.dat')
         filename_lf = os.path.join(path, 'local_fields'+postfix+'.dat')
 
-        if os.path.exists(filename_wm) and os.path.exists(filename_lf):
+        if not recalculate and os.path.exists(filename_wm) and os.path.exists(filename_lf):
             weight_matrix = np.loadtxt(filename_wm)
             local_fields = np.loadtxt(filename_lf)
             print("Loaded generated models.")

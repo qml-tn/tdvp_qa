@@ -79,6 +79,9 @@ if __name__ == "__main__":
     parser.add_argument('--no_local_fields',
                         action='store_true',
                         help='If set we set all hi to zero.')
+    parser.add_argument('--recalculate',
+                        action='store_true',
+                        help='We restart the simulation and overwrite existing data.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -111,9 +114,10 @@ if __name__ == "__main__":
     annealing_time = args_dict["annealing_time"]
     dt = args_dict["dt"]
     Dmax = args_dict["dmax"]
+    recalculate = args_dict["recalculate"]
 
     Jz, loc_fields, connect = generate_graph(
-        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path)
+        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate)
 
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
 
@@ -124,7 +128,7 @@ if __name__ == "__main__":
         N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, annealing_time, dt)
 
     eng, data, measurement = PrepareTDVP(
-        hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filename_data, filename_mps)
+        hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filename_data, filename_mps, recalculate)
 
     total = int(np.round(annealing_time/dt))
     t = eng.evolved_time

@@ -354,7 +354,7 @@ def initial_state_RA(hz0, Dmax):
 # Preparing the annealing engine
 
 
-def PrepareTDVP(hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filename_data=None, filename_mps=None):
+def PrepareTDVP(hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filename_data=None, filename_mps=None, recalculate=False):
     '''
       Main function that prepares the initial product state with bond dimension D for the annealing process with tenpy
       and creates the Hamiltonian associated with the couplings J and onsite potential h
@@ -386,8 +386,12 @@ def PrepareTDVP(hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filena
 
     M = AnnealingModel(model_params)
 
-    data, psi = import_tdvp_data(
-        filename_data=filename_data, filename_mps=filename_mps)
+    if recalculate:
+        data = None
+        psi = None
+    else:
+        data, psi = import_tdvp_data(
+            filename_data=filename_data, filename_mps=filename_mps)
 
     if psi is None:
         # Model sites
@@ -406,7 +410,7 @@ def PrepareTDVP(hx, hz, Jz, annealing_schedule, Dmax, annealing_time, dt, filena
         'dt': dt,
         'preserve_norm': True,
         'start_time': start_time,
-        'lanczos_options' : {'P_tol': 1e-16, 'min_gap': 1e-15}
+        'lanczos_options': {'P_tol': 1e-16, 'min_gap': 1e-15}
         # 'trunc_params': {'chi_max': 16}
     }
 
