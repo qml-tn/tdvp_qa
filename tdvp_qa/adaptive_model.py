@@ -308,7 +308,7 @@ class TDVP_QA():
         entropies = []
         slopes = []
         states = []
-        pbar = tqdm(total=1)
+        pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.slope/2)
         while (self.lamb < 1):
             dt = self.get_dt()
