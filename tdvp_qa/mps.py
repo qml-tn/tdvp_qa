@@ -5,6 +5,7 @@ from jax import random
 
 import numpy as np
 
+
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
     n = len(tensors1)
