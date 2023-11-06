@@ -1,0 +1,1 @@
+Nverts: 100Nedges: 100No_fields: Truedt: 0.05
