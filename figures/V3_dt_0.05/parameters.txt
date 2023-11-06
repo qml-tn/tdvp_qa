@@ -1,0 +1,4 @@
+Nverts: [16, 20, 100]
+Nedges: [40, 100, 1000]
+No_fields: True
+dt: 0.05
