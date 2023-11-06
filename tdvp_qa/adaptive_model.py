@@ -310,7 +310,7 @@ class TDVP_QA():
         states = []
         pbar = tqdm(total=1)
         pbar.update(self.slope/2)
-        while (self.lamb <= 1):
+        while (self.lamb < 1):
             dt = self.get_dt()
             er = 0
             if self.adaptive:
