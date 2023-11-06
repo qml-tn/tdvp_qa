@@ -1,4 +1,4 @@
-from jax.scipy import qr
+from jax.scipy.linalg import qr
 from jax import jit
 import jax.numpy as jnp
 from jax import random

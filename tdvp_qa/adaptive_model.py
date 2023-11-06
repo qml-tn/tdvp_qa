@@ -1,9 +1,8 @@
 from jax import jit
 import jax.numpy as jnp
-from mps import MPS
+from tdvp_qa.mps import MPS
 from jax import random
-from jax.scipy import expm
-from jax.scipy.linalg import svd
+from jax.scipy.linalg import svd, expm
 from tqdm import tqdm
 
 import numpy as np
