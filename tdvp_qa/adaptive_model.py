@@ -52,8 +52,8 @@ def effective_hamiltonian_C(Hl, Hr):
 class TDVP_QA():
     def __init__(self, mpo0, mpo1, tensors, slope, dt, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
-        self.mpo0 = mpo0
-        self.mpo1 = mpo1
+        self.mpo0 = [jnp.array(A) for A in mpo0]
+        self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
         self.mps = MPS(tensors, key)
         self.mps.right_canonical()

@@ -89,3 +89,72 @@ def generate_postfix(REGULAR, N_verts, N_edges, d, seed, no_local_fields):
     if no_local_fields:
         postfix += "_hi=0"
     return postfix
+
+
+def longitudinal_mpo(n):
+    A = np.zeros([2, 2, 2, 2])
+    sx = np.array([[0, 1], [1, 0]])
+    i2 = np.eye(2)
+    A[0, :, :, 0] = i2
+    A[1, :, :, 1] = i2
+    A[0, :, :, 1] = sx
+    mpo = [A[:1]] + [A]*(n-2)+[A[:, :, :, -1:]]
+    return mpo
+
+
+def transverse_mpo(Jz, hz, n):
+    d = 2
+    sz = np.array([[1, 0], [0, -1]])
+    i2 = np.eye(d)
+    A = np.zeros([n+1, d, d, n+1])
+    A[0, :, :, 0] = i2
+    A[-1, :, :, -1] = i2
+    mpo = [A.copy() for i in range(n)]
+    # Local fields
+    for i in range(n):
+        mpo[i][0, :, :, -1] += sz*hz[i]
+        if i > 0:
+            mpo[i][i, :, :, -1] += sz
+        for j in range(1, i):
+            mpo[j][i, :, :, i] += i2
+    # Interaction
+    for k in range(len(Jz)):
+        i = int(Jz[k, 0])-1
+        j = int(Jz[k, 1])-1
+        Jij = Jz[k, 2]
+        mpo[i][0, :, :, j] += sz*Jij
+
+    # Taking only the output state of the last mpo tensor
+    mpo[0] = mpo[0][:1]
+    mpo[-1] = mpo[-1][:, :, :, -1:]
+
+    # Bring the mpo in the left canonical form
+    Al = mpo[0]
+    for i in range(n-1):
+        Dl, _, _, Dr = Al.shape
+        Al = np.reshape(Al, [-1, Dr])
+        q, r = np.linalg.qr(Al, mode="reduced")
+        Dr = q.shape[-1]
+        mpo[i] = np.reshape(q, [Dl, d, d, Dr])
+        Al = np.einsum("ij,jklm->iklm", r, mpo[i+1])
+        mpo[i+1] = Al
+
+    # Compress MPO
+    Ar = mpo[-1]
+    eps = 1e-12
+    for i in range(n-1, 0, -1):
+        Dl, _, _, Dr = Ar.shape
+        Ar = np.reshape(Ar, [Dl, -1])
+        u, s, v = np.linalg.svd(Ar, full_matrices=False)
+        smax = np.max(s)
+        snorm = s/smax
+        inds = snorm > eps
+        s = s[inds]
+        v = v[inds]
+        u = u[:, inds]
+        Dl = len(s)
+        mpo[i] = np.reshape(v, [Dl, d, d, Dr])
+        Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
+        mpo[i-1] = Ar
+
+    return mpo

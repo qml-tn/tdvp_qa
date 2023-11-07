@@ -142,3 +142,41 @@ class MPS():
 
     def overlap(self, mps2):
         return mps_overlap(self.tensors, mps2.tensors)
+
+
+def bond_dimensions(n, d, Dmax):
+    '''
+    List of bond dimensions
+
+    Parameters:
+      - n     : length of the system
+      - d     : local Hilbert space size
+      - Dmax  : maximum bond dimension
+    '''
+    dims = []
+    nhalf = int((n+1)//2)
+    for i in range(nhalf):
+        dims.append(int(np.min([d**i, Dmax])))
+    middle = []
+    if np.mod(n, 2) == 0:
+        middle = [int(np.min([d**nhalf, Dmax]))]
+    return dims + middle + dims[::-1]
+
+
+def initial_state(n, Dmax):
+    '''
+    List of MPS matrices for a particular initial product state
+
+    Parameters:
+      - n     : size of the system
+      - Dmax  : maximum bond dimension
+    '''
+    d = 2
+    mps = []
+    dims = bond_dimensions(n, d, Dmax)
+    for i in range(n):
+        B = np.zeros([dims[i], d, dims[i+1]])
+        v = np.array([1., 1])/np.sqrt(2.)
+        B[0, :, 0] = v
+        mps.append(B)
+    return mps
