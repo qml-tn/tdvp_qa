@@ -8,8 +8,10 @@ from tdvp_qa.model import PrepareTDVP, export_tdvp_data, generate_postfix
 from tdvp_qa.adaptive_model import TDVP_QA
 from tdvp_qa.mps import initial_state
 
+from jax import config
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp):
+
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data/')
@@ -18,7 +20,8 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_s_{slope}_s_{seed_tdvp}"
+    
+    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -85,6 +88,10 @@ if __name__ == "__main__":
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
+    
+    parser.add_argument('--double_precision',
+                        action='store_true',
+                        help='If set we use double precision jax calculations.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -113,6 +120,7 @@ if __name__ == "__main__":
         print(f"Using a random seed {seed}.")
 
     # TDVP annealing parameters
+    double_precision = args_dict["double_precision"]
     seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
@@ -124,6 +132,9 @@ if __name__ == "__main__":
 
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
+
+    if double_precision:
+        config.update("jax_enable_x64", True)
 
     Jz, loc_fields, connect = generate_graph(
         N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate)
@@ -137,7 +148,7 @@ if __name__ == "__main__":
         annealing_schedule = "adaptive"
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision)
 
     mpoz = transverse_mpo(Jz, hz, n)
     mpox = longitudinal_mpo(n)
