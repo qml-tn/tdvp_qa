@@ -4,6 +4,8 @@ from tdvp_qa.mps import MPS
 from jax import random
 from jax.scipy.linalg import svd, expm
 from tqdm import tqdm
+from GracefulKiller import GracefulKiller
+import time
 
 import numpy as np
 
@@ -78,6 +80,10 @@ class TDVP_QA():
         self.Hleft1 = None
 
         self.key = random.PRNGKey(key)
+
+        self.tstart = time.time()
+        self.killer = GracefulKiller()
+
 
     def get_dt(self):
         if not self.stochastic:
@@ -353,9 +359,15 @@ class TDVP_QA():
                 if self.adaptive:
                     energiesr.append(er)
 
+
+            tcurrent = time.time()
+            if tcurrent-self.tstart > 3600*47 or self.killer.kill_now:
+                print(f"Killing program after {int(tcurrent-self.tstart)} seconds.")
+                break
+
         pbar.close()
 
-        if evolve_final:
+        if evolve_final and not self.killer.kill_now:
             dt = self.get_dt()
             er = 0
             if self.adaptive:

@@ -1,9 +1,7 @@
 import argparse
 import numpy as np
-from tqdm import tqdm
 import os
-import time
-from GracefulKiller import GracefulKiller
+import pickle
 
 from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
 from tdvp_qa.model import PrepareTDVP, export_tdvp_data, generate_postfix
@@ -11,13 +9,10 @@ from tdvp_qa.adaptive_model import TDVP_QA
 from tdvp_qa.mps import initial_state
 
 
-def generate_tdvp_filenames(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope):
     if global_path is None:
         global_path = os.getcwd()
-    path_mps = os.path.join(global_path, 'mps/')
-    if not os.path.exists(path_mps):
-        os.makedirs(path_mps)
-    path_data = os.path.join(global_path, 'evolution_data/')
+    path_data = os.path.join(global_path, 'adaptive_data/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
@@ -26,14 +21,10 @@ def generate_tdvp_filenames(N_verts, N_edges, seed, REGULAR, d, no_local_fields,
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_s_{slope}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
-    filename_mps = os.path.join(path_mps, 'mps'+postfix+'.hdf5')
-    return filename_data, filename_mps
+    return filename_data
 
 
 if __name__ == "__main__":
-    tstart = time.time()
-    killer = GracefulKiller()
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--path',
                         default="data/",
@@ -140,7 +131,7 @@ if __name__ == "__main__":
     if adaptive:
         annealing_schedule = "adaptive"
 
-    filename_data, filename_mps = generate_tdvp_filenames(
+    filename = generate_tdvp_filename(
         N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope)
 
     mpoz = transverse_mpo(Jz, hz, n)
@@ -155,8 +146,10 @@ if __name__ == "__main__":
         evolve_final=True)
 
     data = {"energy": energies, "energyr": energiesr,
-            "entropy": entropies, "slopes": slopes, "states": states}
+            "entropy": entropies, "slopes": slopes, "states": states, "mps": tdvpqa.mps.tensors}
 
-    export_tdvp_data(data, tdvpqa.mps, filename_data, filename_mps)
+    with open(filename, 'wb') as f:
+        pickle.dump(data, f)
+
     export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
                   connect, REGULAR, d, no_local_fields, global_path)
