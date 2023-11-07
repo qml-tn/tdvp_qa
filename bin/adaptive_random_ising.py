@@ -9,7 +9,7 @@ from tdvp_qa.adaptive_model import TDVP_QA
 from tdvp_qa.mps import initial_state
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data/')
@@ -18,7 +18,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_s_{slope}"
+    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_s_{slope}_s_{seed_tdvp}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -75,6 +75,10 @@ if __name__ == "__main__":
                         type=int,
                         action="store",
                         help='Seed for the graph generator.')
+    parser.add_argument('--seed_tdvp',
+                        type=int,
+                        action="store",
+                        help='Seed for the graph generator.')
     parser.add_argument('--no_local_fields',
                         action='store_true',
                         help='If set we set all hi to zero.')
@@ -109,6 +113,7 @@ if __name__ == "__main__":
         print(f"Using a random seed {seed}.")
 
     # TDVP annealing parameters
+    seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
     slope = args_dict["slope"]
@@ -132,7 +137,7 @@ if __name__ == "__main__":
         annealing_schedule = "adaptive"
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvo)
 
     mpoz = transverse_mpo(Jz, hz, n)
     mpox = longitudinal_mpo(n)
@@ -140,7 +145,7 @@ if __name__ == "__main__":
     tensors = initial_state(n, Dmax)
 
     tdvpqa = TDVP_QA(mpox, mpoz, tensors, slope, dt,
-                     compute_states=False, adaptive=adaptive, stochastic=stochastic)
+                     compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp)
 
     energies, energiesr, entropies, slopes, states = tdvpqa.evolve(
         evolve_final=True)
