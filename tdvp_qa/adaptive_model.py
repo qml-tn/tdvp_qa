@@ -343,11 +343,11 @@ class TDVP_QA():
             if self.adaptive:
                 # correct the slope
                 if self.slope > self.min_slope and abs(er-ec) > 0.01:
-                    self.slope = np.max([self.slope/1.5, self.min_slope])
+                    self.slope = np.max([self.slope/2., self.min_slope])
                     self.mps.set_tensors(tensors)
                     increase_lambda = False
                 if abs(er-ec) < 0.001:
-                    self.slope = np.min([self.slope*1.5, self.max_slope])
+                    self.slope = np.min([self.slope*2., self.max_slope])
 
             if increase_lambda:
                 pbar.update(self.slope)
