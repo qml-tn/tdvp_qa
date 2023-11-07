@@ -57,7 +57,7 @@ def energy(sample, Jz, hz):
 
 
 def energy_mpo(sample, mpo):
-    e = jnp.array([[1.]])
+    e = np.array([[1.]])
     for i in range(len(sample)):
         s = int(sample[i])
         e = e @ mpo[i][:, s, s, :]
