@@ -77,8 +77,8 @@ if __name__ == "__main__":
                         help='Seed for the graph generator.')
     parser.add_argument('--seed_tdvp',
                         type=int,
-                        action="store",
-                        help='Seed for the graph generator.')
+                        default=42,
+                        help='Seed for the mps and tdvp evolution. Used for sampling and stochastic TDVP.')
     parser.add_argument('--no_local_fields',
                         action='store_true',
                         help='If set we set all hi to zero.')
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         annealing_schedule = "adaptive"
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvo)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp)
 
     mpoz = transverse_mpo(Jz, hz, n)
     mpox = longitudinal_mpo(n)
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         evolve_final=True)
 
     data = {"energy": energies, "energyr": energiesr,
-            "entropy": entropies, "slopes": slopes, "states": states, "mps": tdvpqa.mps.tensors}
+            "entropy": entropies, "slope": slopes, "state": states, "mps": tdvpqa.mps.tensors}
 
     with open(filename, 'wb') as f:
         pickle.dump(data, f)

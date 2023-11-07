@@ -84,7 +84,6 @@ class TDVP_QA():
         self.tstart = time.time()
         self.killer = GracefulKiller()
 
-
     def get_dt(self):
         if not self.stochastic:
             return self.dt/2
@@ -359,10 +358,10 @@ class TDVP_QA():
                 if self.adaptive:
                     energiesr.append(er)
 
-
             tcurrent = time.time()
             if tcurrent-self.tstart > 3600*47 or self.killer.kill_now:
-                print(f"Killing program after {int(tcurrent-self.tstart)} seconds.")
+                print(
+                    f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
 
         pbar.close()
