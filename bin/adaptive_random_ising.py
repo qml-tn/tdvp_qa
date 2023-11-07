@@ -167,8 +167,8 @@ if __name__ == "__main__":
 
     data = get_simulation_data(filename)
     if data is not None:
-        slope = data["slopes"][-1]
-        lamb = np.sum(data["slopes"])
+        slope = data["slope"][-1]
+        lamb = np.sum(data["slope"])
         tensors = data["mps"]
         tdvpqa.update_tdvp_state(tensors=tensors, lamb=lamb, slope=slope)
 

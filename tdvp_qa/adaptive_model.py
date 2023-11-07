@@ -327,7 +327,7 @@ class TDVP_QA():
             states = data["state"]
 
         pbar = tqdm(total=1, position=0, leave=True)
-        pbar.update(self.slope/2)
+        pbar.update(self.lamb)
         while (self.lamb < 1):
             dt = self.get_dt()
             er = 0
