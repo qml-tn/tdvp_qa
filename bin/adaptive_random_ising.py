@@ -49,6 +49,10 @@ if __name__ == "__main__":
                         type=float,
                         default=0.05,
                         help='Real time step for the simulation.')
+    parser.add_argument('--dti',
+                        type=float,
+                        default=0.1,
+                        help='Imaginary time step for the simulation.')
     parser.add_argument('--stochastic',
                         action='store_true',
                         help='If set we sample the imaginary component of dt in the range [0, dti].')
@@ -59,10 +63,6 @@ if __name__ == "__main__":
                         type=float,
                         default=0.01,
                         help='Initial increment for which we change lambda after each time step.')
-    parser.add_argument('--dti',
-                        type=float,
-                        default=0.05,
-                        help='Imaginary time step for the simulation.')
     parser.add_argument('--distr',
                         type=str,
                         default="Uniform",
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     slope = args_dict["slope"]
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
-    dt = dtr + 1j*dti
+    dt = dtr - 1j*dti
     n = N_verts
 
     Dmax = args_dict["dmax"]
