@@ -11,6 +11,14 @@ from tdvp_qa.mps import initial_state
 from jax import config
 
 
+def get_simulation_data(filename_path):
+    data = None
+    if os.path.exists(filename_path):
+        with open(filename_path, 'rb') as f:
+            data = pickle.load(f)
+    return data
+
+
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision):
     if global_path is None:
         global_path = os.getcwd()
@@ -20,7 +28,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
-    
+
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
@@ -88,7 +96,6 @@ if __name__ == "__main__":
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
-    
     parser.add_argument('--double_precision',
                         action='store_true',
                         help='If set we use double precision jax calculations.')
@@ -158,11 +165,15 @@ if __name__ == "__main__":
     tdvpqa = TDVP_QA(mpox, mpoz, tensors, slope, dt,
                      compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp)
 
-    energies, energiesr, entropies, slopes, states = tdvpqa.evolve(
-        evolve_final=True)
+    data = get_simulation_data(filename)
+    if data is not None:
+        slope = data["slopes"][-1]
+        lamb = np.sum(data["slopes"])
+        tensors = data["mps"]
+        tdvpqa.update_tdvp_state(tensors=tensors, lamb=lamb, slope=slope)
 
-    data = {"energy": energies, "energyr": energiesr,
-            "entropy": entropies, "slope": slopes, "state": states, "mps": tdvpqa.mps.tensors}
+    data = tdvpqa.evolve(evolve_final=True, data=data)
+    data["mps"] = tdvpqa.mps.tensors
 
     with open(filename, 'wb') as f:
         pickle.dump(data, f)

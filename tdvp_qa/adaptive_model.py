@@ -307,12 +307,25 @@ class TDVP_QA():
         self.Hright0 = Hright0
         self.Hright1 = Hright1
 
-    def evolve(self, evolve_final=False):
-        energies = []
-        energiesr = []
-        entropies = []
-        slopes = []
-        states = []
+    def update_tdvp_state(self, tensors, lamb, slope):
+        self.mps.set_tensors(tensors)
+        self.lamb = lamb
+        self.slope = slope
+
+    def evolve(self, evolve_final=False, data=None):
+        if data is None:
+            energies = []
+            energiesr = []
+            entropies = []
+            slopes = []
+            states = []
+        else:
+            energies = data["energy"]
+            energiesr = data["energyr"]
+            entropies = data["entropy"]
+            slopes = data["slope"]
+            states = data["state"]
+
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.slope/2)
         while (self.lamb < 1):
@@ -396,4 +409,6 @@ class TDVP_QA():
             if self.adaptive:
                 energiesr.append(er)
 
-        return energies, energiesr, entropies, slopes, states
+        data = {"energy": energies, "energyr": energiesr,
+                "entropy": entropies, "slope": slopes, "state": states}
+        return data
