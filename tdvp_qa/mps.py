@@ -113,7 +113,7 @@ class MPS():
     def sample(self):
         mps = self.tensors
         n = len(mps)
-        sample = jnp.zeros(n)
+        sample = np.zeros(n)
         Al = jnp.array([[1]])
         self.key, subkey = random.split(self.key)
         rs = random.uniform(subkey, [n])
