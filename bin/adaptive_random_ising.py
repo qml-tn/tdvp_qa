@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         help='Real time step for the simulation.')
     parser.add_argument('--dti',
                         type=float,
-                        default=0.1,
+                        default=1.0,
                         help='Imaginary time step for the simulation.')
     parser.add_argument('--stochastic',
                         action='store_true',
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                         help='If set we adaptively change the slope.')
     parser.add_argument('--slope',
                         type=float,
-                        default=0.01,
+                        default=0.001,
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--distr',
                         type=str,
@@ -132,6 +132,7 @@ if __name__ == "__main__":
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
     slope = args_dict["slope"]
+    lamb = slope/2.0
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
@@ -161,18 +162,17 @@ if __name__ == "__main__":
     mpox = longitudinal_mpo(n)
 
     tensors = initial_state(n, Dmax)
-
-    tdvpqa = TDVP_QA(mpox, mpoz, tensors, slope, dt,
-                     compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp)
-
     data = get_simulation_data(filename)
     if data is not None:
+        tensors = data["mps"]
         slope = data["slope"][-1]
         lamb = np.sum(data["slope"])
         tensors = data["mps"]
-        tdvpqa.update_tdvp_state(tensors=tensors, lamb=lamb, slope=slope)
 
-    data = tdvpqa.evolve(evolve_final=True, data=data)
+    tdvpqa = TDVP_QA(mpox, mpoz, tensors, slope, dt, lamb=lamb,
+                     compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp)
+
+    data = tdvpqa.evolve(data=data)
     data["mps"] = tdvpqa.mps.tensors
 
     with open(filename, 'wb') as f:

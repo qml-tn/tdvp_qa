@@ -52,7 +52,7 @@ def effective_hamiltonian_C(Hl, Hr):
 
 
 class TDVP_QA():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42, min_energy_diff=0.0001, max_energy_diff=0.01):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -65,7 +65,7 @@ class TDVP_QA():
         self.n = self.mps.n
         self.d = self.mps.d
 
-        self.lamb = slope/2.
+        self.lamb = lamb
         self.max_slope = max_slope
         self.min_slope = min_slope
         self.slope = slope
@@ -73,6 +73,9 @@ class TDVP_QA():
         self.adaptive = adaptive
         self.stochastic = stochastic
         self.compute_states = compute_states
+
+        self.min_energy_diff = min_energy_diff
+        self.max_energy_diff = max_energy_diff
 
         self.Hright0 = right_context(self.mps, self.mpo0)
         self.Hright1 = right_context(self.mps, self.mpo1)
@@ -307,24 +310,12 @@ class TDVP_QA():
         self.Hright0 = Hright0
         self.Hright1 = Hright1
 
-    def update_tdvp_state(self, tensors, lamb, slope):
-        self.mps.set_tensors(tensors)
-        self.lamb = lamb
-        self.slope = slope
-
-    def evolve(self, evolve_final=False, data=None):
+    def evolve(self, data=None):
+        keys = ["energy", "energyr", "entropy", "slope", "state"]
         if data is None:
-            energies = []
-            energiesr = []
-            entropies = []
-            slopes = []
-            states = []
-        else:
-            energies = data["energy"]
-            energiesr = data["energyr"]
-            entropies = data["entropy"]
-            slopes = data["slope"]
-            states = data["state"]
+            data = {}
+            for key in keys:
+                data[key] = []
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
@@ -332,44 +323,40 @@ class TDVP_QA():
             dt = self.get_dt()
             er = 0
             if self.adaptive:
-                # backup state
-                tensors = self.mps.copy_tensors()
-
-                # real update
-                dtr = np.real(dt)
-                self.right_sweep(dtr)
-                self.left_sweep(dtr)
+                # half update
+                dtr = jnp.real(dt/2)
+                self.right_sweep(dtr/2.)
+                self.left_sweep(dtr/2.)
                 er = self.calculate_energy()
 
-                # Revert to backup
-                self.mps.set_tensors(tensors, copy=True)
-
-            # complex update
-            self.right_sweep(dt)
-            self.left_sweep(dt)
-            ec = self.calculate_energy()
+                # half update
+                # dti = jnp.imag(dt)
+                self.right_sweep(dt/2.)
+                self.left_sweep(dt/2.)
+                ec = self.calculate_energy()
+            else:
+                # complex update
+                self.right_sweep(dt)
+                self.left_sweep(dt)
+                ec = self.calculate_energy()
 
             if self.compute_states:
-                states.append(self.mps.construct_state())
+                data["state"].append(self.mps.construct_state())
 
-            increase_lambda = True
             if self.adaptive:
                 # correct the slope
-                if self.slope > self.min_slope and abs(er-ec) > 0.01:
-                    self.slope = np.max([self.slope/2., self.min_slope])
-                    self.mps.set_tensors(tensors)
-                    increase_lambda = False
-                if abs(er-ec) < 0.001:
-                    self.slope = np.min([self.slope*2., self.max_slope])
+                if self.slope > self.min_slope and abs(er-ec) > self.max_energy_diff:
+                    self.slope = np.max([self.slope/1.5, self.min_slope])
+                if abs(er-ec) < self.min_energy_diff:
+                    self.slope = np.min([self.slope*1.5, self.max_slope])
 
-            if increase_lambda:
-                pbar.update(self.slope)
-                self.update_lambda()
-                energies.append(ec)
-                entropies.append(self.entropy/np.log(2.0))
-                slopes.append(self.slope)
-                if self.adaptive:
-                    energiesr.append(er)
+            data["energy"].append(ec)
+            data["entropy"].append(self.entropy/np.log(2.0))
+            data["slope"].append(self.slope)
+            if self.adaptive:
+                data["energyr"].append(er)
+            pbar.update(self.slope)
+            self.update_lambda()
 
             tcurrent = time.time()
             if tcurrent-self.tstart > 3600*47 or self.killer.kill_now:
@@ -378,37 +365,4 @@ class TDVP_QA():
                 break
 
         pbar.close()
-
-        if evolve_final and not self.killer.kill_now:
-            dt = self.get_dt()
-            er = 0
-            if self.adaptive:
-                # backup state
-                tensors = self.mps.copy_tensors()
-
-                # real update
-                dtr = np.real(dt)
-                self.right_sweep(dtr)
-                self.left_sweep(dtr)
-                er = self.calculate_energy()
-
-                # Revert to backup
-                self.mps.set_tensors(tensors, copy=True)
-
-            # complex update
-            self.right_sweep(dt)
-            self.left_sweep(dt)
-            ec = self.calculate_energy()
-
-            if self.compute_states:
-                states.append(self.mps.construct_state())
-
-            energies.append(ec)
-            entropies.append(self.entropy/np.log(2.0))
-            slopes.append(self.slope)
-            if self.adaptive:
-                energiesr.append(er)
-
-        data = {"energy": energies, "energyr": energiesr,
-                "entropy": entropies, "slope": slopes, "state": states}
         return data
