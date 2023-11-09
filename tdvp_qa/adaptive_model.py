@@ -350,11 +350,11 @@ class TDVP_QA():
                 if abs(er-ec) < self.min_energy_diff:
                     self.slope = np.min([self.slope*1.5, self.max_slope])
 
-            data["energy"].append(np.real(ec))
-            data["entropy"].append(np.real(self.entropy/np.log(2.0)))
-            data["slope"].append(np.real(self.slope))
+            data["energy"].append(float(np.real(ec)))
+            data["entropy"].append(float(np.real(self.entropy/np.log(2.0))))
+            data["slope"].append(float(np.real(self.slope)))
             if self.adaptive:
-                data["energyr"].append(np.real(er))
+                data["energyr"].append(float(np.real(er)))
             pbar.update(self.slope)
             self.update_lambda()
 
