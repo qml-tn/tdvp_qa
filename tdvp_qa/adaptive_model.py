@@ -105,7 +105,7 @@ class TDVP_QA():
         b = np.min([self.lamb, 1])
         return -a, b
 
-    def calculate_energy(self):
+    def energy_right_canonical(self):
         Hl0 = jnp.array([[[1.]]])
         Hl1 = jnp.array([[[1.]]])
         Hr0 = self.Hright0[0]
@@ -114,6 +114,30 @@ class TDVP_QA():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
+        Dl, d, Dr = A.shape
+
+        a, b = self.get_couplings()
+
+        # Effective Hamiltonian for A
+        dd = Dl*d*Dr
+        Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
+        Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
+        Ha = a * Ha0 + b * Ha1
+
+        A = jnp.reshape(A, [-1])
+        return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+    
+
+    def energy_left_canonical(self):
+        Hr0 = jnp.array([[[1.]]])
+        Hr1 = jnp.array([[[1.]]])
+        Hl0 = self.Hleft0[-1]
+        Hl1 = self.Hleft1[-1]
+        H0 = self.mpo0[-1]
+        H1 = self.mpo1[-1]
+
+        n = self.n
+        A = self.mps.get_tensor(n-1)
         Dl, d, Dr = A.shape
 
         a, b = self.get_couplings()
@@ -310,6 +334,10 @@ class TDVP_QA():
         self.Hright0 = Hright0
         self.Hright1 = Hright1
 
+    def right_left_sweep(self,dt):
+        self.right_sweep(dt/2.)
+        self.left_sweep(dt/2.)
+
     def evolve(self, data=None):
         keys = ["energy", "energyr", "entropy", "slope", "state"]
         if data is None:
@@ -323,22 +351,22 @@ class TDVP_QA():
             dt = self.get_dt()
             er = 0
             if self.adaptive:
-                # half update
-                dtr = jnp.real(dt/2)
-                self.right_sweep(dtr/2.)
-                self.left_sweep(dtr/2.)
-                er = self.calculate_energy()
+                # full step update right
+                tensors = self.mps.copy_tensors()
+                self.right_sweep(dt)
+                er = self.energy_left_canonical()
+                self.mps.set_tensors(tensors)
 
-                # half update
-                # dti = jnp.imag(dt)
-                self.right_sweep(dt/2.)
-                self.left_sweep(dt/2.)
-                ec = self.calculate_energy()
+                # half-step update right-left
+                dt = jnp.real(dt/2)
+                self.right_left_sweep(dt/2.)
+                ec = self.energy_right_canonical()
+
             else:
                 # complex update
                 self.right_sweep(dt)
                 self.left_sweep(dt)
-                ec = self.calculate_energy()
+                ec = self.energy_right_canonical()
 
             if self.compute_states:
                 data["state"].append(np.array(self.mps.construct_state()))
