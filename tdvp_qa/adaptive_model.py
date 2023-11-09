@@ -89,10 +89,10 @@ class TDVP_QA():
 
     def get_dt(self):
         if not self.stochastic:
-            return self.dt/2
+            return self.dt
         key, subkey = random.split(self.key)
-        dtr = jnp.real(self.dt/2)
-        dti = jnp.imag(self.dt/2) * random.uniform(subkey)
+        dtr = jnp.real(self.dt)
+        dti = jnp.imag(self.dt) * random.uniform(subkey)
         dt = dtr + 1j*dti
         self.key = key
         return dt
