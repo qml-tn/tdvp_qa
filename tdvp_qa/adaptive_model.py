@@ -374,7 +374,6 @@ class TDVP_QA():
                 self.right_left_sweep(dt, lamb)
                 ec = self.energy_right_canonical(lamb)
                 ediff = abs((er-ec)/ec)
-                print(ediff)
             else:
                 # complex update
                 lamb = self.lamb + self.slope
