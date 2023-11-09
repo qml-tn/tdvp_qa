@@ -4,7 +4,7 @@ import os
 import pickle
 
 from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
-from tdvp_qa.model import PrepareTDVP, export_tdvp_data, generate_postfix
+from tdvp_qa.model import generate_postfix
 from tdvp_qa.adaptive_model import TDVP_QA
 from tdvp_qa.mps import initial_state
 
@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, max_energy, min_energy):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data/')
@@ -29,7 +29,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
 
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}"
+    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}_mme_{max_energy}_{min_energy}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -74,6 +74,14 @@ if __name__ == "__main__":
                         type=float,
                         default=0.001,
                         help='Initial increment for which we change lambda after each time step.')
+    parser.add_argument('--max_energy',
+                        type=float,
+                        default=0.001,
+                        help='Maximum energy difference in the adiabatic evolution.')
+    parser.add_argument('--min_energy',
+                        type=float,
+                        default=0.00001,
+                        help='Minimum energy difference in the adiabatic evolution.')
     parser.add_argument('--distr',
                         type=str,
                         default="Uniform",
@@ -131,6 +139,8 @@ if __name__ == "__main__":
     seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
+    min_energy = args_dict["min_energy"]
+    max_energy = args_dict["max_energy"]
     slope = args_dict["slope"]
     lamb = slope/2.0
     dtr = args_dict["dtr"]
@@ -156,7 +166,7 @@ if __name__ == "__main__":
         annealing_schedule = "adaptive"
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, min_energy=min_energy, max_energy=max_energy)
 
     mpoz = transverse_mpo(Jz, hz, n)
     mpox = longitudinal_mpo(n)
@@ -170,7 +180,7 @@ if __name__ == "__main__":
         tensors = data["mps"]
 
     tdvpqa = TDVP_QA(mpox, mpoz, tensors, slope, dt, lamb=lamb,
-                     compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp)
+                     compute_states=False, adaptive=adaptive, stochastic=stochastic, key=seed_tdvp, min_energy_diff=min_energy, max_energy_diff=max_energy)
 
     data = tdvpqa.evolve(data=data)
     data["mps"] = tdvpqa.mps.tensors
