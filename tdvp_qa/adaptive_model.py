@@ -52,7 +52,7 @@ def effective_hamiltonian_C(Hl, Hr):
 
 
 class TDVP_QA():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42, min_energy_diff=1e-5, max_energy_diff=1e-3):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb, max_slope=0.05, min_slope=1e-4, adaptive=False, compute_states=False, stochastic=False, key=42, min_energy_diff=1e-4, max_energy_diff=1e-2):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -100,12 +100,14 @@ class TDVP_QA():
     def update_lambda(self):
         self.lamb = np.min([1, self.lamb + self.slope])
 
-    def get_couplings(self):
-        a = np.max([1 - self.lamb, 0.])
-        b = np.min([self.lamb, 1])
+    def get_couplings(self, lamb=None):
+        if lamb is None:
+            lamb = self.lamb
+        a = np.max([1 - lamb, 0.])
+        b = np.min([lamb, 1.])
         return -a, b
 
-    def energy_right_canonical(self):
+    def energy_right_canonical(self, lamb=None):
         Hl0 = jnp.array([[[1.]]])
         Hl1 = jnp.array([[[1.]]])
         Hr0 = self.Hright0[0]
@@ -116,7 +118,7 @@ class TDVP_QA():
         A = self.mps.get_tensor(0)
         Dl, d, Dr = A.shape
 
-        a, b = self.get_couplings()
+        a, b = self.get_couplings(lamb)
 
         # Effective Hamiltonian for A
         dd = Dl*d*Dr
@@ -126,9 +128,8 @@ class TDVP_QA():
 
         A = jnp.reshape(A, [-1])
         return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
-    
 
-    def energy_left_canonical(self):
+    def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
         Hr1 = jnp.array([[[1.]]])
         Hl0 = self.Hleft0[-1]
@@ -140,7 +141,7 @@ class TDVP_QA():
         A = self.mps.get_tensor(n-1)
         Dl, d, Dr = A.shape
 
-        a, b = self.get_couplings()
+        a, b = self.get_couplings(lamb)
 
         # Effective Hamiltonian for A
         dd = Dl*d*Dr
@@ -151,14 +152,14 @@ class TDVP_QA():
         A = jnp.reshape(A, [-1])
         return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
 
-    def right_sweep(self, dt):
+    def right_sweep(self, dt, lamb=None):
         Hleft0 = [jnp.array([[[1.]]])]
         Hleft1 = [jnp.array([[[1.]]])]
         # Assumes that the Hright is already prepared and that the state is in the right canonical form
 
         n = self.n
 
-        a, b = self.get_couplings()
+        a, b = self.get_couplings(lamb)
         for i in range(n-1):
             Hl0 = Hleft0[i]
             Hl1 = Hleft1[i]
@@ -240,14 +241,14 @@ class TDVP_QA():
         self.Hleft0 = Hleft0
         self.Hleft1 = Hleft1
 
-    def left_sweep(self, dt):
+    def left_sweep(self, dt, lamb=None):
         Hright0 = [jnp.array([[[1.]]])]
         Hright1 = [jnp.array([[[1.]]])]
         # Assumes that the Hleft is already prepared and that the state is in the left canonical form
 
         n = self.n
 
-        a, b = self.get_couplings()
+        a, b = self.get_couplings(lamb)
         for i in range(n-1, 0, -1):
             Hl0 = self.Hleft0[i]
             Hl1 = self.Hleft1[i]
@@ -334,9 +335,9 @@ class TDVP_QA():
         self.Hright0 = Hright0
         self.Hright1 = Hright1
 
-    def right_left_sweep(self,dt):
-        self.right_sweep(dt/2.)
-        self.left_sweep(dt/2.)
+    def right_left_sweep(self, dt, lamb=None):
+        self.right_sweep(dt/2., lamb)
+        self.left_sweep(dt/2., lamb)
 
     def evolve(self, data=None):
         keys = ["energy", "energyr", "entropy", "slope", "state"]
@@ -351,31 +352,43 @@ class TDVP_QA():
             dt = self.get_dt()
             er = 0
             if self.adaptive:
-                # full step update right
+                # Backup necessary tensors
                 tensors = self.mps.copy_tensors()
-                self.right_sweep(dt)
-                er = self.energy_left_canonical()
+                Hright0 = [H.copy() for H in self.Hright0]
+                Hright1 = [H.copy() for H in self.Hright1]
+
+                # full step update right
+                lamb = self.lamb + self.slope
+                self.right_left_sweep(dt, lamb)
+                er = self.energy_right_canonical(lamb)
+
+                # Backup tensors
                 self.mps.set_tensors(tensors)
+                self.Hright0 = Hright0
+                self.Hright1 = Hright1
 
                 # half-step update right-left
-                dt = jnp.real(dt/2)
-                self.right_left_sweep(dt/2.)
-                ec = self.energy_right_canonical()
-
+                lamb = self.lamb + self.slope/2
+                self.right_left_sweep(dt, lamb)
+                lamb = self.lamb + self.slope
+                self.right_left_sweep(dt, lamb)
+                ec = self.energy_right_canonical(lamb)
+                ediff = abs((er-ec)/ec)
+                print(ediff)
             else:
                 # complex update
-                self.right_sweep(dt)
-                self.left_sweep(dt)
-                ec = self.energy_right_canonical()
+                lamb = self.lamb + self.slope
+                self.right_left_sweep(dt, lamb)
+                ec = self.energy_right_canonical(lamb)
 
             if self.compute_states:
                 data["state"].append(np.array(self.mps.construct_state()))
 
             if self.adaptive:
                 # correct the slope
-                if self.slope > self.min_slope and abs(er-ec) > self.max_energy_diff:
+                if self.slope > self.min_slope and ediff > self.max_energy_diff:
                     self.slope = np.max([self.slope/1.5, self.min_slope])
-                if abs(er-ec) < self.min_energy_diff:
+                if ediff < self.min_energy_diff:
                     self.slope = np.min([self.slope*1.5, self.max_slope])
 
             data["energy"].append(float(np.real(ec)))

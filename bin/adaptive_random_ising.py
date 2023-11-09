@@ -76,11 +76,11 @@ if __name__ == "__main__":
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--max_energy',
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         help='Maximum energy difference in the adiabatic evolution.')
     parser.add_argument('--min_energy',
                         type=float,
-                        default=0.00001,
+                        default=0.0001,
                         help='Minimum energy difference in the adiabatic evolution.')
     parser.add_argument('--distr',
                         type=str,
