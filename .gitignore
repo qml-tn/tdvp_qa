@@ -69,6 +69,7 @@ scripts/params*
 scripts/slurm*
 mathematica/
 qmltn.egg-info/
+cite/
 
 # wandb files
 **/wandb

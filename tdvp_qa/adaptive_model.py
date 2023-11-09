@@ -52,7 +52,7 @@ def effective_hamiltonian_C(Hl, Hr):
 
 
 class TDVP_QA():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42, min_energy_diff=0.0001, max_energy_diff=0.01):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb, max_slope=0.1, min_slope=1e-5, adaptive=False, compute_states=False, stochastic=False, key=42, min_energy_diff=1e-5, max_energy_diff=1e-3):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
