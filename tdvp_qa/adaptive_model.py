@@ -341,7 +341,7 @@ class TDVP_QA():
                 ec = self.calculate_energy()
 
             if self.compute_states:
-                data["state"].append(self.mps.construct_state())
+                data["state"].append(np.array(self.mps.construct_state()))
 
             if self.adaptive:
                 # correct the slope
@@ -350,11 +350,11 @@ class TDVP_QA():
                 if abs(er-ec) < self.min_energy_diff:
                     self.slope = np.min([self.slope*1.5, self.max_slope])
 
-            data["energy"].append(ec)
-            data["entropy"].append(self.entropy/np.log(2.0))
-            data["slope"].append(self.slope)
+            data["energy"].append(np.real(ec))
+            data["entropy"].append(np.real(self.entropy/np.log(2.0)))
+            data["slope"].append(np.real(self.slope))
             if self.adaptive:
-                data["energyr"].append(er)
+                data["energyr"].append(np.real(er))
             pbar.update(self.slope)
             self.update_lambda()
 
@@ -363,6 +363,6 @@ class TDVP_QA():
                 print(
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
-
+        data["mps"] = [np.array(A) for A in self.mps.tensors]
         pbar.close()
         return data
