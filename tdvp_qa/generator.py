@@ -119,8 +119,8 @@ def transverse_mpo(Jz, hz, n):
             mpo[j][i, :, :, i] += i2
     # Interaction
     for k in range(len(Jz)):
-        i = int(Jz[k, 0])-1
-        j = int(Jz[k, 1])-1
+        i = int(Jz[k, 0])
+        j = int(Jz[k, 1])
         Jij = Jz[k, 2]
         mpo[i][0, :, :, j] += sz*Jij
 
