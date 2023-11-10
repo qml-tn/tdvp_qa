@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         help='Real time step for the simulation.')
     parser.add_argument('--dti',
                         type=float,
-                        default=1.0,
+                        default=0.05,
                         help='Imaginary time step for the simulation.')
     parser.add_argument('--stochastic',
                         action='store_true',
@@ -76,11 +76,11 @@ if __name__ == "__main__":
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--max_energy',
                         type=float,
-                        default=0.01,
+                        default=0.00001,
                         help='Maximum energy difference in the adiabatic evolution.')
     parser.add_argument('--min_energy',
                         type=float,
-                        default=0.0001,
+                        default=0.000001,
                         help='Minimum energy difference in the adiabatic evolution.')
     parser.add_argument('--distr',
                         type=str,
