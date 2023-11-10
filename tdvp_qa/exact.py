@@ -38,8 +38,8 @@ def Ising(Jz, hz):
     for i in range(n):
         H += hz[i]*Sz(i, n)
     for k in range(len(Jz)):
-        i = int(Jz[k, 0])-1
-        j = int(Jz[k, 1])-1
+        i = int(Jz[k, 0])
+        j = int(Jz[k, 1])
         H += Jz[k, 2]*Sz(i, n)@Sz(j, n)
     return H
 
