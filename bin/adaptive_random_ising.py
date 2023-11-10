@@ -142,7 +142,7 @@ if __name__ == "__main__":
     min_energy = args_dict["min_energy"]
     max_energy = args_dict["max_energy"]
     slope = args_dict["slope"]
-    lamb = slope/2.0
+    lamb = 0
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
@@ -184,6 +184,8 @@ if __name__ == "__main__":
 
     data = tdvpqa.evolve(data=data)
     data["mps"] = tdvpqa.mps.tensors
+    data["Jz"] = Jz
+    data["hz"] = hz
 
     with open(filename, 'wb') as f:
         pickle.dump(data, f)
