@@ -170,7 +170,7 @@ def initial_state(n, Dmax, K=0):
     dims = bond_dimensions(n, d, Dmax)
     for i in range(n):
         B = np.zeros([dims[i], d, dims[i+1]])
-        if state[i]==0:
+        if state[i] == 0:
             v = np.array([1., 1])/np.sqrt(2.)
         else:
             v = np.array([1., -1])/np.sqrt(2.)
