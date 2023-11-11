@@ -91,14 +91,26 @@ def generate_postfix(REGULAR, N_verts, N_edges, d, seed, no_local_fields):
     return postfix
 
 
-def longitudinal_mpo(n):
+def longitudinal_mpo(n, hx=None):
     A = np.zeros([2, 2, 2, 2])
     sx = np.array([[0, 1], [1, 0]])
     i2 = np.eye(2)
     A[0, :, :, 0] = i2
     A[1, :, :, 1] = i2
     A[0, :, :, 1] = sx
-    mpo = [A[:1]] + [A]*(n-2)+[A[:, :, :, -1:]]
+    if hx is None:
+        mpo = [A[:1]] + [A]*(n-2)+[A[:, :, :, -1:]]
+    else:
+        Ai = A.copy()
+        Ai[0, 1] *= hx[0]
+        mpo = [Ai[:1]]
+        for i in range(1, n-1):
+            Ai = A.copy()
+            Ai[0, 1] *= hx[i]
+            mpo.append(Ai)
+        Ai = A.copy()
+        Ai[0, 1] *= hx[n-1]
+        mpo.append(Ai[:, :, :, -1:])
     return mpo
 
 
