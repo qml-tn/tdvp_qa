@@ -156,7 +156,7 @@ def bond_dimensions(n, d, Dmax):
     return dims + middle + dims[::-1]
 
 
-def initial_state(n, Dmax):
+def initial_state(n, Dmax, K=0):
     '''
     List of MPS matrices for a particular initial product state
 
@@ -166,10 +166,14 @@ def initial_state(n, Dmax):
     '''
     d = 2
     mps = []
+    state = np.array([int(a) for a in f"{K:b}".zfill(n)])
     dims = bond_dimensions(n, d, Dmax)
     for i in range(n):
         B = np.zeros([dims[i], d, dims[i+1]])
-        v = np.array([1., 1])/np.sqrt(2.)
+        if state[i]==0:
+            v = np.array([1., 1])/np.sqrt(2.)
+        else:
+            v = np.array([1., -1])/np.sqrt(2.)
         B[0, :, 0] = v
         mps.append(B)
     return mps
