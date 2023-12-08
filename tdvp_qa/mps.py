@@ -177,3 +177,27 @@ def initial_state(n, Dmax, K=0):
         B[0, :, 0] = v
         mps.append(B)
     return mps
+
+
+def sample_tensors(mps, key=42):
+    n = len(mps)
+    key = random.PRNGKey(key)
+    sample = np.zeros(n)
+    Al = jnp.array([[1]])
+    key, subkey = random.split(key)
+    rs = random.uniform(subkey, [n])
+    for i in range(n):
+        A = jnp.einsum("ij,jkl->ikl", Al, mps[i])
+        p0 = jnp.linalg.norm(A[:, 0, :])**2
+        p1 = jnp.linalg.norm(A[:, 1, :])**2
+
+        assert np.isclose(
+            p0+p1, 1), f"Distribution is not normalized p0={p0}, p1={p1}, p0+p1={p0+p1}."
+
+        if rs[i] < p0:
+            Al = A[:, 0, :]/jnp.sqrt(p0)
+            sample[i] = 0
+        else:
+            sample[i] = 1
+            Al = A[:, 1, :]/jnp.sqrt(p1)
+    return sample
