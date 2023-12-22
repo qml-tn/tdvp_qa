@@ -335,7 +335,7 @@ class TDVP_QA_V2():
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
-
+        k = 1
         while (self.lamb < 1):
             dt = self.get_dt()
             # full step update right
@@ -346,12 +346,14 @@ class TDVP_QA_V2():
                 data["omega0"].append(float(np.real(omega0)))
                 self.slope = omega0*self.slope_omega
 
-            if self.compute_states and np.isclose(np.mod(lamb, self.ds), 1e-4):
+            if self.compute_states and lamb < k*self.ds:
                 data["state"].append(np.array(self.mps.construct_state()))
                 dmrg_mps = self.mps.copy()
-                dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1, self.Hright0, self.Hright1, sweeps=10)
+                dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
+                              self.Hright0, self.Hright1, sweeps=10)
                 data["var_gs"].append(np.array(dmrg_mps.construct_state()))
                 data["s"].append(self.lamb)
+                k = k+1
 
             data["energy"].append(float(np.real(ec)))
             data["entropy"].append(float(np.real(self.entropy/np.log(2.0))))
