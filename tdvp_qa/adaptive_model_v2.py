@@ -346,7 +346,7 @@ class TDVP_QA_V2():
                 data["omega0"].append(float(np.real(omega0)))
                 self.slope = omega0*self.slope_omega
 
-            if self.compute_states and lamb < k*self.ds:
+            if self.compute_states and lamb > k*self.ds:
                 data["state"].append(np.array(self.mps.construct_state()))
                 dmrg_mps = self.mps.copy()
                 dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
