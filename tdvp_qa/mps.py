@@ -159,7 +159,7 @@ class MPS():
                 Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
 
                 _, vec = jnp.linalg.eigh(Ha)
-                Al = jnp.reshap(vec[:, 0], [Dl, d, Dr])
+                Al = jnp.reshape(vec[:, 0], [Dl, d, Dr])
 
                 self.set_tensor(i,Al)
                 self.move_right(i)
@@ -185,7 +185,7 @@ class MPS():
                 Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
 
                 _, vec = jnp.linalg.eigh(Ha)
-                Ar = jnp.reshap(vec[:, 0], [Dl, d, Dr])
+                Ar = jnp.reshape(vec[:, 0], [Dl, d, Dr])
 
                 self.set_tensor(i,Ar)
                 self.move_left(i)
