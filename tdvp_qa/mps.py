@@ -4,7 +4,7 @@ import jax.numpy as jnp
 from jax import random
 import numpy as np
 
-from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, effective_hamiltonian_A, full_effective_hamiltonian_A
+from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, full_effective_hamiltonian_A
 
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])

@@ -1,6 +1,5 @@
 from jax import jit
 import jax.numpy as jnp
-from tdvp_qa.mps import MPS
 from numpy import max, min
 
 
@@ -20,7 +19,7 @@ def left_hamiltonian(A, Hl0, H0):
     return Hl
 
 
-def right_context(mps: type[MPS], mpo):
+def right_context(mps, mpo):
     # Here we assume that the mps is already in the right canonical form
     n = mps.n
     Hright = [jnp.array([[[1.]]])]
