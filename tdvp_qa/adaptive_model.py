@@ -1,54 +1,15 @@
 from jax import jit
 import jax.numpy as jnp
-from tdvp_qa.mps import MPS
 from jax import random
-from jax.scipy.linalg import svd, expm
+from jax.scipy.linalg import svd, expm, qr
 from tqdm import tqdm
 from GracefulKiller import GracefulKiller
 import time
-
 import numpy as np
 
 
-@jit
-def right_hamiltonian(A, Hr0, H0):
-    Hr = jnp.einsum("aiu,umd->aimd", A, Hr0)
-    Hr = jnp.einsum("njim,aimd->anjd", H0, Hr)
-    Hr = jnp.einsum("bjd,anjd->anb", jnp.conj(A), Hr)
-    return Hr
-
-
-@jit
-def left_hamiltonian(A, Hl0, H0):
-    Hl = jnp.einsum("uia,umd->aimd", A, Hl0)
-    Hl = jnp.einsum("mjin,aimd->anjd", H0, Hl)
-    Hl = jnp.einsum("djb,anjd->anb", jnp.conj(A), Hl)
-    return Hl
-
-
-def right_context(mps: type[MPS], mpo):
-    # Here we assume that the mps is already in the right canonical form
-    n = mps.n
-    Hright = [jnp.array([[[1.]]])]
-    for i in range(n-1, 0, -1):
-        H0 = mpo[i]
-        A = mps.get_tensor(i)
-        Hr = right_hamiltonian(A, Hright[0], H0)
-        Hright = [Hr] + Hright
-    return Hright
-
-
-@jit
-def effective_hamiltonian_A(Hl, Hr, H0):
-    Heff = jnp.einsum("umd,mijn->diujn", Hl, H0)
-    Heff = jnp.einsum("diujn,anb->dibuja", Heff, Hr)
-    return Heff
-
-
-@jit
-def effective_hamiltonian_C(Hl, Hr):
-    Heff = jnp.einsum("umd,amb->dbua", Hl, Hr)
-    return Heff
+from tdvp_qa.mps import MPS
+from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
 
 
 class TDVP_QA():

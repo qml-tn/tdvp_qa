@@ -2,9 +2,9 @@ from jax.scipy.linalg import qr
 from jax import jit
 import jax.numpy as jnp
 from jax import random
-
 import numpy as np
 
+from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, effective_hamiltonian_A, full_effective_hamiltonian_A
 
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
@@ -135,6 +135,66 @@ class MPS():
 
     def overlap(self, mps2):
         return mps_overlap(self.tensors, mps2.tensors)
+    
+    def copy(self):
+        return MPS(self.tensors)
+
+    def dmrg(self, lamb, mpo0, mpo1, Hright0, Hright1, sweeps=10):
+        n = self.n
+        hright0 = [A.copy() for A in Hright0]
+        hright1 = [A.copy() for A in Hright1]
+        for _ in range(sweeps):
+            # Starting the right sweep
+            hleft0 = [jnp.array([[[1.]]])]
+            hleft1 = [jnp.array([[[1.]]])]
+            for i in range(n-1):
+                Dl,d,Dr = self.get_tensor(i).shape
+                H0 = mpo0[i]
+                Hl0 = hleft0[i]
+                Hr0 = hright0[i]
+                H1 = mpo1[i]
+                Hl1 = hleft1[i]
+                Hr1 = hright1[i]
+                dd = Dl*d*Dr
+                Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
+
+                _, vec = jnp.linalg.eigh(Ha)
+                Al = jnp.reshap(vec[:, 0], [Dl, d, Dr])
+
+                self.set_tensor(i,Al)
+                self.move_right(i)
+                Alnew = self.get_tensor(i)
+
+                Hl0 = left_hamiltonian(Alnew, Hl0, H0)
+                Hl1 = left_hamiltonian(Alnew, Hl1, H1)
+                hleft0.append(Hl0)
+                hleft1.append(Hl1)
+
+            # Starting the left sweep
+            hright0 = [jnp.array([[[1.]]])]
+            hright1 = [jnp.array([[[1.]]])]
+            for i in np.arange(n-1, 0, -1):
+                Dl,d,Dr = self.get_tensor(i).shape
+                H0 = mpo0[i]
+                Hl0 = hleft0[i]
+                Hr0 = hright0[0]
+                H1 = mpo1[i]
+                Hl1 = hleft1[i]
+                Hr1 = hright1[0]
+                dd = Dl*d*Dr
+                Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
+
+                _, vec = jnp.linalg.eigh(Ha)
+                Ar = jnp.reshap(vec[:, 0], [Dl, d, Dr])
+
+                self.set_tensor(i,Ar)
+                self.move_left(i)
+                Arnew = self.get_tensor(i)
+
+                Hr0 = right_hamiltonian(Arnew, Hr0, H0)
+                Hr1 = right_hamiltonian(Arnew, Hr1, H1)
+                hright0 = [Hr0] + hright0
+                hright1 = [Hr1] + hright1
 
 
 def bond_dimensions(n, d, Dmax):

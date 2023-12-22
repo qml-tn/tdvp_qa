@@ -1,58 +1,19 @@
 from jax import jit
 import jax.numpy as jnp
-from tdvp_qa.mps import MPS
 from jax import random
-from jax.scipy.linalg import svd, expm
+from jax.scipy.linalg import svd, expm, qr
 from tqdm import tqdm
 from GracefulKiller import GracefulKiller
 import time
-
 import numpy as np
 
 
-@jit
-def right_hamiltonian(A, Hr0, H0):
-    Hr = jnp.einsum("aiu,umd->aimd", A, Hr0)
-    Hr = jnp.einsum("njim,aimd->anjd", H0, Hr)
-    Hr = jnp.einsum("bjd,anjd->anb", jnp.conj(A), Hr)
-    return Hr
-
-
-@jit
-def left_hamiltonian(A, Hl0, H0):
-    Hl = jnp.einsum("uia,umd->aimd", A, Hl0)
-    Hl = jnp.einsum("mjin,aimd->anjd", H0, Hl)
-    Hl = jnp.einsum("djb,anjd->anb", jnp.conj(A), Hl)
-    return Hl
-
-
-def right_context(mps: type[MPS], mpo):
-    # Here we assume that the mps is already in the right canonical form
-    n = mps.n
-    Hright = [jnp.array([[[1.]]])]
-    for i in range(n-1, 0, -1):
-        H0 = mpo[i]
-        A = mps.get_tensor(i)
-        Hr = right_hamiltonian(A, Hright[0], H0)
-        Hright = [Hr] + Hright
-    return Hright
-
-
-@jit
-def effective_hamiltonian_A(Hl, Hr, H0):
-    Heff = jnp.einsum("umd,mijn->diujn", Hl, H0)
-    Heff = jnp.einsum("diujn,anb->dibuja", Heff, Hr)
-    return Heff
-
-
-@jit
-def effective_hamiltonian_C(Hl, Hr):
-    Heff = jnp.einsum("umd,amb->dbua", Hl, Hr)
-    return Heff
+from tdvp_qa.mps import MPS
+from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
 
 
 class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-4):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-4, ds=0.05):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -73,6 +34,7 @@ class TDVP_QA_V2():
         self.dt = dt
         self.adaptive = adaptive
         self.compute_states = compute_states
+        self.ds = ds
 
         self.Hright0 = right_context(self.mps, self.mpo0)
         self.Hright1 = right_context(self.mps, self.mpo1)
@@ -365,7 +327,7 @@ class TDVP_QA_V2():
         return np.min([omega0l, omega0r])
 
     def evolve(self, data=None):
-        keys = ["energy", "omega0", "entropy", "slope", "state"]
+        keys = ["energy", "omega0", "entropy", "slope", "state", "var_gs", "s"]
         if data is None:
             data = {}
             for key in keys:
@@ -373,6 +335,7 @@ class TDVP_QA_V2():
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
+
         while (self.lamb < 1):
             dt = self.get_dt()
             # full step update right
@@ -383,8 +346,12 @@ class TDVP_QA_V2():
                 data["omega0"].append(float(np.real(omega0)))
                 self.slope = omega0*self.slope_omega
 
-            if self.compute_states:
+            if self.compute_states and np.isclose(np.mod(lamb, self.ds), 1e-4):
                 data["state"].append(np.array(self.mps.construct_state()))
+                dmrg_mps = self.mps.copy()
+                dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1, self.Hright0, self.Hright1, sweeps=10)
+                data["var_gs"].append(np.array(dmrg_mps.construct_state()))
+                data["s"].append(self.lamb)
 
             data["energy"].append(float(np.real(ec)))
             data["entropy"].append(float(np.real(self.entropy/np.log(2.0))))
