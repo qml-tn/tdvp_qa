@@ -159,6 +159,7 @@ class MPS():
             if np.abs(e1-e0)<1e-8:
                 print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")
                 break
+            print(e0,e1,e0-e1)
             e0 = e1
             for i in range(n-1):
                 Dl,d,Dr = self.get_tensor(i).shape
@@ -208,7 +209,6 @@ class MPS():
                 Hr1 = right_hamiltonian(Arnew, Hr1, H1)
                 hright0 = [Hr0] + hright0
                 hright1 = [Hr1] + hright1
-
 
 def bond_dimensions(n, d, Dmax):
     '''
