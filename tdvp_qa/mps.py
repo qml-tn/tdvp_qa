@@ -159,6 +159,7 @@ class MPS():
             if np.abs(e1-e0)<1e-8:
                 print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")
                 break
+            e0 = e1
             for i in range(n-1):
                 Dl,d,Dr = self.get_tensor(i).shape
                 H0 = mpo0[i]
