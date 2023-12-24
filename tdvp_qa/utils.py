@@ -3,6 +3,20 @@ import jax.numpy as jnp
 from numpy import max, min
 
 
+def annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A):
+    Dl, d, Dr = A.shape
+    a = -max([1 - lamb, 0.])
+    b = min([lamb, 1.])
+
+    # Effective Hamiltonian for A
+    dd = Dl*d*Dr
+    Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
+    Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
+    Ha = a * Ha0 + b * Ha1
+
+    A = jnp.reshape(A, [-1])
+    return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+
 @jit
 def right_hamiltonian(A, Hr0, H0):
     Hr = jnp.einsum("aiu,umd->aimd", A, Hr0)

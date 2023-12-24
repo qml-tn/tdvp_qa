@@ -9,7 +9,7 @@ import numpy as np
 
 
 from tdvp_qa.mps import MPS
-from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
+from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
 
 
 class TDVP_QA_V2():
@@ -73,18 +73,20 @@ class TDVP_QA_V2():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
-        Dl, d, Dr = A.shape
+        # Dl, d, Dr = A.shape
 
-        a, b = self.get_couplings(lamb)
+        # a, b = self.get_couplings(lamb)
 
-        # Effective Hamiltonian for A
-        dd = Dl*d*Dr
-        Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
-        Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
-        Ha = a * Ha0 + b * Ha1
+        # # Effective Hamiltonian for A
+        # dd = Dl*d*Dr
+        # Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
+        # Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
+        # Ha = a * Ha0 + b * Ha1
 
-        A = jnp.reshape(A, [-1])
-        return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+        # A = jnp.reshape(A, [-1])
+        # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+        return annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
+    
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -96,18 +98,19 @@ class TDVP_QA_V2():
 
         n = self.n
         A = self.mps.get_tensor(n-1)
-        Dl, d, Dr = A.shape
+        # Dl, d, Dr = A.shape
 
-        a, b = self.get_couplings(lamb)
+        # a, b = self.get_couplings(lamb)
 
-        # Effective Hamiltonian for A
-        dd = Dl*d*Dr
-        Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
-        Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
-        Ha = a * Ha0 + b * Ha1
+        # # Effective Hamiltonian for A
+        # dd = Dl*d*Dr
+        # Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
+        # Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
+        # Ha = a * Ha0 + b * Ha1
 
-        A = jnp.reshape(A, [-1])
-        return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+        # A = jnp.reshape(A, [-1])
+        # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
+        return annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
 
     def right_sweep(self, dt, lamb=None):
         Hleft0 = [jnp.array([[[1.]]])]

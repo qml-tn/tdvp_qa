@@ -4,7 +4,7 @@ import jax.numpy as jnp
 from jax import random
 import numpy as np
 
-from tdvp_qa.utils import right_hamiltonian, left_hamiltonian, full_effective_hamiltonian_A
+from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, full_effective_hamiltonian_A
 
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
@@ -143,10 +143,22 @@ class MPS():
         n = self.n
         hright0 = [A.copy() for A in Hright0]
         hright1 = [A.copy() for A in Hright1]
-        for _ in range(sweeps):
+        e0 = 1e5
+        for nsweep in range(sweeps):
             # Starting the right sweep
             hleft0 = [jnp.array([[[1.]]])]
             hleft1 = [jnp.array([[[1.]]])]
+            H0 = mpo0[0]
+            Hl0 = hleft0[0]
+            Hr0 = hright0[0]
+            H1 = mpo1[0]
+            Hl1 = hleft1[0]
+            Hr1 = hright1[0]
+            A = self.get_tensor(0)
+            e1 = annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
+            if np.abs(e1-e0)<1e-8:
+                print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")
+                break
             for i in range(n-1):
                 Dl,d,Dr = self.get_tensor(i).shape
                 H0 = mpo0[i]
