@@ -16,6 +16,16 @@ def mps_overlap(tensors1, tensors2):
         overlap = jnp.einsum("lkj,kjm->lm", overlap, tensors2[i])
     return overlap[0, 0]
 
+def np_mps_overlap(tensors1, tensors2):
+    overlap = jnp.array([[1.]])
+    n = len(tensors1)
+    assert n == len(
+        tensors2), "MPS should have the same length but have lengths {len(tensors1)} and {len(tensors2)}."
+    for i in range(n):
+        overlap = np.einsum("ij,ikl->ljk", overlap, tensors1[i])
+        overlap = np.einsum("lkj,kjm->lm", overlap, tensors2[i])
+    return overlap[0, 0]
+
 
 @jit
 def _norm(nrm, A):
@@ -139,7 +149,7 @@ class MPS():
     def copy(self):
         return MPS(self.tensors)
 
-    def dmrg(self, lamb, mpo0, mpo1, Hright0, Hright1, sweeps=10):
+    def dmrg(self, lamb, mpo0, mpo1, Hright0, Hright1, sweeps=20):
         n = self.n
         hright0 = [A.copy() for A in Hright0]
         hright1 = [A.copy() for A in Hright1]

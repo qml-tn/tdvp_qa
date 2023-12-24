@@ -355,11 +355,13 @@ class TDVP_QA_V2():
                 data["s"].append(lamb)
                 k = k+1
                 if self.compute_states:
-                    data["state"].append(np.array(self.mps.construct_state()))
+                    # data["state"].append(np.array(self.mps.construct_state()))
                     dmrg_mps = self.mps.copy()
                     dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
                                 self.Hright0, self.Hright1, sweeps=10)
-                    data["var_gs"].append(np.array(dmrg_mps.construct_state()))
+                    # data["var_gs"].append(np.array(dmrg_mps.construct_state()))
+                    data["state"].append([np.array(A) for A in self.mps.tensors])
+                    data["var_gs"].append([np.array(A) for A in dmrg_mps.tensors])
             data["slope"].append(float(np.real(self.slope)))
             pbar.update(self.slope)
             self.update_lambda()
