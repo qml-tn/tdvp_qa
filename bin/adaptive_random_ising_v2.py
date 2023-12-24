@@ -58,11 +58,11 @@ if __name__ == "__main__":
                         help='Maximum bond dimension to be used in the TDVP.')
     parser.add_argument('--dtr',
                         type=float,
-                        default=0.05,
+                        default=0.025,
                         help='Real time step for the simulation.')
     parser.add_argument('--dti',
                         type=float,
-                        default=0.05,
+                        default=0.0,
                         help='Imaginary time step for the simulation.')
     parser.add_argument('--stochastic',
                         action='store_true',
