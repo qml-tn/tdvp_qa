@@ -172,13 +172,13 @@ if __name__ == "__main__":
 
     tensors = initial_state(n, Dmax)
     data = get_simulation_data(filename)
+    lamb = 0
     if data is not None:
         tensors = data["mps"]
         slope = data["slope"][-1]
         lamb = np.sum(data["slope"])
-        tensors = data["mps"]
 
-    tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=0, max_slope=0.1, min_slope=1e-8,
+    tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
                         adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
     data = tdvpqa.evolve(data=data)

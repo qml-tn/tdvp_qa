@@ -13,7 +13,7 @@ def mps_overlap(tensors1, tensors2):
         tensors2), "MPS should have the same length but have lengths {len(tensors1)} and {len(tensors2)}."
     for i in range(n):
         overlap = jnp.einsum("ij,ikl->ljk", overlap, tensors1[i])
-        overlap = jnp.einsum("lkj,kjm->lm", overlap, tensors2[i])
+        overlap = jnp.einsum("lkj,kjm->lm", overlap, jnp.conj(tensors2[i]))
     return overlap[0, 0]
 
 def np_mps_overlap(tensors1, tensors2):
@@ -23,7 +23,7 @@ def np_mps_overlap(tensors1, tensors2):
         tensors2), "MPS should have the same length but have lengths {len(tensors1)} and {len(tensors2)}."
     for i in range(n):
         overlap = np.einsum("ij,ikl->ljk", overlap, tensors1[i])
-        overlap = np.einsum("lkj,kjm->lm", overlap, tensors2[i])
+        overlap = np.einsum("lkj,kjm->lm", overlap, np.conj(tensors2[i]))
     return overlap[0, 0]
 
 

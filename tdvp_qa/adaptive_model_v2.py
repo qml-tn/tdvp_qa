@@ -338,7 +338,11 @@ class TDVP_QA_V2():
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
-        k = 1
+        if self.lamb==0:
+            k=1
+        else:
+            k = int(np.ceil(self.lamb/self.ds))
+
         while (self.lamb < 1):
             dt = self.get_dt()
             # full step update right
