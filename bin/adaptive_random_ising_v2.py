@@ -177,17 +177,20 @@ if __name__ == "__main__":
         tensors = data["mps"]
         slope = data["slope"][-1]
         lamb = np.sum(data["slope"])
+    
+    if lamb<1:
+        tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
+                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
-    tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
-                        adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
+        data = tdvpqa.evolve(data=data)
+        data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
+        data["Jz"] = Jz
+        data["hz"] = hz
 
-    data = tdvpqa.evolve(data=data)
-    data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
-    data["Jz"] = Jz
-    data["hz"] = hz
+        with open(filename, 'wb') as f:
+            pickle.dump(data, f)
 
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
-
-    export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                  connect, REGULAR, d, no_local_fields, global_path)
+        export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
+                    connect, REGULAR, d, no_local_fields, global_path)
+    else:
+        print("The simulation is already finished!")
