@@ -19,6 +19,14 @@ def hamiltonian_from_mpo(mpo):
     d = int(2**n)
     return np.reshape(H, [d, d])
 
+def state_from_mps(tensors):
+    n = len(tensors)
+    assert n < 12, f"Can not construct a state with more than 12 spins. The state has {n} spins"
+    psi = tensors[0]
+    for i in range(1, n):
+        psi = np.einsum("...i,ijk", psi, tensors[i])
+    return np.reshape(psi, [-1])
+
 
 def Sx(i, n):
     return np.kron(np.eye(2**(i)), np.kron([[0, 1], [1, 0]], np.eye(2**(n-i-1))))
