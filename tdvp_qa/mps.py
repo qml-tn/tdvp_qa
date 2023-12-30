@@ -166,7 +166,8 @@ class MPS():
             Hr1 = hright1[0]
             A = self.get_tensor(0)
             e1 = annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
-            if np.abs(e1-e0)<1e-6:
+            # print(f"nsweep = {nsweep}. Err={e1-e0}")
+            if np.abs(e1-e0)<1e-10:
                 # print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")
                 break
             e0 = e1
