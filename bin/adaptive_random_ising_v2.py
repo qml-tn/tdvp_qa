@@ -6,7 +6,7 @@ import pickle
 from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
 from tdvp_qa.model import generate_postfix
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
-from tdvp_qa.mps import initial_state
+from tdvp_qa.mps import initial_state_theta
 
 from jax import config
 
@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -29,7 +29,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
 
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}_so_{slope_omega}"
+    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -106,6 +106,9 @@ if __name__ == "__main__":
     parser.add_argument('--comp_state',
                         action='store_true',
                         help='If set we also compute the states.')
+    parser.add_argument('--rand_init',
+                        action='store_true',
+                        help='If set the initial state will be a Haar random product state. The initial hamiltonian is changed accordingly.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -146,6 +149,8 @@ if __name__ == "__main__":
     dt = dtr - 1j*dti
     n = N_verts
 
+    rand_init = args_dict["rand_init"]
+
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
     compute_states = args_dict["comp_state"]
@@ -164,21 +169,26 @@ if __name__ == "__main__":
     if adaptive:
         annealing_schedule = "adaptive"
 
+    theta = np.array([[np.pi/2.,0]]*n)
+    if rand_init:
+        np.random.seed(seed_tdvp)
+        theta = np.array([[np.random.rand()*np.pi,2*np.random.rand()*np.pi] for i in range(n)])
+
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init)
 
+    mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
-    mpox = longitudinal_mpo(n)
+    tensors = initial_state_theta(n, Dmax, theta=theta)
 
-    tensors = initial_state(n, Dmax)
     data = get_simulation_data(filename)
     lamb = 0
     if data is not None:
         tensors = data["mps"]
         slope = data["slope"][-1]
         lamb = np.sum(data["slope"])
-    
-    if lamb<1:
+
+    if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
@@ -191,6 +201,6 @@ if __name__ == "__main__":
             pickle.dump(data, f)
 
         export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                    connect, REGULAR, d, no_local_fields, global_path)
+                      connect, REGULAR, d, no_local_fields, global_path)
     else:
         print("The simulation is already finished!")

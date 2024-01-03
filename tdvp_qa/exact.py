@@ -52,10 +52,14 @@ def Ising(Jz, hz):
     return H
 
 
-def Hx_fields(n):
+def Hx_fields(n,hx=None):
     H = 0
-    for i in range(n):
-        H += Sx(i, n)
+    if hx is None:
+        for i in range(n):
+            H += Sx(i, n)
+    else:
+        for i in range(n):
+            H += Sx(i, n)*hx[i]
     return H
 
 

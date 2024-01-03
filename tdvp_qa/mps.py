@@ -6,6 +6,7 @@ import numpy as np
 
 from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, full_effective_hamiltonian_A
 
+
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
     n = len(tensors1)
@@ -15,6 +16,7 @@ def mps_overlap(tensors1, tensors2):
         overlap = jnp.einsum("ij,ikl->ljk", overlap, tensors1[i])
         overlap = jnp.einsum("lkj,kjm->lm", overlap, jnp.conj(tensors2[i]))
     return overlap[0, 0]
+
 
 def np_mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
@@ -145,7 +147,7 @@ class MPS():
 
     def overlap(self, mps2):
         return mps_overlap(self.tensors, mps2.tensors)
-    
+
     def copy(self):
         return MPS(self.tensors)
 
@@ -165,14 +167,15 @@ class MPS():
             Hl1 = hleft1[0]
             Hr1 = hright1[0]
             A = self.get_tensor(0)
-            e1 = annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
+            e1 = annealing_energy_canonical(
+                Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
             # print(f"nsweep = {nsweep}. Err={e1-e0}")
-            if np.abs(e1-e0)<1e-10:
+            if np.abs(e1-e0) < 1e-10:
                 # print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")
                 break
             e0 = e1
             for i in range(n-1):
-                Dl,d,Dr = self.get_tensor(i).shape
+                Dl, d, Dr = self.get_tensor(i).shape
                 H0 = mpo0[i]
                 Hl0 = hleft0[i]
                 Hr0 = hright0[i]
@@ -180,12 +183,13 @@ class MPS():
                 Hl1 = hleft1[i]
                 Hr1 = hright1[i]
                 dd = Dl*d*Dr
-                Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
+                Ha = full_effective_hamiltonian_A(
+                    Hl0, Hl1, H0, H1, Hr0, Hr1, lamb, dd)
 
                 _, vec = jnp.linalg.eigh(Ha)
                 Al = jnp.reshape(vec[:, 0], [Dl, d, Dr])
 
-                self.set_tensor(i,Al)
+                self.set_tensor(i, Al)
                 self.move_right(i)
                 Alnew = self.get_tensor(i)
 
@@ -198,7 +202,7 @@ class MPS():
             hright0 = [jnp.array([[[1.]]])]
             hright1 = [jnp.array([[[1.]]])]
             for i in np.arange(n-1, 0, -1):
-                Dl,d,Dr = self.get_tensor(i).shape
+                Dl, d, Dr = self.get_tensor(i).shape
                 H0 = mpo0[i]
                 Hl0 = hleft0[i]
                 Hr0 = hright0[0]
@@ -206,12 +210,13 @@ class MPS():
                 Hl1 = hleft1[i]
                 Hr1 = hright1[0]
                 dd = Dl*d*Dr
-                Ha = full_effective_hamiltonian_A(Hl0,Hl1,H0,H1,Hr0,Hr1,lamb,dd)
+                Ha = full_effective_hamiltonian_A(
+                    Hl0, Hl1, H0, H1, Hr0, Hr1, lamb, dd)
 
                 _, vec = jnp.linalg.eigh(Ha)
                 Ar = jnp.reshape(vec[:, 0], [Dl, d, Dr])
 
-                self.set_tensor(i,Ar)
+                self.set_tensor(i, Ar)
                 self.move_left(i)
                 Arnew = self.get_tensor(i)
 
@@ -219,6 +224,7 @@ class MPS():
                 Hr1 = right_hamiltonian(Arnew, Hr1, H1)
                 hright0 = [Hr0] + hright0
                 hright1 = [Hr1] + hright1
+
 
 def bond_dimensions(n, d, Dmax):
     '''
@@ -252,11 +258,32 @@ def initial_state(n, Dmax, K=0):
     state = np.array([int(a) for a in f"{K:b}".zfill(n)])
     dims = bond_dimensions(n, d, Dmax)
     for i in range(n):
-        B = np.zeros([dims[i], d, dims[i+1]])
+        B = np.zeros([dims[i], d, dims[i+1]], dtype=np.cdouble)
         if state[i] == 0:
             v = np.array([1., 1])/np.sqrt(2.)
         else:
             v = np.array([1., -1])/np.sqrt(2.)
+        B[0, :, 0] = v
+        mps.append(B)
+    return mps
+
+
+def initial_state_theta(n, Dmax, theta):
+    '''
+    List of MPS matrices for a particular initial product state
+
+    Parameters:
+      - n     : size of the system
+      - Dmax  : maximum bond dimension
+    '''
+    d = 2
+    mps = []
+    dims = bond_dimensions(n, d, Dmax)
+    for i in range(n):
+        B = np.zeros([dims[i], d, dims[i+1]], dtype=np.cdouble)
+        th = theta[i][0]
+        fi = theta[i][1]
+        v = np.array([np.cos(th/2), np.sin(th/2)*np.exp(-1j*fi)])
         B[0, :, 0] = v
         mps.append(B)
     return mps

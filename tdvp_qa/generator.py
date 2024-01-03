@@ -102,15 +102,42 @@ def longitudinal_mpo(n, hx=None):
         mpo = [A[:1]] + [A]*(n-2)+[A[:, :, :, -1:]]
     else:
         Ai = A.copy()
-        Ai[0, 1] *= hx[0]
+        Ai[0, :, :, 1] *= hx[0]
         mpo = [Ai[:1]]
         for i in range(1, n-1):
             Ai = A.copy()
-            Ai[0, 1] *= hx[i]
+            Ai[0, :, :, 1] *= hx[i]
             mpo.append(Ai)
         Ai = A.copy()
-        Ai[0, 1] *= hx[n-1]
+        Ai[0, :, :, 1] *= hx[n-1]
         mpo.append(Ai[:, :, :, -1:])
+    return mpo
+
+
+def h0_theta(theta=None):
+    sx = np.array([[0, 1], [1, 0]])
+    if theta is None:
+        return sx
+    th = theta[0]
+    fi = theta[1]
+    return np.array([[np.cos(th), np.sin(th)*np.exp(1j*fi)], [np.sin(th)*np.exp(-1j*fi), -np.cos(th)]])
+
+
+def longitudinal_mpo(n, theta):
+    A = np.zeros([2, 2, 2, 2], dtype=np.cdouble)
+    i2 = np.eye(2)
+    A[0, :, :, 0] = i2
+    A[1, :, :, 1] = i2
+    Ai = A.copy()
+    Ai[0, :, :, 1] = h0_theta(theta[0])
+    mpo = [Ai[:1]]
+    for i in range(1, n-1):
+        Ai = A.copy()
+        Ai[0, :, :, 1] = h0_theta(theta[i])
+        mpo.append(Ai)
+    Ai = A.copy()
+    Ai[0, :, :, 1] = h0_theta(theta[n-1])
+    mpo.append(Ai[:, :, :, -1:])
     return mpo
 
 
