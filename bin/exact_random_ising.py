@@ -155,6 +155,7 @@ if __name__ == "__main__":
     states_exact = []
     gs_exact = []
     slist = []
+    specter = []
     pbar = tqdm(total=1, position=0, leave=True)
     k = 1
     ds = 0.01
@@ -170,6 +171,7 @@ if __name__ == "__main__":
 
         if lamb >= k*ds:
             val, vec = np.linalg.eigh(H)
+            specter.append(val)
             states_exact.append(psi)
             gs_exact.append(vec[:, 0])
             slist.append(lamb)
@@ -181,7 +183,8 @@ if __name__ == "__main__":
     data = {
         "state": states_exact,
         "gs": gs_exact,
-        "s": slist
+        "s": slist,
+        "specter": specter,
     }
 
     with open(filename, 'wb') as f:
