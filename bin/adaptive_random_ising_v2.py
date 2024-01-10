@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -30,6 +30,8 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         REGULAR, N_verts, N_edges, d, seed, no_local_fields)
 
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    if rand_xy:
+        postfix += "_xy"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -109,6 +111,9 @@ if __name__ == "__main__":
     parser.add_argument('--rand_init',
                         action='store_true',
                         help='If set the initial state will be a Haar random product state. The initial hamiltonian is changed accordingly.')
+    parser.add_argument('--rand_xy',
+                        action='store_true',
+                        help='If set the initial state will be a random product state in the XY plane, i.e. sz=0. The initial hamiltonian is changed accordingly.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -150,6 +155,7 @@ if __name__ == "__main__":
     n = N_verts
 
     rand_init = args_dict["rand_init"]
+    rand_xy = args_dict["rand_xy"]
 
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
@@ -169,13 +175,16 @@ if __name__ == "__main__":
     if adaptive:
         annealing_schedule = "adaptive"
 
-    theta = np.array([[np.pi/2.,0]]*n)
+    theta = np.array([[np.pi/2., 0]]*n)
     if rand_init:
         np.random.seed(seed_tdvp)
-        theta = np.array([[np.random.rand()*np.pi,2*np.random.rand()*np.pi] for i in range(n)])
+        theta = np.array(
+            [[np.random.rand()*np.pi, 2*np.random.rand()*np.pi] for i in range(n)])
+        if rand_xy:
+            theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
