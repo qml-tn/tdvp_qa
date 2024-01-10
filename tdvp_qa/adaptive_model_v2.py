@@ -9,7 +9,7 @@ import numpy as np
 
 
 from tdvp_qa.mps import MPS
-from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
+from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
 
 
 class TDVP_QA_V2():
@@ -337,7 +337,7 @@ class TDVP_QA_V2():
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "entropy",
-                "slope", "state", "var_gs", "s", "specter"]
+                "slope", "state", "var_gs", "s"]
         if data is None:
             data = {}
             for key in keys:
@@ -365,8 +365,6 @@ class TDVP_QA_V2():
                 data["entropy"].append(
                     float(np.real(self.entropy/np.log(2.0))))
                 data["s"].append(lamb)
-                data["specter"].append(linearised_specter(
-                    self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb))
                 k = k+1
                 if self.compute_states:
                     dmrg_mps = self.mps.copy()
