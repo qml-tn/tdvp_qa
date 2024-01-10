@@ -9,7 +9,7 @@ import numpy as np
 
 
 from tdvp_qa.mps import MPS
-from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C
+from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
 
 
 class TDVP_QA_V2():
@@ -85,8 +85,7 @@ class TDVP_QA_V2():
 
         # A = jnp.reshape(A, [-1])
         # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
-        return annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
-    
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -110,7 +109,7 @@ class TDVP_QA_V2():
 
         # A = jnp.reshape(A, [-1])
         # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
-        return annealing_energy_canonical(Hl0,Hl1,Hr0,Hr1,H0,H1,lamb,A)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
 
     def right_sweep(self, dt, lamb=None):
         Hleft0 = [jnp.array([[[1.]]])]
@@ -330,7 +329,8 @@ class TDVP_QA_V2():
         return np.min([omega0l, omega0r])
 
     def evolve(self, data=None):
-        keys = ["energy", "omega0", "entropy", "slope", "state", "var_gs", "s"]
+        keys = ["energy", "omega0", "entropy",
+                "slope", "state", "var_gs", "s"]
         if data is None:
             data = {}
             for key in keys:
@@ -338,8 +338,8 @@ class TDVP_QA_V2():
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
-        if self.lamb==0:
-            k=1
+        if self.lamb == 0:
+            k = 1
         else:
             k = int(np.ceil(self.lamb/self.ds))
 
@@ -355,17 +355,22 @@ class TDVP_QA_V2():
 
             if lamb >= k*self.ds:
                 data["energy"].append(float(np.real(ec)))
-                data["entropy"].append(float(np.real(self.entropy/np.log(2.0))))
+                data["entropy"].append(
+                    float(np.real(self.entropy/np.log(2.0))))
                 data["s"].append(lamb)
+                # data["specter"].append(linearised_specter(
+                #     self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb))
                 k = k+1
                 if self.compute_states:
                     # data["state"].append(np.array(self.mps.construct_state()))
                     dmrg_mps = self.mps.copy()
                     dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
-                                self.Hright0, self.Hright1, sweeps=20)
+                                  self.Hright0, self.Hright1, sweeps=20)
                     # data["var_gs"].append(np.array(dmrg_mps.construct_state()))
-                    data["state"].append([np.array(A) for A in self.mps.tensors])
-                    data["var_gs"].append([np.array(A) for A in dmrg_mps.tensors])
+                    data["state"].append([np.array(A)
+                                         for A in self.mps.tensors])
+                    data["var_gs"].append([np.array(A)
+                                          for A in dmrg_mps.tensors])
             data["slope"].append(float(np.real(self.slope)))
             pbar.update(self.slope)
             self.update_lambda()
