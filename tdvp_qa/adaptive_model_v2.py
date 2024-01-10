@@ -137,8 +137,9 @@ class TDVP_QA_V2():
             Ha = a * Ha0 + b * Ha1
 
             # Minimum energy A
-            val = jnp.abs(jnp.linalg.eigvalsh(Ha))
-            omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+            val = jnp.linalg.eigvalsh(Ha)
+            val = jnp.diff(val)[0]
+            omega0 = np.min([val, omega0])
 
             # Updating A
             A = jnp.reshape(A, [dd])
@@ -165,8 +166,10 @@ class TDVP_QA_V2():
             Hc = a * Hc0 + b * Hc1
 
             # Minimum energy C
-            val = jnp.abs(jnp.linalg.eigvalsh(Hc))
-            omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+            val = jnp.linalg.eigvalsh(Hc)
+            if len(val)>1:
+                val = jnp.diff(val)[0]
+                omega0 = np.min([val, omega0])
 
             # Updating C
             C = jnp.reshape(r, [Dl*Dr])
@@ -197,8 +200,9 @@ class TDVP_QA_V2():
         Ha = a * Ha0 + b * Ha1
 
         # Minimum energy A
-        val = jnp.abs(jnp.linalg.eigvalsh(Ha))
-        omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+        val = jnp.linalg.eigvalsh(Ha)
+        val = jnp.diff(val)[0]
+        omega0 = np.min([val, omega0])
 
         # Updating A
         A = jnp.reshape(A, [dd])
@@ -241,8 +245,8 @@ class TDVP_QA_V2():
             Ha = a * Ha0 + b * Ha1
 
             # Minimum energy A
-            val = jnp.abs(jnp.linalg.eigvalsh(Ha))
-            omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+            val = jnp.diff(jnp.linalg.eigvalsh(Ha))[0]
+            omega0 = np.min([val, omega0])
 
             # Updating A
             A = jnp.reshape(A, [dd])
@@ -269,8 +273,10 @@ class TDVP_QA_V2():
             Hc = a * Hc0 + b * Hc1
 
             # Minimum energy C
-            val = jnp.abs(jnp.linalg.eigvalsh(Hc))
-            omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+            val = jnp.linalg.eigvalsh(Hc)
+            if len(val)>1:
+                val = jnp.diff(val)[0]
+                omega0 = np.min([val, omega0])
 
             # Updating C
             C = jnp.reshape(r, [Dl*Dr])
@@ -306,8 +312,9 @@ class TDVP_QA_V2():
         Ha = a * Ha0 + b * Ha1
 
         # Minimum energy A
-        val = jnp.abs(jnp.linalg.eigvalsh(Ha))
-        omega0 = jnp.min(jnp.array([jnp.min(val), omega0]))
+        val = jnp.linalg.eigvalsh(Ha)
+        val = jnp.diff(val)[0]
+        omega0 = np.min([val, omega0])
 
         # Updating A
         A = jnp.reshape(A, [dd])
@@ -330,7 +337,7 @@ class TDVP_QA_V2():
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "entropy",
-                "slope", "state", "var_gs", "s"]
+                "slope", "state", "var_gs", "s", "specter"]
         if data is None:
             data = {}
             for key in keys:
@@ -358,11 +365,10 @@ class TDVP_QA_V2():
                 data["entropy"].append(
                     float(np.real(self.entropy/np.log(2.0))))
                 data["s"].append(lamb)
-                # data["specter"].append(linearised_specter(
-                #     self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb))
+                data["specter"].append(linearised_specter(
+                    self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb))
                 k = k+1
                 if self.compute_states:
-                    # data["state"].append(np.array(self.mps.construct_state()))
                     dmrg_mps = self.mps.copy()
                     dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
                                   self.Hright0, self.Hright1, sweeps=20)
