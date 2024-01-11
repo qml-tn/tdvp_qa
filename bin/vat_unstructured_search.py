@@ -57,11 +57,20 @@ def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
-    postfix = f"n_{n}_m_{m}"
+    postfix = f"n_{n}_m_{m}_quadratic_"
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}"
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
 
+class TDVP_QA_V3(TDVP_QA_V2):
+    def get_couplings(self, lamb=None):
+        N = 2**self.n
+        A = np.sqrt(N)
+        if lamb is None:
+            lamb = self.lamb
+        a = 1 - lamb +A*lamb*(1-lamb)
+        b = lamb + A*lamb*(1-lamb)
+        return -a, b
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -174,7 +183,7 @@ if __name__ == "__main__":
         lamb = np.sum(data["slope"])
 
     if lamb < 1:
-        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
+        tdvpqa = TDVP_QA_V3(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
         data = tdvpqa.evolve(data=data)
