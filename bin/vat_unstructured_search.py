@@ -11,6 +11,38 @@ from tdvp_qa.mps import initial_state_theta
 from jax import config
 
 
+def search_mpos(n, state):
+    # n is the number of spins
+    # state is the designed spin configuration
+    # H0
+    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
+    ix = np.array([[1, 1], [1, 1]])/2.
+    i2 = np.eye(2)
+    A[0, :, :, 1] = i2
+    A[1, :, :, 1] = i2
+    A[1, :, :, 3] = i2
+    A[0, :, :, 2] = -ix
+    A[2, :, :, 2] = ix
+    A[2, :, :, 3] = ix
+    mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
+
+    # H1
+    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
+    A[0, :, :, 1] = i2
+    A[1, :, :, 1] = i2
+    A[1, :, :, 3] = i2
+    mpo1 = []
+    for s in state:
+        Ai = A.copy()
+        Ai[0, s, s, 2] = -1.0
+        Ai[2, s, s, 2] = 1.0
+        Ai[2, s, s, 3] = 1.0
+        mpo1.append(Ai)
+    mpo1[0] = mpo1[0][:1]
+    mpo1[-1] = mpo1[-1][:, :, :, -1:]
+    return mpo0, mpo1
+
+
 def get_simulation_data(filename_path):
     data = None
     if os.path.exists(filename_path):
@@ -19,20 +51,15 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy):
+def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega):
     if global_path is None:
         global_path = os.getcwd()
-    path_data = os.path.join(global_path, 'adaptive_data_v2/')
+    path_data = os.path.join(global_path, 'search/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
-    postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
-
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
-    if rand_xy:
-        postfix += "_xy"
-
+    postfix = f"n_{n}_m_{m}"
+    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}"
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
 
@@ -43,17 +70,14 @@ if __name__ == "__main__":
                         default="data/",
                         type=str,
                         help='A full path to where the files should be stored.')
-    parser.add_argument('--regular',
-                        action='store_true',
-                        help='If set we generate regular graph of degree d.')
-    parser.add_argument('--n_verts',
+    parser.add_argument('--n',
                         type=int,
                         default=16,
-                        help='Number of vertices in the graph.')
-    parser.add_argument('--n_edges',
+                        help='The number of elements in the search is N=2**n.')
+    parser.add_argument('--m',
                         type=int,
-                        action="store",
-                        help='Number of edges.')
+                        default=16,
+                        help='The vector we are looking for. Should be between 0 and 2**n-1.')
     parser.add_argument('--dmax',
                         type=int,
                         default=8,
@@ -78,27 +102,12 @@ if __name__ == "__main__":
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--slope_omega',
                         type=float,
-                        default=0.001,
+                        default=0.00001,
                         help='The ratio between the slope and omega during the adaptive time evolution.')
-    parser.add_argument('--distr',
-                        type=str,
-                        default="Uniform",
-                        help='Sampling distribution of the local fields. It can be Normal or Uniform')
-    parser.add_argument('--d',
-                        type=int,
-                        action="store",
-                        help='Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten.')
-    parser.add_argument('--seed',
-                        type=int,
-                        action="store",
-                        help='Seed for the graph generator.')
     parser.add_argument('--seed_tdvp',
                         type=int,
                         default=42,
                         help='Seed for the mps and tdvp evolution. Used for sampling and stochastic TDVP.')
-    parser.add_argument('--no_local_fields',
-                        action='store_true',
-                        help='If set we set all hi to zero.')
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
@@ -108,12 +117,6 @@ if __name__ == "__main__":
     parser.add_argument('--comp_state',
                         action='store_true',
                         help='If set we also compute the states.')
-    parser.add_argument('--rand_init',
-                        action='store_true',
-                        help='If set the initial state will be a Haar random product state. The initial hamiltonian is changed accordingly.')
-    parser.add_argument('--rand_xy',
-                        action='store_true',
-                        help='If set the initial state will be a random product state in the XY plane, i.e. sz=0. The initial hamiltonian is changed accordingly.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -123,23 +126,10 @@ if __name__ == "__main__":
         print('Unknown arguments: {}'.format(unknown))
 
     # Model generator parameters
-    N_verts = args_dict['n_verts']
-    N_edges = args_dict['n_edges']
-    if N_edges is None:
-        N_edges = int(N_verts*(N_verts - 1)/2)
-
-    # Set TRUE to generate regular graph of degree d
-    REGULAR = args_dict['regular']
-    # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
-    d = args_dict['d']
+    n = args_dict['n']
+    m = args_dict['m']
     global_path = args_dict['path']
     # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm
-    seed = args_dict['seed']
-    no_local_fields = args_dict['no_local_fields']
-
-    if seed is None:
-        seed = np.random.randint(10000)
-        print(f"Using a random seed {seed}.")
 
     # TDVP annealing parameters
     double_precision = args_dict["double_precision"]
@@ -152,10 +142,6 @@ if __name__ == "__main__":
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
-    n = N_verts
-
-    rand_init = args_dict["rand_init"]
-    rand_xy = args_dict["rand_xy"]
 
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
@@ -164,31 +150,22 @@ if __name__ == "__main__":
     if double_precision:
         config.update("jax_enable_x64", True)
 
-    Jz, loc_fields, connect = generate_graph(
-        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate)
-
-    assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
-
-    hz = loc_fields[:, 1]
-
     annealing_schedule = "linear"
     if adaptive:
         annealing_schedule = "adaptive"
 
     theta = np.array([[np.pi/2., 0]]*n)
-    if rand_init:
-        np.random.seed(seed_tdvp)
-        theta = np.array(
-            [[np.random.rand()*np.pi, 2*np.random.rand()*np.pi] for i in range(n)])
-        if rand_xy:
-            theta[:, 0] = np.pi/2.
+    tensors = initial_state_theta(n, Dmax, theta=theta)
+
+    if m < 0 or m >= 2**n:
+        raise ValueError(
+            f"Stopping the simulation m={m} is too large! It should be between 0 and {2**n-1}.")
+
+    state = [int(i) for i in ("{:0"+(f"{n}")+"b}").format(m)]
+    mpo0, mpo1 = search_mpos(n, state)
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy)
-
-    mpox = longitudinal_mpo(n, theta)
-    mpoz = transverse_mpo(Jz, hz, n)
-    tensors = initial_state_theta(n, Dmax, theta=theta)
+        n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega)
 
     data = get_simulation_data(filename)
     lamb = 0
@@ -198,18 +175,20 @@ if __name__ == "__main__":
         lamb = np.sum(data["slope"])
 
     if lamb < 1:
-        tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
+        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
-        data["Jz"] = Jz
-        data["hz"] = hz
+
+        data["samples"] = [tdvpqa.mps.sample() for i in range(10)]
+        print("Samples")
+        print(data["samples"])
+        print("Solution")
+        print(state)
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
 
-        export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                      connect, REGULAR, d, no_local_fields, global_path)
     else:
         print("The simulation is already finished!")
