@@ -178,7 +178,11 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(
         n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega)
 
-    data = get_simulation_data(filename)
+    if recalculate:
+        data = None
+    else:
+        data = get_simulation_data(filename)
+
     lamb = 0
     if data is not None:
         tensors = data["mps"]
