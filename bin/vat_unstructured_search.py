@@ -64,7 +64,7 @@ def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti
 
 class TDVP_QA_V3(TDVP_QA_V2):
     def get_couplings(self, lamb=None):
-        if n<24:
+        if self.n<24:
             N = 2**self.n
         else:
             N = 2**24
