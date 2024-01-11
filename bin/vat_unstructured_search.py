@@ -174,7 +174,7 @@ if __name__ == "__main__":
         lamb = np.sum(data["slope"])
 
     if lamb < 1:
-        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
+        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
 
         data = tdvpqa.evolve(data=data)
