@@ -3,8 +3,6 @@ import numpy as np
 import os
 import pickle
 
-from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
-from tdvp_qa.model import generate_postfix
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
 
@@ -18,10 +16,10 @@ def search_mpos(n, state):
     A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
     ix = np.array([[1, 1], [1, 1]])/2.
     i2 = np.eye(2)
-    A[0, :, :, 1] = i2
+    A[0, :, :, 1] = -i2
     A[1, :, :, 1] = i2
     A[1, :, :, 3] = i2
-    A[0, :, :, 2] = -ix
+    A[0, :, :, 2] = ix
     A[2, :, :, 2] = ix
     A[2, :, :, 3] = ix
     mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
@@ -40,6 +38,7 @@ def search_mpos(n, state):
         mpo1.append(Ai)
     mpo1[0] = mpo1[0][:1]
     mpo1[-1] = mpo1[-1][:, :, :, -1:]
+
     return mpo0, mpo1
 
 
@@ -102,7 +101,7 @@ if __name__ == "__main__":
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--slope_omega',
                         type=float,
-                        default=0.00001,
+                        default=0.001,
                         help='The ratio between the slope and omega during the adaptive time evolution.')
     parser.add_argument('--seed_tdvp',
                         type=int,
