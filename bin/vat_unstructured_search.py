@@ -62,18 +62,20 @@ def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
 
+
 class TDVP_QA_V3(TDVP_QA_V2):
     def get_couplings(self, lamb=None):
-        if self.n<24:
+        if self.n < 24:
             N = 2**self.n
         else:
             N = 2**24
         A = np.sqrt(N)
         if lamb is None:
-            lamb = self.lamb
-        a = 1 - lamb +A*lamb*(1-lamb)
-        b = lamb + A*lamb*(1-lamb)
+            lamb = np.clip(self.lamb,0,1)
+        a = 1 - lamb + A*np.max([0, lamb*(1-lamb)])
+        b = lamb + A*np.max([0, lamb*(1-lamb)])
         return -a, b
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
