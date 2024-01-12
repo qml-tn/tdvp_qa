@@ -13,7 +13,7 @@ from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_ha
 
 
 class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -25,6 +25,8 @@ class TDVP_QA_V2():
 
         self.n = self.mps.n
         self.d = self.mps.d
+        self.omega0 = 1
+        self.scale_gap = scale_gap
 
         self.lamb = lamb
         self.max_slope = max_slope
@@ -55,7 +57,7 @@ class TDVP_QA_V2():
         return dt
 
     def update_lambda(self):
-        self.lamb = np.min([1, self.lamb + self.slope])
+        self.lamb = np.clip(self.lamb + self.slope, 0, 1)
 
     def get_couplings(self, lamb=None):
         if lamb is None:
@@ -111,14 +113,33 @@ class TDVP_QA_V2():
         # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
         return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
 
+    def evolve_with_local_H(self, A, H, dt, omega0, omega_scale):
+        val, vec = jnp.linalg.eigh(H)
+        if len(val) <= 1:
+            return A, omega0, omega_scale
+
+        # calculate gaps
+        omega0 = np.min([omega0, val[1]-val[0]])
+        if self.scale_gap:
+            val = (val-val[0])/self.omega0
+        omega_scale = np.min([omega_scale, val[1]-val[0]])
+        # Evolve for a time dt
+        A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
+        A = jnp.einsum("i,i->i", jnp.exp(-1j*val*dt), A)
+        A = jnp.einsum("ij,j->i", vec, A)
+        return A, omega0, omega_scale
+
     def right_sweep(self, dt, lamb=None):
         Hleft0 = [jnp.array([[[1.]]])]
         Hleft1 = [jnp.array([[[1.]]])]
         # Assumes that the Hright is already prepared and that the state is in the right canonical form
-        omega0 = jnp.inf
-        n = self.n
 
         a, b = self.get_couplings(lamb)
+        omega0 = jnp.inf
+        omega_scale = jnp.inf
+
+        n = self.n
+
         for i in range(n-1):
             Hl0 = Hleft0[i]
             Hl1 = Hleft1[i]
@@ -135,16 +156,12 @@ class TDVP_QA_V2():
             Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
             Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
             Ha = a * Ha0 + b * Ha1
-
-            # Minimum energy A
-            val = jnp.linalg.eigvalsh(Ha)
-            val = jnp.diff(val)[0]
-            omega0 = np.min([val, omega0])
+            A = jnp.reshape(A, [dd])
 
             # Updating A
-            A = jnp.reshape(A, [dd])
-            eA = expm(-1j*dt*Ha)
-            A = eA @ A
+            A, omega0, omega_scale = self.evolve_with_local_H(
+                A, Ha, dt, omega0, omega_scale)
+
             A = jnp.reshape(A, [Dl, d, Dr])
             A = A/jnp.linalg.norm(A)
             self.mps.set_tensor(i, A)
@@ -163,18 +180,14 @@ class TDVP_QA_V2():
                 Hl0, Hr0), [Dl*Dr, Dl*Dr])
             Hc1 = jnp.reshape(effective_hamiltonian_C(
                 Hl1, Hr1), [Dl*Dr, Dl*Dr])
+
+            C = jnp.reshape(r, [Dl*Dr])
             Hc = a * Hc0 + b * Hc1
 
-            # Minimum energy C
-            val = jnp.linalg.eigvalsh(Hc)
-            if len(val)>1:
-                val = jnp.diff(val)[0]
-                omega0 = np.min([val, omega0])
-
             # Updating C
-            C = jnp.reshape(r, [Dl*Dr])
-            eC = expm(1j*dt*Hc)
-            C = eC @ C
+            C, omega0, omega_scale = self.evolve_with_local_H(
+                C, Hc, -dt, omega0, omega_scale)
+
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
             Ar = jnp.einsum("ij,jkl->ikl", C, Ar)
@@ -198,16 +211,12 @@ class TDVP_QA_V2():
         Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
         Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
         Ha = a * Ha0 + b * Ha1
-
-        # Minimum energy A
-        val = jnp.linalg.eigvalsh(Ha)
-        val = jnp.diff(val)[0]
-        omega0 = np.min([val, omega0])
+        A = jnp.reshape(A, [dd])
 
         # Updating A
-        A = jnp.reshape(A, [dd])
-        eA = expm(-1j*dt*Ha)
-        A = eA @ A
+        A, omega0, omega_scale = self.evolve_with_local_H(
+            A, Ha, dt, omega0, omega_scale)
+
         A = jnp.reshape(A, [Dl, d, Dr])
         A = A/jnp.linalg.norm(A)
         self.mps.set_tensor(i, A)
@@ -216,7 +225,7 @@ class TDVP_QA_V2():
         self.Hleft0 = Hleft0
         self.Hleft1 = Hleft1
 
-        return omega0
+        return omega0, omega_scale
 
     def left_sweep(self, dt, lamb=None):
         Hright0 = [jnp.array([[[1.]]])]
@@ -224,9 +233,10 @@ class TDVP_QA_V2():
         # Assumes that the Hleft is already prepared and that the state is in the left canonical form
 
         n = self.n
-        omega0 = jnp.inf
-
         a, b = self.get_couplings(lamb)
+        omega0 = jnp.inf
+        omega_scale = jnp.inf
+
         for i in range(n-1, 0, -1):
             Hl0 = self.Hleft0[i]
             Hl1 = self.Hleft1[i]
@@ -243,15 +253,12 @@ class TDVP_QA_V2():
             Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
             Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
             Ha = a * Ha0 + b * Ha1
-
-            # Minimum energy A
-            val = jnp.diff(jnp.linalg.eigvalsh(Ha))[0]
-            omega0 = np.min([val, omega0])
+            A = jnp.reshape(A, [dd])
 
             # Updating A
-            A = jnp.reshape(A, [dd])
-            eA = expm(-1j*dt*Ha)
-            A = eA @ A
+            A, omega0, omega_scale = self.evolve_with_local_H(
+                A, Ha, dt, omega0, omega_scale)
+
             A = jnp.reshape(A, [Dl, d, Dr])
             A = A/jnp.linalg.norm(A)
             self.mps.set_tensor(i, A)
@@ -270,18 +277,13 @@ class TDVP_QA_V2():
                 Hl0, Hr0), [Dl*Dr, Dl*Dr])
             Hc1 = jnp.reshape(effective_hamiltonian_C(
                 Hl1, Hr1), [Dl*Dr, Dl*Dr])
+            C = jnp.reshape(r, [Dl*Dr])
             Hc = a * Hc0 + b * Hc1
 
-            # Minimum energy C
-            val = jnp.linalg.eigvalsh(Hc)
-            if len(val)>1:
-                val = jnp.diff(val)[0]
-                omega0 = np.min([val, omega0])
-
             # Updating C
-            C = jnp.reshape(r, [Dl*Dr])
-            eC = expm(1j*dt*Hc)
-            C = eC @ C
+            C, omega0, omega_scale = self.evolve_with_local_H(
+                C, Hc, -dt, omega0, omega_scale)
+
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
             Al = jnp.einsum("ijk,kl->ijl", Al, C)
@@ -310,16 +312,12 @@ class TDVP_QA_V2():
         Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
         Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
         Ha = a * Ha0 + b * Ha1
-
-        # Minimum energy A
-        val = jnp.linalg.eigvalsh(Ha)
-        val = jnp.diff(val)[0]
-        omega0 = np.min([val, omega0])
+        A = jnp.reshape(A, [dd])
 
         # Updating A
-        A = jnp.reshape(A, [dd])
-        eA = expm(-1j*dt*Ha)
-        A = eA @ A
+        A, omega0, omega_scale = self.evolve_with_local_H(
+            A, Ha, dt, omega0, omega_scale)
+
         A = jnp.reshape(A, [Dl, d, Dr])
         A = A/jnp.linalg.norm(A)
         self.mps.set_tensor(i, A)
@@ -328,12 +326,12 @@ class TDVP_QA_V2():
         self.Hright0 = Hright0
         self.Hright1 = Hright1
 
-        return omega0
+        return omega0, omega_scale
 
     def right_left_sweep(self, dt, lamb=None):
-        omega0r = self.right_sweep(dt/2., lamb)
-        omega0l = self.left_sweep(dt/2., lamb)
-        return np.min([omega0l, omega0r])
+        omega0r, omega_scaler = self.right_sweep(dt/2., lamb)
+        omega0l, omega_scalel = self.left_sweep(dt/2., lamb)
+        return np.min([omega0l, omega0r]), np.min([omega_scalel, omega_scaler, 1.0])
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "entropy",
@@ -342,6 +340,8 @@ class TDVP_QA_V2():
             data = {}
             for key in keys:
                 data[key] = []
+        else:
+            self.omega0 = data["omega0"][-1]
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
@@ -354,11 +354,13 @@ class TDVP_QA_V2():
             dt = self.get_dt()
             # full step update right
             lamb = self.lamb + self.slope
-            omega0 = self.right_left_sweep(dt, lamb)
+            omega0, omega_scale = self.right_left_sweep(dt, lamb)
+            self.omega0 = omega0
             ec = self.energy_right_canonical(lamb)
             data["omega0"].append(float(np.real(omega0)))
             if self.adaptive:
-                self.slope = omega0*self.slope_omega
+                self.slope = np.clip(
+                    omega_scale*self.slope_omega, self.min_slope, self.max_slope)
 
             if lamb >= k*self.ds:
                 data["energy"].append(float(np.real(ec)))
@@ -375,8 +377,9 @@ class TDVP_QA_V2():
                                          for A in self.mps.tensors])
                     data["var_gs"].append([np.array(A)
                                           for A in dmrg_mps.tensors])
+                    # print(lamb, ec, self.slope, self.omega0, omega_gap)
             data["slope"].append(float(np.real(self.slope)))
-            pbar.update(self.slope)
+            pbar.update(float(np.real(self.slope)))
             self.update_lambda()
 
             tcurrent = time.time()

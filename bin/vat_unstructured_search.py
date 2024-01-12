@@ -50,15 +50,17 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega):
+def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, scale_gap):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'search/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
-    postfix = f"n_{n}_m_{m}_quadratic_"
+    postfix = f"n_{n}_m_{m}"
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}"
+    if scale_gap:
+        postfix += "_sgap"
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
 
@@ -71,7 +73,7 @@ class TDVP_QA_V3(TDVP_QA_V2):
             N = 2**24
         A = np.sqrt(N)
         if lamb is None:
-            lamb = np.clip(self.lamb,0,1)
+            lamb = np.clip(self.lamb, 0, 1)
         a = 1 - lamb + A*np.max([0, lamb*(1-lamb)])
         b = lamb + A*np.max([0, lamb*(1-lamb)])
         return -a, b
@@ -130,6 +132,9 @@ if __name__ == "__main__":
     parser.add_argument('--comp_state',
                         action='store_true',
                         help='If set we also compute the states.')
+    parser.add_argument('--scale_gap',
+                        action='store_true',
+                        help='If set we use gap scaling. This can be used with or without adaptive step adjustment.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -149,6 +154,7 @@ if __name__ == "__main__":
     seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
+    scale_gap = args_dict["scale_gap"]
     slope_omega = args_dict["slope_omega"]
     slope = args_dict["slope"]
     lamb = 0
@@ -178,7 +184,7 @@ if __name__ == "__main__":
     mpo0, mpo1 = search_mpos(n, state)
 
     filename = generate_tdvp_filename(
-        n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega)
+        n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, scale_gap=scale_gap)
 
     if recalculate:
         data = None
@@ -192,8 +198,8 @@ if __name__ == "__main__":
         lamb = np.sum(data["slope"])
 
     if lamb < 1:
-        tdvpqa = TDVP_QA_V3(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
-                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
+        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
+                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
