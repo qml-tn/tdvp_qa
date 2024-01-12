@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -32,6 +32,8 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     if rand_xy:
         postfix += "_xy"
+    if scale_gap:
+        postfix += "_sgap"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -114,6 +116,9 @@ if __name__ == "__main__":
     parser.add_argument('--rand_xy',
                         action='store_true',
                         help='If set the initial state will be a random product state in the XY plane, i.e. sz=0. The initial hamiltonian is changed accordingly.')
+    parser.add_argument('--scale_gap',
+                        action='store_true',
+                        help='If set we use gap scaling. This can be used with or without adaptive step adjustment.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -146,6 +151,7 @@ if __name__ == "__main__":
     seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
+    scale_gap = args_dict["scale_gap"]
     slope_omega = args_dict["slope_omega"]
     slope = args_dict["slope"]
     lamb = 0
@@ -184,7 +190,7 @@ if __name__ == "__main__":
             theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
@@ -199,7 +205,7 @@ if __name__ == "__main__":
 
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-8,
-                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01)
+                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
