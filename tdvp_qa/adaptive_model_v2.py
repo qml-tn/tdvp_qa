@@ -333,8 +333,8 @@ class TDVP_QA_V2():
         else:
             self.omega0 = data["omega0"][-1]
 
-        # pbar = tqdm(total=1, position=0, leave=True)
-        # pbar.update(self.lamb)
+        pbar = tqdm(total=1, position=0, leave=True)
+        pbar.update(self.lamb)
         if self.lamb == 0:
             k = 1
         else:
@@ -367,9 +367,9 @@ class TDVP_QA_V2():
                                          for A in self.mps.tensors])
                     data["var_gs"].append([np.array(A)
                                           for A in dmrg_mps.tensors])
-                    print(lamb, ec, self.slope, self.omega0, omega_scale)
+                    # print(lamb, ec, self.slope, self.omega0, omega_scale)
             data["slope"].append(float(np.real(self.slope)))
-            # pbar.update(float(np.real(self.slope)))
+            pbar.update(float(np.real(self.slope)))
             self.update_lambda()
 
             tcurrent = time.time()
@@ -378,5 +378,5 @@ class TDVP_QA_V2():
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
         data["mps"] = [np.array(A) for A in self.mps.tensors]
-        # pbar.close()
+        pbar.close()
         return data
