@@ -119,9 +119,11 @@ class TDVP_QA_V2():
             return A, omega0, omega_scale
 
         # calculate gaps
-        omega0 = np.min([omega0, val[1]-val[0]])
+        gap = val[1]-val[0]
+        omega0 = np.min([omega0, gap])
         if self.scale_gap:
-            val = (val-val[0])/self.omega0
+            # val = (val-val[0])/self.omega0
+            val = (val-val[0])/gap
         omega_scale = np.min([omega_scale, val[1]-val[0]])
         # Evolve for a time dt
         A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
@@ -186,7 +188,7 @@ class TDVP_QA_V2():
 
             # Updating C
             C, omega0, omega_scale = self.evolve_with_local_H(
-                C, Hc, -dt, omega0, omega_scale)
+                C, Hc, -np.conj(dt), omega0, omega_scale)
 
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
@@ -282,7 +284,7 @@ class TDVP_QA_V2():
 
             # Updating C
             C, omega0, omega_scale = self.evolve_with_local_H(
-                C, Hc, -dt, omega0, omega_scale)
+                C, Hc, -np.conj(dt), omega0, omega_scale)
 
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
