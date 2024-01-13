@@ -111,7 +111,8 @@ class TDVP_QA_V2():
         omega0 = np.min([omega0, gap])
         if self.scale_gap:
             # val = (val-val[0])/self.omega0
-            val = (val-val[0])/(gap+1e-16)
+            # If the gap is 0 we have a problem here
+            val = (val-val[0])/(gap + 1e-32)
         omega_scale = np.min([omega_scale, val[1]-val[0]])
         # Evolve for a time dt
         A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
