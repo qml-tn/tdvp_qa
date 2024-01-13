@@ -57,7 +57,7 @@ class TDVP_QA_V2():
         return dt
 
     def update_lambda(self):
-        self.lamb = np.clip(self.lamb + self.slope, 0, 1-1e-10)
+        self.lamb = np.clip(self.lamb + self.slope, 0, 1)
 
     def get_couplings(self, lamb=None):
         if lamb is None:
