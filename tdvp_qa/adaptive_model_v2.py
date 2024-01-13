@@ -57,7 +57,7 @@ class TDVP_QA_V2():
         return dt
 
     def update_lambda(self):
-        self.lamb = np.clip(self.lamb + self.slope, 0, 1)
+        self.lamb = np.clip(self.lamb + self.slope, 0, 1-1e-10)
 
     def get_couplings(self, lamb=None):
         if lamb is None:
@@ -75,18 +75,6 @@ class TDVP_QA_V2():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
-        # Dl, d, Dr = A.shape
-
-        # a, b = self.get_couplings(lamb)
-
-        # # Effective Hamiltonian for A
-        # dd = Dl*d*Dr
-        # Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
-        # Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
-        # Ha = a * Ha0 + b * Ha1
-
-        # A = jnp.reshape(A, [-1])
-        # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
         return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
 
     def energy_left_canonical(self, lamb=None):
@@ -123,7 +111,7 @@ class TDVP_QA_V2():
         omega0 = np.min([omega0, gap])
         if self.scale_gap:
             # val = (val-val[0])/self.omega0
-            val = (val-val[0])/gap
+            val = (val-val[0])/(gap+1e-16)
         omega_scale = np.min([omega_scale, val[1]-val[0]])
         # Evolve for a time dt
         A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
@@ -345,8 +333,8 @@ class TDVP_QA_V2():
         else:
             self.omega0 = data["omega0"][-1]
 
-        pbar = tqdm(total=1, position=0, leave=True)
-        pbar.update(self.lamb)
+        # pbar = tqdm(total=1, position=0, leave=True)
+        # pbar.update(self.lamb)
         if self.lamb == 0:
             k = 1
         else:
@@ -379,9 +367,9 @@ class TDVP_QA_V2():
                                          for A in self.mps.tensors])
                     data["var_gs"].append([np.array(A)
                                           for A in dmrg_mps.tensors])
-                    # print(lamb, ec, self.slope, self.omega0, omega_gap)
+                    print(lamb, ec, self.slope, self.omega0, omega_scale)
             data["slope"].append(float(np.real(self.slope)))
-            pbar.update(float(np.real(self.slope)))
+            # pbar.update(float(np.real(self.slope)))
             self.update_lambda()
 
             tcurrent = time.time()
@@ -390,5 +378,5 @@ class TDVP_QA_V2():
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
         data["mps"] = [np.array(A) for A in self.mps.tensors]
-        pbar.close()
+        # pbar.close()
         return data
