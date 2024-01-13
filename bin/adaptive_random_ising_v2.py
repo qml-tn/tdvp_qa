@@ -196,7 +196,11 @@ if __name__ == "__main__":
     mpoz = transverse_mpo(Jz, hz, n)
     tensors = initial_state_theta(n, Dmax, theta=theta)
 
-    data = get_simulation_data(filename)
+    if recalculate:
+        data = None
+    else:
+        data = get_simulation_data(filename)
+
     lamb = 0
     if data is not None:
         tensors = data["mps"]
