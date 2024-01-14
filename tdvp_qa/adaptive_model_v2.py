@@ -108,6 +108,7 @@ class TDVP_QA_V2():
 
         # calculate gaps
         gap = val[1]-val[0]
+        # mean_gap = np.mean(np.diff(val))
         omega0 = np.min([omega0, gap])
         if self.scale_gap:
             # val = (val-val[0])/self.omega0
@@ -115,6 +116,12 @@ class TDVP_QA_V2():
             val = (val-val[0])/(gap + 1e-32)
         omega_scale = np.min([omega_scale, val[1]-val[0]])
         # Evolve for a time dt
+        if self.scale_gap and abs(np.imag(dt)) >= 1.0:
+            # if gap < 1e-2:
+            #     print("small gap",gap/mean_gap,gap,mean_gap)
+            #     return (vec[:, 0]+vec[:, 1])/np.sqrt(2.), omega0, omega_scale
+            return vec[:, 0],  omega0, omega_scale
+
         A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
         A = jnp.einsum("i,i->i", jnp.exp(-1j*val*dt), A)
         A = jnp.einsum("ij,j->i", vec, A)
