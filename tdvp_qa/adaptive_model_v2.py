@@ -333,7 +333,7 @@ class TDVP_QA_V2():
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "entropy",
-                "slope", "state", "var_gs", "s"]
+                "slope", "state", "var_gs", "s","ds_overlap"]
         if data is None:
             data = {}
             for key in keys:
@@ -347,6 +347,8 @@ class TDVP_QA_V2():
             k = 1
         else:
             k = int(np.ceil(self.lamb/self.ds))
+        
+        mps_prev = self.mps.copy()
 
         while (self.lamb < 1):
             dt = self.get_dt()
@@ -356,9 +358,22 @@ class TDVP_QA_V2():
             self.omega0 = omega0
             ec = self.energy_right_canonical(lamb)
             data["omega0"].append(float(np.real(omega0)))
+            prev_overlap = 1-abs(self.mps.overlap(mps_prev))
+            data["ds_overlap"].append(prev_overlap)
+            mps_prev = self.mps.copy()
             if self.adaptive:
-                self.slope = np.clip(
-                    omega_scale*self.slope_omega, self.min_slope, self.max_slope)
+                if self.scale_gap:
+                    # print(prev_overlap,self.slope)
+                    if prev_overlap>self.slope_omega:
+                        self.slope = np.clip(
+                            self.slope/2, self.min_slope, self.max_slope)
+                    if prev_overlap<self.slope_omega/10.0:
+                        self.slope = np.clip(
+                            self.slope*2., self.min_slope, self.max_slope)
+
+                else:
+                    self.slope = np.clip(
+                        omega_scale*self.slope_omega, self.min_slope, self.max_slope)
 
             if lamb >= k*self.ds:
                 data["energy"].append(float(np.real(ec)))
