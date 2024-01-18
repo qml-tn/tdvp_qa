@@ -358,18 +358,13 @@ class TDVP_QA_V2():
             self.omega0 = omega0
             ec = self.energy_right_canonical(lamb)
             data["omega0"].append(float(np.real(omega0)))
-            prev_overlap = 1-abs(self.mps.overlap(mps_prev))
+            prev_overlap = abs(self.mps.overlap(mps_prev))
             data["ds_overlap"].append(prev_overlap)
             mps_prev = self.mps.copy()
             if self.adaptive:
                 if self.scale_gap:
-                    # print(prev_overlap,self.slope)
-                    if prev_overlap>self.slope_omega:
-                        self.slope = np.clip(
-                            self.slope/2, self.min_slope, self.max_slope)
-                    if prev_overlap<self.slope_omega/10.0:
-                        self.slope = np.clip(
-                            self.slope*2., self.min_slope, self.max_slope)
+                    self.slope = np.clip(
+                        prev_overlap*self.slope_omega, self.min_slope, self.max_slope)                    
 
                 else:
                     self.slope = np.clip(
