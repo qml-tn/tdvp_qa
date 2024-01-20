@@ -135,8 +135,11 @@ if __name__ == "__main__":
 
     # Set TRUE to generate regular graph of degree d
     REGULAR = args_dict['regular']
-    # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
+    if REGULAR:
+        N_edges = None
     d = args_dict['d']
+
+    # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path = args_dict['path']
     # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm
     seed = args_dict['seed']
