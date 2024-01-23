@@ -368,7 +368,6 @@ class TDVP_QA_V2():
                 self.slope = np.clip(
                     omega0*self.slope_omega, self.min_slope, self.max_slope)
 
-            mps_prev = self.mps.copy()
             data["omega0"].append(float(np.real(omega0)))
 
             if lamb >= k*self.ds:
@@ -378,6 +377,7 @@ class TDVP_QA_V2():
                 data["s"].append(lamb)
                 data["ds_overlap"].append(abs(self.mps.overlap(mps_prev)))
                 data["init_overlap"].append(abs(self.mps.overlap(mps0)))
+                mps_prev = self.mps.copy()
                 k = k+1
                 if self.compute_states:
                     dmrg_mps = self.mps.copy()
