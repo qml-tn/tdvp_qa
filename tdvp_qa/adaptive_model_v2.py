@@ -340,6 +340,11 @@ class TDVP_QA_V2():
                 data[key] = []
         else:
             self.omega0 = data["omega0"][-1]
+        
+        for key in keys:
+            dkeys = list(data.keys())
+            if key not in dkeys:
+                data[key] = []
 
         pbar = tqdm(total=1, position=0, leave=True)
         pbar.update(self.lamb)
