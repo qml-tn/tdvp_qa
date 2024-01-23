@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -27,7 +27,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         os.makedirs(path_data)
 
     postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+        REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=max_cut)
 
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     if rand_xy:
@@ -101,6 +101,9 @@ if __name__ == "__main__":
     parser.add_argument('--no_local_fields',
                         action='store_true',
                         help='If set we set all hi to zero.')
+    parser.add_argument('--max_cut',
+                        action='store_true',
+                        help='If set to true a max-cut hamiltonian is produced and local fields are set to zero.')
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
@@ -145,6 +148,10 @@ if __name__ == "__main__":
     seed = args_dict['seed']
     no_local_fields = args_dict['no_local_fields']
 
+    max_cut = args_dict["max_cut"]
+    if max_cut:
+        no_local_fields = True
+
     if seed is None:
         seed = np.random.randint(10000)
         print(f"Using a random seed {seed}.")
@@ -174,7 +181,7 @@ if __name__ == "__main__":
         config.update("jax_enable_x64", True)
 
     Jz, loc_fields, connect = generate_graph(
-        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate)
+        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate, max_cut=max_cut)
 
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
 
@@ -193,7 +200,7 @@ if __name__ == "__main__":
             theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
@@ -223,6 +230,11 @@ if __name__ == "__main__":
             pickle.dump(data, f)
 
         export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                      connect, REGULAR, d, no_local_fields, global_path)
+                      connect, REGULAR, d, no_local_fields, global_path, max_cut)
+        if max_cut:
+            mcut = (np.sum(Jz[:,2])-data["energy"][-1])/2
+            print(f"Edges in maximum cut: {mcut}" )
+        else:
+            print(f"Final energy is: {data['energy'][-1]}")
     else:
         print("The simulation is already finished!")

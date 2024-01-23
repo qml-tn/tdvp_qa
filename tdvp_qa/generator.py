@@ -7,12 +7,12 @@ import networkx as nx
 GRAPHS_PATH = 'graphs/'
 
 
-def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None, recalculate=False):
+def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None, recalculate=False, max_cut=False):
 
     if global_path:
         path = os.path.join(global_path, GRAPHS_PATH)
         postfix = generate_postfix(
-            REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+            REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=max_cut)
         filename_wm = os.path.join(path, 'weight_matrix'+postfix+'.dat')
         filename_lf = os.path.join(path, 'local_fields'+postfix+'.dat')
 
@@ -43,6 +43,10 @@ def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_l
 
     # Samples the couplings from uniform distribution between 0 and 1
     Jij = np.random.rand(N_edges)
+    
+    if max_cut:
+        Jij[:] = 1.0
+
     # Samples the local fields from uniform distribution between -0.5 and 0.5
     h_i = (np.random.rand(N_verts) - 0.5)
 
@@ -54,14 +58,14 @@ def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_l
     for i in range(N_verts):
         local_fields[i] = (i, h_i[i])
 
-    if no_local_fields:
+    if no_local_fields or max_cut:
         local_fields[:, 1] = 0
 
     connect = nx.node_connectivity(graph)
     return weight_matrix, local_fields, connect
 
 
-def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, no_local_fields, global_path=None):
+def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, no_local_fields, global_path=None, max_cut=False):
     if global_path is None:
         global_path = os.getcwd()
     path = os.path.join(global_path, GRAPHS_PATH)
@@ -69,7 +73,7 @@ def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, no_local_fie
         os.makedirs(path)
 
     postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+        REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut)
     filename_wm = os.path.join(path, 'weight_matrix'+postfix+'.dat')
     filename_lf = os.path.join(path, 'local_fields'+postfix+'.dat')
 
@@ -80,7 +84,7 @@ def export_graphs(wm, lf, N_verts, N_edges, seed, cnct, REGULAR, d, no_local_fie
     np.savetxt(filename_lf, lf, header=header_lf)
 
 
-def generate_postfix(REGULAR, N_verts, N_edges, d, seed, no_local_fields):
+def generate_postfix(REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut):
     postfix = ""
     if REGULAR:
         postfix = '_Nv_'+str(N_verts)+'_regular_d'+str(d)+'_seed_'+str(seed)
@@ -88,6 +92,8 @@ def generate_postfix(REGULAR, N_verts, N_edges, d, seed, no_local_fields):
         postfix = '_Nv_'+str(N_verts)+'_N_edg_'+str(N_edges)+'_seed_'+str(seed)
     if no_local_fields:
         postfix += "_hi=0"
+    if max_cut:
+        postfix += "_mc"
     return postfix
 
 
