@@ -6,7 +6,6 @@ import networkx as nx
 
 GRAPHS_PATH = 'graphs/'
 
-
 def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None, recalculate=False, max_cut=False):
 
     if global_path:
