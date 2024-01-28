@@ -22,7 +22,7 @@ def get_simulation_data(filename_path):
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad):
     if global_path is None:
         global_path = os.getcwd()
-    path_data = os.path.join(global_path, 'adaptive_data_v2/')
+    path_data = os.path.join(global_path, 'adaptive_data_v3/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
