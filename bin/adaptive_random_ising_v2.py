@@ -19,7 +19,7 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -34,6 +34,8 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         postfix += "_xy"
     if scale_gap:
         postfix += "_sgap"
+    if auto_grad:
+        postfix += "_ag"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -122,6 +124,9 @@ if __name__ == "__main__":
     parser.add_argument('--scale_gap',
                         action='store_true',
                         help='If set we use gap scaling. This can be used with or without adaptive step adjustment.')
+    parser.add_argument('--auto_grad',
+                        action='store_true',
+                        help='If set we automatic_gradient.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -172,6 +177,7 @@ if __name__ == "__main__":
 
     rand_init = args_dict["rand_init"]
     rand_xy = args_dict["rand_xy"]
+    auto_grad = args_dict["auto_grad"]
 
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
@@ -200,7 +206,7 @@ if __name__ == "__main__":
             theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
@@ -221,7 +227,7 @@ if __name__ == "__main__":
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap)
 
-        data = tdvpqa.evolve(data=data)
+        data = tdvpqa.evolve(data=data, auto_grad=auto_grad)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = Jz
         data["hz"] = hz
@@ -232,8 +238,8 @@ if __name__ == "__main__":
         export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
                       connect, REGULAR, d, no_local_fields, global_path, max_cut)
         if max_cut:
-            mcut = (np.sum(Jz[:,2])-data["energy"][-1])/2
-            print(f"Edges in maximum cut: {mcut}" )
+            mcut = (np.sum(Jz[:, 2])-data["energy"][-1])/2
+            print(f"Edges in maximum cut: {mcut}")
         else:
             print(f"Final energy is: {data['energy'][-1]}")
     else:
