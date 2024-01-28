@@ -34,6 +34,15 @@ def left_hamiltonian(A, Hl0, H0):
     return Hl
 
 
+def right_context_c(mpsc, mpo):
+    # we assume that the MPS is in the central canonical form:
+    raise NotImplementedError
+
+def left_context_c(mpsc, mpo):
+    # we assume that the MPS is in the central canonical form:
+    raise NotImplementedError
+
+
 def right_context(mps, mpo):
     # Here we assume that the mps is already in the right canonical form
     n = mps.n
@@ -44,7 +53,6 @@ def right_context(mps, mpo):
         Hr = right_hamiltonian(A, Hright[0], H0)
         Hright = [Hr] + Hright
     return Hright
-
 
 @jit
 def effective_hamiltonian_A(Hl, Hr, H0):
