@@ -105,21 +105,14 @@ class TDVP_QA_V2():
         val, vec = jnp.linalg.eigh(H)
         if len(val) <= 1:
             return A, omega0, omega_scale
-
         # calculate gaps
         gap = val[1]-val[0]
-        # mean_gap = np.mean(np.diff(val))
         omega0 = np.min([omega0, gap])
         if self.scale_gap:
-            # val = (val-val[0])/self.omega0
-            # If the gap is 0 we have a problem here
             val = (val-val[0])/(gap + 1e-32)
         omega_scale = np.min([omega_scale, val[1]-val[0]])
         # Evolve for a time dt
         if self.scale_gap and abs(np.imag(dt)) >= 1.0:
-            # if gap < 1e-2:
-            #     print("small gap",gap/mean_gap,gap,mean_gap)
-            #     return (vec[:, 0]+vec[:, 1])/np.sqrt(2.), omega0, omega_scale
             return vec[:, 0],  omega0, omega_scale
 
         A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
@@ -331,6 +324,18 @@ class TDVP_QA_V2():
         omega0l, omega_scalel = self.left_sweep(dt/2., lamb)
         return np.min([omega0l, omega0r]), np.min([omega_scalel, omega_scaler, 1.0])
 
+    def single_step(self, dt, lamb):
+        omega0, omega_scale = self.right_left_sweep(dt, lamb)
+        ec = self.energy_right_canonical(lamb)
+        if self.scale_gap and abs(np.imag(dt)) >= 1.0:
+            for _ in range(100):
+                ec_prev = ec
+                omega0, omega_scale = self.right_left_sweep(dt, lamb)
+                ec = self.energy_right_canonical(lamb)
+                if abs(ec-ec_prev) < 1e-6:
+                    break
+        return omega0, omega_scale, ec
+
     def evolve(self, data=None):
         keys = ["energy", "omega0", "entropy",
                 "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap"]
@@ -340,7 +345,7 @@ class TDVP_QA_V2():
                 data[key] = []
         else:
             self.omega0 = data["omega0"][-1]
-        
+
         for key in keys:
             dkeys = list(data.keys())
             if key not in dkeys:
@@ -360,9 +365,8 @@ class TDVP_QA_V2():
             dt = self.get_dt()
             # full step update right
             lamb = np.clip(self.lamb + self.slope, 0, 1)
-            omega0, omega_scale = self.right_left_sweep(dt, lamb)
+            omega0, omega_scale, ec = self.single_step(dt, lamb)
             self.omega0 = omega0
-            ec = self.energy_right_canonical(lamb)
 
             if self.adaptive:
                 self.slope = np.clip(
