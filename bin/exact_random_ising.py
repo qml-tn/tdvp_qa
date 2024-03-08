@@ -9,6 +9,7 @@ from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, lon
 from tdvp_qa.model import generate_postfix
 from tdvp_qa.exact import Ising, Hx_fields
 
+
 def get_simulation_data(filename_path):
     data = None
     if os.path.exists(filename_path):
@@ -25,7 +26,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         os.makedirs(path_data)
 
     postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+        REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=False)
 
     postfix += f"_{annealing_schedule}_dt_{dtr}_{dti}_s_{slope}_s_{stochastic}_{seed_tdvp}_so_{slope_omega}"
 
@@ -133,7 +134,6 @@ if __name__ == "__main__":
     n = N_verts
 
     recalculate = args_dict["recalculate"]
-
 
     Jz, loc_fields, connect = generate_graph(
         N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate)
