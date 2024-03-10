@@ -4,18 +4,30 @@ import os
 import pickle
 import scipy
 from tqdm import tqdm
+from GracefulKiller import GracefulKiller
+import time
+
 
 from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
 from tdvp_qa.model import generate_postfix
 from tdvp_qa.exact import Ising, Hx_fields
 
 
-def get_simulation_data(filename_path):
-    data = None
-    if os.path.exists(filename_path):
+def get_simulation_data(filename_path, recalculate=False):
+    # data = None
+    if (not recalculate) and os.path.exists(filename_path):
         with open(filename_path, 'rb') as f:
             data = pickle.load(f)
-    return data
+        return data
+    else:
+        psi = np.ones(2**n)/np.sqrt(2**n)
+        data = {
+            "state": [psi.copy()],
+            "gs": [psi.copy()],
+            "s": [0],
+            "specter": [None],
+        }
+        return data
 
 
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, dtr, dti, slope, seed_tdvp, stochastic, slope_omega):
@@ -133,6 +145,9 @@ if __name__ == "__main__":
     dt = dtr - 1j*dti
     n = N_verts
 
+    killer = GracefulKiller()
+    tstart = time.time()
+
     recalculate = args_dict["recalculate"]
 
     Jz, loc_fields, connect = generate_graph(
@@ -152,43 +167,45 @@ if __name__ == "__main__":
     H0 = Hx_fields(n)
     H1 = Ising(Jz, hz)
 
-    states_exact = []
-    gs_exact = []
-    slist = []
-    specter = []
-    pbar = tqdm(total=1, position=0, leave=True)
-    k = 1
+    data = get_simulation_data(filename, recalculate)
     ds = 0.01
-    lamb = 0
-    psi = np.ones(2**n)/np.sqrt(2**n)
-    while (lamb <= 1. or np.isclose(lamb, 1)):
-        lamb += slope
-        a = np.max([1 - lamb, 0.])
-        b = np.min([lamb, 1.])
-        H = -a * H0 + b * H1
-        U = scipy.linalg.expm(-1j*dt*H)
-        psi = U @ psi
 
-        if lamb >= k*ds:
-            val, vec = np.linalg.eigh(H)
-            specter.append(val)
-            states_exact.append(psi)
-            gs_exact.append(vec[:, 0])
-            slist.append(lamb)
-            k = k+1
+    k = len(data["s"]) + 1
+    lamb = data["s"][-1]
 
-        pbar.update(slope)
-    pbar.close()
+    if lamb <= 1.:
+        print(f"Starting the simulation with lamb={lamb}!")
+        pbar = tqdm(total=1, position=0, leave=True)
+        psi = data["state"][-1]
+        pbar.update(lamb)
+        while (lamb <= 1. or np.isclose(lamb, 1)):
+            lamb += slope
+            a = np.max([1 - lamb, 0.])
+            b = np.min([lamb, 1.])
+            H = -a * H0 + b * H1
+            U = scipy.linalg.expm(-1j*dt*H)
+            psi = U @ psi
 
-    data = {
-        "state": states_exact,
-        "gs": gs_exact,
-        "s": slist,
-        "specter": specter,
-    }
+            if lamb >= k*ds:
+                val, vec = np.linalg.eigh(H)
+                data["specter"].append(val)
+                data["state"].append(psi)
+                data["gs"].append(vec[:, 0])
+                data["s"].append(lamb)
+                k = k+1
+            pbar.update(slope)
 
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
+            tcurrent = time.time()
+            if tcurrent-tstart > 3600*47 or killer.kill_now:
+                print(
+                    f"Killing program after {int(tcurrent-tstart)} seconds.")
+                break
+        pbar.close()
 
-    export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                  connect, REGULAR, d, no_local_fields, global_path)
+        with open(filename, 'wb') as f:
+            pickle.dump(data, f)
+
+        export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
+                      connect, REGULAR, d, no_local_fields, global_path)
+    else:
+        print("Simulation already finished!")
