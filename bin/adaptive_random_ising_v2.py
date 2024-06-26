@@ -14,12 +14,16 @@ from jax import config
 def get_simulation_data(filename_path):
     data = None
     if os.path.exists(filename_path):
-        with open(filename_path, 'rb') as f:
-            data = pickle.load(f)
+        try:
+            with open(filename_path, 'rb') as f:
+                data = pickle.load(f)
+        except:
+            print("Corrupted data starting at t=0!")
+            pass
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad):
+def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad, nitime):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -29,7 +33,11 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=max_cut)
 
-    postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    if nitime>1:
+        postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    else:
+        postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    
     if rand_xy:
         postfix += "_xy"
     if scale_gap:
@@ -70,6 +78,10 @@ if __name__ == "__main__":
                         type=float,
                         default=0.0,
                         help='Imaginary time step for the simulation.')
+    parser.add_argument('--nitime',
+                        type=int,
+                        default=1,
+                        help='Number of repetitions of the same step if dti>0.')
     parser.add_argument('--stochastic',
                         action='store_true',
                         help='If set we sample the imaginary component of dt in the range [0, dti].')
@@ -175,6 +187,11 @@ if __name__ == "__main__":
     dt = dtr - 1j*dti
     n = N_verts
 
+    if dti > 0:
+        nitime = args_dict["nitime"]
+    else:
+        nitime = 0
+
     rand_init = args_dict["rand_init"]
     rand_xy = args_dict["rand_xy"]
     auto_grad = args_dict["auto_grad"]
@@ -206,7 +223,8 @@ if __name__ == "__main__":
             theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad)
+        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic,
+        double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad, nitime=nitime)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
@@ -225,7 +243,8 @@ if __name__ == "__main__":
 
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
-                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap)
+                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
