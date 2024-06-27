@@ -480,7 +480,7 @@ class TDVP_QA_V2():
                 dt, lamb, energy, energy_gradient)
             self.omega0 = omega0
 
-            if (self.dmax <= 16):
+            if (self.dmax <= 2):
                 lspec = linearised_specter(
                     self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb)
                 gap = np.real(lspec[0][0]-ec)
