@@ -38,6 +38,7 @@ def right_context_c(mpsc, mpo):
     # we assume that the MPS is in the central canonical form:
     raise NotImplementedError
 
+
 def left_context_c(mpsc, mpo):
     # we assume that the MPS is in the central canonical form:
     raise NotImplementedError
@@ -53,6 +54,7 @@ def right_context(mps, mpo):
         Hr = right_hamiltonian(A, Hright[0], H0)
         Hright = [Hr] + Hright
     return Hright
+
 
 @jit
 def effective_hamiltonian_A(Hl, Hr, H0):
@@ -82,34 +84,26 @@ def full_effective_hamiltonian_A(Hl0, Hl1, H0, H1, Hr0, Hr1, lamb, dd):
     return Ha
 
 
-def linearised_hamiltonian(mps, mpo, Hright):
+def linearised_hamiltonian(mps, lv, tv, mpo, Hright):
     # We assume that the mps is in the right canonical form
     n = len(mps)
     Hl = jnp.array([[[1.]]])
     dims = [prod(A.shape) for A in mps]
-    # N = sum(dims)
     Klist = []
-    A1 = mps[0]
     for i in range(n):
         # Diagonal of K
         Kl = jnp.einsum("iaj,adub->jdiub", Hl, mpo[i])
         K = jnp.einsum("jdiub,kbl->jdliuk", Kl, Hright[i])
-        dl = dims[i]
-        dr = dl
         Kij = []
         for j in range(i):
-            Kij.append(jnp.conj(jnp.transpose(Klist[j][i])))
-        Kij.append(jnp.reshape(K, [dl, dr]))
-        # Move Hl and mps to the right
-        A = jnp.reshape(A1, [-1, A1.shape[-1]])
-        q, r = jnp.linalg.qr(A)
-        A = jnp.reshape(q, A1.shape)
+            Kij.append(Klist[j][i])
+        Kij.append(K)
+        # Move Hl to the right
+        A = lv[i]
         Hl = left_hamiltonian(A, Hl, mpo[i])
         # Preparing first off-diagonal Kl
         Kl = jnp.einsum("jdiub,iuk->jdkb", Kl, A)
         if i < n-1:
-            A1 = jnp.einsum("ij,jkl->ikl", r, mps[i+1])
-            A2 = A1.copy()
             Kl = jnp.einsum("JDia,adub->JDiudb", Kl, mpo[i+1])
             Kl = jnp.einsum("JDiudb,Ldl->JDLiubl", Kl, jnp.conj(mps[i+1]))
 
@@ -117,26 +111,77 @@ def linearised_hamiltonian(mps, mpo, Hright):
         for j in range(i+1, n):
             # Calculating the offdiagonal K
             K = jnp.einsum("JDLiubl,kbl->JDLiuk", Kl, Hright[j])
-            dr = dims[j]
-            Kij.append(jnp.reshape(K, [dl, dr]))
+            Kij.append(K)
 
             # Calculating the new Kl and moving A2 to right
-            A = jnp.reshape(A2, [-1, A2.shape[-1]])
-            q, r = jnp.linalg.qr(A)
-            A = jnp.reshape(q, A2.shape)
+            A = lv[j]
             if j < n-1:
-                A2 = jnp.einsum("ij,jkl->ikl", r, mps[j+1])
                 Kl = jnp.einsum("JDLkual,kui->JDLial", Kl, A)
                 Kl = jnp.einsum("JDLiar,rdl->JDLliad", Kl, jnp.conj(mps[j+1]))
                 Kl = jnp.einsum("JDLliad,adub->JDLiubl", Kl, mpo[j+1])
         Klist.append(Kij)
-    return jnp.block(Klist)
+
+    KVlist = []
+    for i in range(n):
+        vi = tv[i]
+        if len(vi) == 0:
+            continue
+        Kij = []
+        for j in range(n):
+            vj = tv[j]
+            if len(vj) == 0:
+                continue
+            if i <= j:
+                va = jnp.conj(vi)
+                vb = vj
+                K = Klist[i][j]
+            else:
+                va = vi
+                vb = jnp.conj(vj)
+                K = jnp.einsum("jdliuk->iukjdl", jnp.conj(Klist[i][j]))
+            K = jnp.einsum("jdliuk,jda->aliuk", K, va)
+            K = jnp.einsum("aliuk,iub->albk", K, vb)
+            dims = K.shape
+            K = jnp.reshape(K, [dims[0]*dims[1], -1])
+            Kij.append(K)
+        KVlist.append(Kij)
+    return jnp.block(KVlist)
+
+
+def tangent_vectors(mps):
+    # We assume that the state is in the right canonical form
+    n = len(mps)
+    eps=1e-10
+    lv = []
+    tv = []
+    r = jnp.array([[1]])
+    for i in range(n):
+        A = jnp.einsum("ij,jkl->ikl", r, mps[i])
+        dims = A.shape
+        A = jnp.reshape(A, [-1, dims[-1]])
+        u, s, v = jnp.linalg.svd(A, full_matrices=True)
+        m = dims[-1]
+        mp = sum(s>eps)
+        s = s[:m]
+        v = v[:m]
+        Al = jnp.reshape(u[:, :m], [dims[0], dims[1], m])
+        lv.append(Al)
+        if m < len(u):
+            Ap = jnp.reshape(u[:, mp:], [dims[0], dims[1], -1])
+        else:
+            Ap = []
+        tv.append(Ap)
+        r = jnp.einsum("i,ij->ij", s, v)
+    return lv, tv
 
 
 def linearised_specter(mps, mpo0, mpo1, Hright0, Hright1, lamb):
-    K0 = linearised_hamiltonian(mps, mpo0, Hright0)
-    K1 = linearised_hamiltonian(mps, mpo1, Hright1)
-    K = K0 + lamb * K1
+    lv, tv = tangent_vectors(mps)
+    K0 = linearised_hamiltonian(mps, lv, tv, mpo0, Hright0)
+    K1 = linearised_hamiltonian(mps, lv, tv, mpo1, Hright1)
+    a = - max([1 - lamb, 0.])
+    b = min([lamb, 1.])
+    K = a*K0 + b*K1
     val = jnp.linalg.eigvalsh(K)
     return val, K
 

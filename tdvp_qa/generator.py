@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import networkx as nx
+from scipy.stats import ortho_group
+
 
 # import time
 
@@ -202,3 +204,42 @@ def transverse_mpo(Jz, hz, n):
         mpo[i-1] = Ar
 
     return mpo
+
+
+def compress_mpo(mpo):
+    # Compress MPO
+    Ar = mpo[-1]
+    eps = 1e-12
+    n = len(mpo)
+    for i in range(n-1, 0, -1):
+        Dl, d, _, Dr = Ar.shape
+        Ar = np.reshape(Ar, [Dl, -1])
+        u, s, v = np.linalg.svd(Ar, full_matrices=False)
+        smax = np.max(s)
+        snorm = s/smax
+        inds = snorm > eps
+        s = s[inds]
+        v = v[inds]
+        u = u[:, inds]
+        Dl = len(s)
+        mpo[i] = np.reshape(v, [Dl, d, d, Dr])
+        Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
+        mpo[i-1] = Ar
+    # return mpo
+
+def anonimize_mpo(mpo):
+    n = len(mpo)
+    nrm = np.linalg.norm(mpo[0])
+    new_nrm = nrm**(1.0/n)
+    mpo[0] = (mpo[0]/nrm)*new_nrm
+    for i in range(n-1):
+        Al = mpo[i]
+        Ar = mpo[i+1]
+        D = Ar.shape[0] 
+        Ol = ortho_group.rvs(D)
+        Or = Ol.T
+        Al = np.einsum("...i,ij->...j",Al,Ol)
+        Ar = np.einsum("ij,j...->i...",Or,Ar)
+        mpo[i] = Al*new_nrm
+        mpo[i+1] = Ar
+    mpo[n-1]=mpo[n-1]*new_nrm

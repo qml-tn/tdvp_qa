@@ -5,41 +5,79 @@ import pickle
 
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
+from tdvp_qa.generator import longitudinal_mpo
 
 from jax import config
 
+def sum_mpos(mpo1,mpo2):
+    mpo = []
+    n = len(mpo1)
+    for i in range(n):
+        A = mpo1[i]
+        B = mpo2[i]
+        da = A.shape
+        db = B.shape
+        C = np.zeros([da[0]+db[0],da[1],da[2],da[3]+db[3]], dtype=np.cdouble)
+        C[:da[0],:,:,:da[3]] = A
+        C[da[0]:,:,:,da[3]:] = B
+        mpo.append(C)
+    e = np.ones([2])    
+    A = np.einsum("i,i...->...",e,mpo[0])
+    A = np.reshape(A,[1]+list(A.shape))
+    mpo[0] = A
+    A = np.einsum("i,...i->...",e,mpo[-1])
+    A = np.reshape(A,list(A.shape)+[1])
+    mpo[-1] = A
+    return mpo
 
-def search_mpos(n, state):
-    # n is the number of spins
-    # state is the designed spin configuration
-    # H0
-    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
-    ix = np.array([[1, 1], [1, 1]])/2.
+def multiply_mpos(mpo1,mpo2):
+    mpo= []
+    n = len(mpo1)
+    for i in range(n):
+        A = mpo1[i]
+        B = mpo2[i]
+        da = A.shape
+        db = B.shape
+        C = np.einsum("lijr,ajkb->laikrb",A,B)
+        C = np.reshape(C,[da[0]*db[0],da[1],db[2],da[3]*db[3]])
+        mpo.append(C)
+    return mpo
+
+def factoring_mpos(p, q):
+    n = p*q
+    nx = len(bin(p)[2:])
+    ny = len(bin(q)[2:])
+
+    
+    A = np.zeros([2, 2, 2, 2], dtype=np.cdouble)
+    F = np.zeros([2, 2, 2, 1], dtype=np.cdouble)
+    sp = np.array([[0, 0], [0, 1]])
     i2 = np.eye(2)
-    A[0, :, :, 1] = -i2
-    A[1, :, :, 1] = i2
-    A[1, :, :, 3] = i2
-    A[0, :, :, 2] = ix
-    A[2, :, :, 2] = ix
-    A[2, :, :, 3] = ix
-    mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
 
-    # H1
-    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
-    A[0, :, :, 1] = i2
+    A[0, :, :, 0] = 2*i2
     A[1, :, :, 1] = i2
-    A[1, :, :, 3] = i2
-    mpo1 = []
-    for s in state:
-        Ai = A.copy()
-        Ai[0, s, s, 2] = -1.0
-        Ai[2, s, s, 2] = 1.0
-        Ai[2, s, s, 3] = 1.0
-        mpo1.append(Ai)
-    mpo1[0] = mpo1[0][:1]
-    mpo1[-1] = mpo1[-1][:, :, :, -1:]
+    A[0, :, :, 1] = sp
+    
+    F[0, :, :, 0] = sp
+    F[1, :, :, 0] = i2
 
-    return mpo0, mpo1
+    mpoxy = [A[:1]] + [A]*(nx-2) + [F[:, :, :, :], A[:1]] + [A]*(ny-2) + [F]
+    mpoxxyy = multiply_mpos(mpoxy,mpoxy)
+
+    # mpoxy[0] = (-2*n*mpoxy[0])*(nx+ny)/n**2 # We simplify this expression below
+    
+    # mpoxy[0] = (-2*mpoxy[0])*(nx+ny)/n
+    # mpoxxyy[0] = (mpoxxyy[0])*(nx+ny)/n**2
+
+    mpoxy[0] = (-2*mpoxy[0])
+    m = nx+ny
+    c1 = ((nx+ny)/n)**(1./m)
+    c2 = ((nx+ny)/n**2)**(1./m)
+    for i in range(m):
+        mpoxy[i] = c1*mpoxy[i]        
+        mpoxxyy[i] = c2*mpoxxyy[i]        
+
+    return sum_mpos(mpoxy,mpoxxyy)
 
 
 def get_simulation_data(filename_path):
@@ -50,33 +88,19 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, scale_gap, nitime):
+def generate_tdvp_filename(p,q, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, scale_gap, nitime):
     if global_path is None:
         global_path = os.getcwd()
-    path_data = os.path.join(global_path, 'search/')
+    path_data = os.path.join(global_path, 'factoring/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
-    postfix = f"n_{n}_m_{m}"
+    postfix = f"p_{p}_q_{q}"
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}"
     if scale_gap:
         postfix += "_sgap"
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
-
-
-class TDVP_QA_V3(TDVP_QA_V2):
-    def get_couplings(self, lamb=None):
-        if self.n < 24:
-            N = 2**self.n
-        else:
-            N = 2**24
-        A = np.sqrt(N)
-        if lamb is None:
-            lamb = np.clip(self.lamb, 0, 1)
-        a = 1 - lamb + A*np.max([0, lamb*(1-lamb)])
-        b = lamb + A*np.max([0, lamb*(1-lamb)])
-        return -a, b
 
 
 if __name__ == "__main__":
@@ -85,14 +109,14 @@ if __name__ == "__main__":
                         default="data/",
                         type=str,
                         help='A full path to where the files should be stored.')
-    parser.add_argument('--n',
+    parser.add_argument('--p',
                         type=int,
-                        default=16,
-                        help='The number of elements in the search is N=2**n.')
-    parser.add_argument('--m',
+                        default=5,
+                        help='The First factor of the composit number')
+    parser.add_argument('--q',
                         type=int,
-                        default=16,
-                        help='The vector we are looking for. Should be between 0 and 2**n-1.')
+                        default=13,
+                        help='The second factor of the composit number.')
     parser.add_argument('--dmax',
                         type=int,
                         default=8,
@@ -152,8 +176,13 @@ if __name__ == "__main__":
         print('Unknown arguments: {}'.format(unknown))
 
     # Model generator parameters
-    n = args_dict['n']
-    m = args_dict['m']
+    p = args_dict['p']
+    q = args_dict['q']
+
+    nx = len(bin(p)[2:])
+    ny = len(bin(q)[2:])
+    n = nx + ny
+
     global_path = args_dict['path']
     # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm
 
@@ -188,23 +217,17 @@ if __name__ == "__main__":
     elif adaptive:
         annealing_schedule = "adaptive"
 
-    if annealing_schedule == "quadratic":
-        # for quadratic annealing schedule we do not scale the gap and have a linear schedule.
-        scale_gap = False
-        adaptive = False
-
     theta = np.array([[np.pi/2., 0]]*n)
     tensors = initial_state_theta(n, Dmax, theta=theta)
 
-    if m < 0 or m >= 2**n:
-        raise ValueError(
-            f"Stopping the simulation m={m} is too large! It should be between 0 and {2**n-1}.")
+    mpo0 = longitudinal_mpo(n, theta)
+    mpo1 = factoring_mpos(p,q)
 
-    state = [int(i) for i in ("{:0"+(f"{n}")+"b}").format(m)]
-    mpo0, mpo1 = search_mpos(n, state)
+    tensors = initial_state_theta(n, Dmax, theta=theta)
+
 
     filename = generate_tdvp_filename(
-        n, m, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, scale_gap=scale_gap, nitime=nitime)
+        p, q, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic, double_precision=double_precision, slope_omega=slope_omega, scale_gap=scale_gap, nitime=nitime)
 
     if recalculate:
         data = None
@@ -218,24 +241,16 @@ if __name__ == "__main__":
         lamb = np.sum(data["slope"])
 
     if lamb < 1:
-        if annealing_schedule == "quadratic":
-            tdvpqa = TDVP_QA_V3(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
-                                adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap, nitime=nitime)
-        else:
-            tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
-                                adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap, nitime=nitime)
+        tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.1, min_slope=1e-10,
+                            adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega, ds=0.01, scale_gap=scale_gap, nitime=nitime)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
-
-        data["samples"] = [tdvpqa.mps.sample() for i in range(10)]
-        print("Samples")
-        print(data["samples"])
-        print("Solution")
-        print(state)
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
 
     else:
         print("The simulation is already finished!")
+
+    print("Energy difference",nx+ny+data["energy"][-1])

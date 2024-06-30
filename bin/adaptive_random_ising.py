@@ -27,7 +27,7 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         os.makedirs(path_data)
 
     postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields)
+        REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=False)
 
     postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_s_{slope}_s_{stochastic}_{seed_tdvp}_mme_{max_energy}_{min_energy}"
 

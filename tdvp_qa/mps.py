@@ -24,9 +24,49 @@ def np_mps_overlap(tensors1, tensors2):
     assert n == len(
         tensors2), "MPS should have the same length but have lengths {len(tensors1)} and {len(tensors2)}."
     for i in range(n):
-        overlap = np.einsum("ij,ikl->ljk", overlap, tensors1[i])
-        overlap = np.einsum("lkj,kjm->lm", overlap, np.conj(tensors2[i]))
+        overlap = np.einsum("ij,ikl->ljk", overlap, np.conj(tensors1[i]))
+        overlap = np.einsum("lkj,kjm->lm", overlap, tensors2[i])
     return overlap[0, 0]
+
+############# NOT WORKING START ##############
+# def np_mps_norm(tensors):
+#     n = len(tensors)
+#     nrm = np.array([[1.]])
+#     for i in range(n):
+#         A = tensors[i]
+#         nrm = np.einsum("ij,jkl->ikl", nrm, A)
+#         nrm = np.einsum("ikl,ikm->ml", nrm, np.conj(A))
+#     return np.sqrt(nrm[0, 0])
+
+# def np_mps_difference(tensors1, tensors2, calc_norm=True):
+#     # We assume that the norm of the MPS2 is 1.
+#     n = len(tensors1)
+#     tensors =  []
+#     assert n == len(
+#         tensors2), "MPS should have the same length but have lengths {len(tensors1)} and {len(tensors2)}."
+#     for i in range(n):
+#         A1 = tensors1[i]
+#         A2 = tensors2[i]
+#         dims1 = np.array(A1.shape)
+#         dims2 = np.array(A2.shape)
+#         A = np.zeros(dims1+dims2)
+#         A[:dims1[0],:dims1[1],:dims1[2]] = A1
+#         A[dims1[0]:,dims1[1]:,dims1[2]:] = A2
+
+#     overlap = np_mps_overlap(tensors1,tensors2)
+
+#     el = np.array([[1,-overlap]])
+#     A = np.einsum("ai,ijk->ajk",el, tensors[0])
+#     tensors[0] = A
+
+#     er = np.array([[1],[1]])
+#     A = np.einsum("ijk,kb->ijb",er, tensors[-1])
+#     tensors[-1] = A
+#     if calc_norm:
+#         return np_mps_norm(tensors)
+#     return tensors
+############# NOT WORKING END ##############
+
 
 
 @jit
