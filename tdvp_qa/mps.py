@@ -68,7 +68,6 @@ def np_mps_overlap(tensors1, tensors2):
 ############# NOT WORKING END ##############
 
 
-
 @jit
 def _norm(nrm, A):
     nrm = jnp.einsum("ij,jkl->ikl", nrm, A)
@@ -207,8 +206,11 @@ class MPS():
             Hl1 = hleft1[0]
             Hr1 = hright1[0]
             A = self.get_tensor(0)
+
+            a = -max([1 - lamb, 0.])
+            b = min([lamb, 1.])
             e1 = annealing_energy_canonical(
-                Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+                Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
             # print(f"nsweep = {nsweep}. Err={e1-e0}")
             if np.abs(e1-e0) < 1e-10:
                 # print(f"Converged in nsweep = {nsweep}. Err={e1-e0}")

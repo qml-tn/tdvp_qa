@@ -93,7 +93,8 @@ class TDVP_QA_AD():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -117,7 +118,8 @@ class TDVP_QA_AD():
 
         # A = jnp.reshape(A, [-1])
         # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def evolve_with_local_H(self, A, H, dt, omega0, omega_scale):
         val, vec = jnp.linalg.eigh(H)
@@ -354,7 +356,7 @@ class TDVP_QA_AD():
         for i in range(n):
             A = self.mps.get_tensor(i)
             A = A - lr*gradients[i]
-            self.mps.set_tensor(i,A)
+            self.mps.set_tensor(i, A)
         self.mps.normalize()
 
     def evolve(self, data=None, auto_grad=False):
@@ -407,7 +409,7 @@ class TDVP_QA_AD():
                     omega0, _ = self.right_left_sweep(dt, lamb)
                     ec = self.energy_right_canonical(lamb)
                     print(ec-ec_prev)
-                    if abs(ec-ec_prev)<1e-6:
+                    if abs(ec-ec_prev) < 1e-6:
                         break
                     ec_prev = ec
             else:
@@ -417,11 +419,11 @@ class TDVP_QA_AD():
                     mg = np.max([jnp.linalg.norm(g) for g in gradients])
                     mglist.append(mg)
                     print(mg)
-                    self.apply_gradients(gradients,lr=abs(dt))
-                    if mg<1e-4:
+                    self.apply_gradients(gradients, lr=abs(dt))
+                    if mg < 1e-4:
                         print(f"gstep {gstep}")
                         break
-                
+
                 # self.mps.right_canonical()
                 ec = energy(self.mps.tensors)
                 # print(mglist[0],mglist[-1],jnp.linalg.norm(gradients[0]))

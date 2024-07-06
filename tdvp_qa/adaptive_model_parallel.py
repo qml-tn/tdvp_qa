@@ -79,7 +79,8 @@ class TDVP_QA_P():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -103,7 +104,8 @@ class TDVP_QA_P():
 
         # A = jnp.reshape(A, [-1])
         # return jnp.einsum("i,ij,j", jnp.conj(A), Ha, A)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def evolve_with_local_H(self, A, H, dt, omega0, omega_scale):
         val, vec = jnp.linalg.eigh(H)

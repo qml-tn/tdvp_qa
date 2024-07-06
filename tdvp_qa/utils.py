@@ -3,10 +3,10 @@ import jax.numpy as jnp
 from numpy import max, min, prod
 
 
-def annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A):
+def annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A):
     Dl, d, Dr = A.shape
-    a = -max([1 - lamb, 0.])
-    b = min([lamb, 1.])
+    # a = -max([1 - lamb, 0.])
+    # b = min([lamb, 1.])
 
     # Effective Hamiltonian for A
     dd = Dl*d*Dr
@@ -151,7 +151,7 @@ def linearised_hamiltonian(mps, lv, tv, mpo, Hright):
 def tangent_vectors(mps):
     # We assume that the state is in the right canonical form
     n = len(mps)
-    eps=1e-10
+    eps = 1e-10
     lv = []
     tv = []
     r = jnp.array([[1]])
@@ -161,7 +161,7 @@ def tangent_vectors(mps):
         A = jnp.reshape(A, [-1, dims[-1]])
         u, s, v = jnp.linalg.svd(A, full_matrices=True)
         m = dims[-1]
-        mp = sum(s>eps)
+        mp = sum(s > eps)
         s = s[:m]
         v = v[:m]
         Al = jnp.reshape(u[:, :m], [dims[0], dims[1], m])

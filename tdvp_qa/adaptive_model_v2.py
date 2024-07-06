@@ -13,13 +13,18 @@ from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_ha
 
 
 class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
         self.mps = MPS(tensors, key)
         self.mps.right_canonical()
+
+        self.cyclic_path = cyclic_path
+        self.lambda_max = 1
+        if cyclic_path:
+            self.lambda_max = 2
 
         self.entropy = 0
 
@@ -62,13 +67,18 @@ class TDVP_QA_V2():
         return dt
 
     def update_lambda(self):
-        self.lamb = np.clip(self.lamb + self.slope, 0, 1)
+        self.lamb = np.clip(self.lamb + self.slope, 0, self.lambda_max)
 
     def get_couplings(self, lamb=None):
         if lamb is None:
             lamb = self.lamb
-        a = np.max([1 - lamb, 0.])
-        b = np.min([lamb, 1.])
+
+        wlamb = lamb
+        if self.cyclic_path and wlamb > 1:
+            wlamb = 2 - wlamb
+
+        a = np.max([1 - wlamb, 0.])
+        b = np.min([wlamb, 1.])
         return -a, b
 
     def energy_right_canonical(self, lamb=None):
@@ -80,7 +90,8 @@ class TDVP_QA_V2():
         H1 = self.mpo1[0]
 
         A = self.mps.get_tensor(0)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -92,7 +103,8 @@ class TDVP_QA_V2():
 
         n = self.n
         A = self.mps.get_tensor(n-1)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, lamb, A)
+        a, b = self.get_couplings(lamb)
+        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
 
     def energy_mpo(self, mpo, mps):
         e = jnp.array([[[1.0]]])
@@ -405,7 +417,7 @@ class TDVP_QA_V2():
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "omega_scale", "entropy",
-                "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap" ,"lgap", "min_gap"]
+                "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap"]
         if data is None:
             data = {}
             for key in keys:
@@ -440,20 +452,18 @@ class TDVP_QA_V2():
             def energy(mps):
                 e0 = energy0(mps)
                 e1 = energy1(mps)
-                a = jnp.clip(1 - self.lamb, 0, 1)
-                b = jnp.clip(self.lamb, 0, 1)
-                e = -a*e0+b*e1
+                a, b = self.get_couplings()
+                e = a*e0+b*e1
                 return e
 
             energy_gradient0 = jit(grad(energy0))
             energy_gradient1 = jit(grad(energy1))
 
             def energy_gradient(mps):
-                a = jnp.clip(1 - self.lamb, 0, 1)
-                b = jnp.clip(self.lamb, 0, 1)
+                a, b = self.get_couplings()
                 gradients0 = energy_gradient0(mps)
                 gradients1 = energy_gradient1(mps)
-                return [-a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
+                return [a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
         else:
             energy = None
             energy_gradient = None
@@ -469,18 +479,18 @@ class TDVP_QA_V2():
 
         # print("=================================")
 
-        pbar = tqdm(total=1, position=0, leave=True)
+        pbar = tqdm(total=self.lambda_max, position=0, leave=True)
         pbar.update(self.lamb)
-        while (self.lamb < 1):
+        while (self.lamb < self.lambda_max):
             self.update_lambda()
             dt = self.get_dt()
             # full step update right
-            lamb = np.clip(self.lamb + self.slope, 0, 1)
+            lamb = np.clip(self.lamb + self.slope, 0, self.lambda_max)
             omega0, omega_scale, ec = self.single_step(
                 dt, lamb, energy, energy_gradient)
             self.omega0 = omega0
 
-            if (self.dmax <= 2):
+            if (self.dmax <= 0):
                 lspec = linearised_specter(
                     self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb)
                 gap = np.real(lspec[0][0]-ec)

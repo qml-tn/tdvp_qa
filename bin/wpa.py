@@ -23,16 +23,15 @@ def get_simulation_data(filename_path):
     return data
 
 
-def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr,
-                           dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad, nitime, cyclic_path):
+def generate_tdvp_filename(n, seed, global_path, annealing_schedule, Dmax, dtr,
+                           dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path):
     if global_path is None:
         global_path = os.getcwd()
-    path_data = os.path.join(global_path, 'adaptive_data_v2/')
+    path_data = os.path.join(global_path, 'wpa/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
-    postfix = generate_postfix(
-        REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=max_cut)
+    postfix = f"n_{n}_s_{seed}"
 
     if nitime > 1:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
@@ -58,17 +57,21 @@ if __name__ == "__main__":
                         default="data/",
                         type=str,
                         help='A full path to where the files should be stored.')
+    parser.add_argument('--model_folder',
+                        default="/home/bojanz/projekti/variational_annealing/piqmc/data/",
+                        type=str,
+                        help='A full path to where the files should be stored.')
     parser.add_argument('--regular',
                         action='store_true',
                         help='If set we generate regular graph of degree d.')
-    parser.add_argument('--n_verts',
+    parser.add_argument('--n',
                         type=int,
-                        default=16,
-                        help='Number of vertices in the graph.')
-    parser.add_argument('--n_edges',
-                        type=int,
-                        action="store",
-                        help='Number of edges.')
+                        default=32,
+                        help='Number of spins.')
+    parser.add_argument('--alpha',
+                        type=float,
+                        default=0.25,
+                        help='Wishart planted ensemble parameter which specifies the number-of-equations–to–number-of-variables ratio. 0.25 (default)')
     parser.add_argument('--dmax',
                         type=int,
                         default=8,
@@ -99,14 +102,6 @@ if __name__ == "__main__":
                         type=float,
                         default=0.001,
                         help='The ratio between the slope and omega during the adaptive time evolution.')
-    parser.add_argument('--distr',
-                        type=str,
-                        default="Uniform",
-                        help='Sampling distribution of the local fields. It can be Normal or Uniform')
-    parser.add_argument('--d',
-                        type=int,
-                        action="store",
-                        help='Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten.')
     parser.add_argument('--seed',
                         type=int,
                         action="store",
@@ -115,12 +110,6 @@ if __name__ == "__main__":
                         type=int,
                         default=42,
                         help='Seed for the mps and tdvp evolution. Used for sampling and stochastic TDVP.')
-    parser.add_argument('--no_local_fields',
-                        action='store_true',
-                        help='If set we set all hi to zero.')
-    parser.add_argument('--max_cut',
-                        action='store_true',
-                        help='If set to true a max-cut hamiltonian is produced and local fields are set to zero.')
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
@@ -154,26 +143,13 @@ if __name__ == "__main__":
         print('Unknown arguments: {}'.format(unknown))
 
     # Model generator parameters
-    N_verts = args_dict['n_verts']
-    N_edges = args_dict['n_edges']
-    if N_edges is None:
-        N_edges = int(N_verts*(N_verts - 1)/2)
-
-    # Set TRUE to generate regular graph of degree d
-    REGULAR = args_dict['regular']
-    if REGULAR:
-        N_edges = None
-    d = args_dict['d']
+    n = args_dict['n']
+    alpha = args_dict['alpha']
 
     # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path = args_dict['path']
     # Can be integer or 'None'. If set to an integer value, it fixes the initial condition for the pseudorandom algorithm
     seed = args_dict['seed']
-    no_local_fields = args_dict['no_local_fields']
-
-    max_cut = args_dict["max_cut"]
-    if max_cut:
-        no_local_fields = True
 
     if seed is None:
         seed = np.random.randint(10000)
@@ -191,7 +167,6 @@ if __name__ == "__main__":
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
-    n = N_verts
 
     cyclic_path = args_dict["cyclic_path"]
 
@@ -211,12 +186,26 @@ if __name__ == "__main__":
     if double_precision:
         config.update("jax_enable_x64", True)
 
-    Jz, loc_fields, connect = generate_graph(
-        N_verts, N_edges, seed=seed, REGULAR=REGULAR, d=d, no_local_fields=no_local_fields, global_path=global_path, recalculate=recalculate, max_cut=max_cut)
+    model_folder = args_dict["model_folder"]
 
-    assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
+    model_name = f"wpe_size{n}_alpha{alpha}_realization{seed}.txt"
+    model_path = os.path.join(model_folder, f"wishart_N{n}", model_name)
+    print(model_path)
+    if os.path.exists(model_path):
+        Jz_matrix = np.loadtxt(model_path)
+        # the planted state is a ferromagnetic state with all spins up!
+        E0 = -4*np.sum(Jz_matrix)
+        Jz = []
+        for i in range(n):
+            # Jz.append([i, i, Jz_matrix[i, i]]) # There are no local interactions by definition
+            for j in range(i):
+                Jz.append([j, i, -8*Jz_matrix[j, i]])
+        Jz = np.array(Jz)
+    else:
+        Exception(
+            "No model with this parameters generated! Implement the generator")
 
-    hz = loc_fields[:, 1]
+    hz = np.zeros(n)  # The fields are always zero in this model
 
     annealing_schedule = "linear"
     if adaptive:
@@ -226,14 +215,12 @@ if __name__ == "__main__":
     if rand_init:
         np.random.seed(seed_tdvp)
         theta = np.array(
-            [[np.random.rand()*np.pi, 2*np.random.rand()*np.pi] for i in range(n)])
+            [[np.random.rand()*0.1+np.pi/2, 2*np.random.rand()*np.pi] for i in range(n)])
         if rand_xy:
             theta[:, 0] = np.pi/2.
 
-    filename = generate_tdvp_filename(
-        N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic,
-        double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad,
-        nitime=nitime, cyclic_path=cyclic_path)
+    filename = generate_tdvp_filename(n, seed, global_path, annealing_schedule, Dmax, dtr,
+                                      dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path)
 
     mpox = longitudinal_mpo(n, theta)
     mpoz = transverse_mpo(Jz, hz, n)
@@ -263,12 +250,26 @@ if __name__ == "__main__":
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
 
-        export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
-                      connect, REGULAR, d, no_local_fields, global_path, max_cut)
-        if max_cut:
-            mcut = (np.sum(Jz[:, 2])-data["energy"][-1])/2
-            print(f"Edges in maximum cut: {mcut}")
+        # export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
+        #               connect, REGULAR, d, no_local_fields, global_path, max_cut)
+
+        print(f"Final energy is: {data['energy'][-1]}")
+
+        if compute_states:
+            psi1 = data["var_gs"][-1]
         else:
-            print(f"Final energy is: {data['energy'][-1]}")
+            psi1 = data["state"][-1]
+
+        for ps in data["state"][-1]:
+            print(abs(ps[0, :, 0]), np.linalg.norm(ps[0, :, 0]))
+
+        sol = np.array(
+            [2*int(abs(ps[0, 0, 0]) > abs(ps[0, 1, 0]))-1 for ps in psi1])
+
+        print(sol)
+        print(f"Var_gs energy: {4*sol @ Jz_matrix @ sol}")
+        print(f"Ground state energy: {E0}")
+        s_up = np.ones(n)
+        print(f"Residual energy state energy: {4*(sol @ Jz_matrix @ sol - s_up @ Jz_matrix @ s_up )/abs(E0)}")
     else:
         print("The simulation is already finished!")
