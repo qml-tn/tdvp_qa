@@ -3,8 +3,7 @@ import numpy as np
 import os
 import pickle
 
-from tdvp_qa.generator import generate_graph, export_graphs, transverse_mpo, longitudinal_mpo
-from tdvp_qa.model import generate_postfix
+from tdvp_qa.generator import ransverse_mpo, longitudinal_mpo
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
 
@@ -193,13 +192,15 @@ if __name__ == "__main__":
     print(model_path)
     if os.path.exists(model_path):
         Jz_matrix = np.loadtxt(model_path)
+        # We divide by alpha in order to keep the energy of order N independent of alpha
+        Jz_matrix = Jz_matrix / alpha
         # the planted state is a ferromagnetic state with all spins up!
-        E0 = -4*np.sum(Jz_matrix)
+        E0 = -np.sum(Jz_matrix)
         Jz = []
         for i in range(n):
             # Jz.append([i, i, Jz_matrix[i, i]]) # There are no local interactions by definition
             for j in range(i):
-                Jz.append([j, i, -8*Jz_matrix[j, i]])
+                Jz.append([j, i, -2*Jz_matrix[j, i]])
         Jz = np.array(Jz)
     else:
         Exception(
