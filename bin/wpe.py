@@ -91,11 +91,11 @@ if __name__ == "__main__":
                         help='If set we adaptively change the slope.')
     parser.add_argument('--slope',
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         help='Initial increment for which we change lambda after each time step.')
     parser.add_argument('--slope_omega',
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         help='The ratio between the slope and omega during the adaptive time evolution.')
     parser.add_argument('--seed',
                         type=int,
