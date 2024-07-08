@@ -249,10 +249,11 @@ if __name__ == "__main__":
             [2*int(abs(ps[0, 0, 0]) > abs(ps[0, 1, 0]))-1 for ps in psi1])
 
         print(sol)
+        E0 = np.sum(Jz_matrix)
         print(f"Var_gs energy: {sol @ Jz_matrix @ sol}")
         print(f"Ground state energy: {E0}")
         s_up = np.ones(n)
         print(
-            f"Residual energy state energy: {(sol @ Jz_matrix @ sol - s_up @ Jz_matrix @ s_up )/abs(E0)}")
+            f"Residual energy state energy: {(sol @ Jz_matrix @ sol - E0 )/n}")
     else:
         print("The simulation is already finished!")

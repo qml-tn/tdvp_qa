@@ -258,6 +258,9 @@ def Wishart(n, alpha, seed=None):
     rng = np.random.default_rng(seed)
     W = rng.multivariate_normal(
         np.zeros(n), np.eye(n), m, method='cholesky') @ S
+
+    print("n, m, m/n, alpha : ", n, m, m/n, alpha)
+
     J = W.T @ W / n / alpha
     J = J - np.diag(np.diag(J))
 
