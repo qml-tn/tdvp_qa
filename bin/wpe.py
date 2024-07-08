@@ -3,7 +3,7 @@ import numpy as np
 import os
 import pickle
 
-from tdvp_qa.generator import ransverse_mpo, longitudinal_mpo
+from tdvp_qa.generator import Wishart, transverse_mpo, longitudinal_mpo
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
 
@@ -26,7 +26,7 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path):
     if global_path is None:
         global_path = os.getcwd()
-    path_data = os.path.join(global_path, 'wpa/')
+    path_data = os.path.join(global_path, 'wpe/')
     if not os.path.exists(path_data):
         os.makedirs(path_data)
 
@@ -54,10 +54,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--path',
                         default="data/",
-                        type=str,
-                        help='A full path to where the files should be stored.')
-    parser.add_argument('--model_folder',
-                        default="/home/bojanz/projekti/variational_annealing/piqmc/data/",
                         type=str,
                         help='A full path to where the files should be stored.')
     parser.add_argument('--regular',
@@ -185,29 +181,6 @@ if __name__ == "__main__":
     if double_precision:
         config.update("jax_enable_x64", True)
 
-    model_folder = args_dict["model_folder"]
-
-    model_name = f"wpe_size{n}_alpha{alpha}_realization{seed}.txt"
-    model_path = os.path.join(model_folder, f"wishart_N{n}", model_name)
-    print(model_path)
-    if os.path.exists(model_path):
-        Jz_matrix = np.loadtxt(model_path)
-        # We divide by alpha in order to keep the energy of order N independent of alpha
-        Jz_matrix = Jz_matrix / alpha
-        # the planted state is a ferromagnetic state with all spins up!
-        E0 = -np.sum(Jz_matrix)
-        Jz = []
-        for i in range(n):
-            # Jz.append([i, i, Jz_matrix[i, i]]) # There are no local interactions by definition
-            for j in range(i):
-                Jz.append([j, i, -2*Jz_matrix[j, i]])
-        Jz = np.array(Jz)
-    else:
-        Exception(
-            "No model with this parameters generated! Implement the generator")
-
-    hz = np.zeros(n)  # The fields are always zero in this model
-
     annealing_schedule = "linear"
     if adaptive:
         annealing_schedule = "adaptive"
@@ -223,14 +196,21 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path)
 
-    mpox = longitudinal_mpo(n, theta)
-    mpoz = transverse_mpo(Jz, hz, n)
-    tensors = initial_state_theta(n, Dmax, theta=theta)
-
     if recalculate:
         data = None
     else:
         data = get_simulation_data(filename)
+
+    if data is None:
+        Jz, hz, Jz_matrix = Wishart(n, alpha, seed)
+    else:
+        Jz = data["Jz"]
+        hz = data["hz"]
+        Jz_matrix = data["Jz_matrix"]
+
+    mpox = longitudinal_mpo(n, theta)
+    mpoz = transverse_mpo(Jz, hz, n)
+    tensors = initial_state_theta(n, Dmax, theta=theta)
 
     lamb = 0
     if data is not None:
@@ -247,6 +227,7 @@ if __name__ == "__main__":
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = Jz
         data["hz"] = hz
+        data["Jz_matrix"] = Jz_matrix
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
@@ -268,10 +249,10 @@ if __name__ == "__main__":
             [2*int(abs(ps[0, 0, 0]) > abs(ps[0, 1, 0]))-1 for ps in psi1])
 
         print(sol)
-        print(f"Var_gs energy: {4*sol @ Jz_matrix @ sol}")
+        print(f"Var_gs energy: {sol @ Jz_matrix @ sol}")
         print(f"Ground state energy: {E0}")
         s_up = np.ones(n)
         print(
-            f"Residual energy state energy: {4*(sol @ Jz_matrix @ sol - s_up @ Jz_matrix @ s_up )/abs(E0)}")
+            f"Residual energy state energy: {(sol @ Jz_matrix @ sol - s_up @ Jz_matrix @ s_up )/abs(E0)}")
     else:
         print("The simulation is already finished!")

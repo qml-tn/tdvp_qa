@@ -8,6 +8,12 @@ from scipy.stats import ortho_group
 
 GRAPHS_PATH = 'graphs/'
 
+
+def is_symmetric(matrix):
+    is_symmetric = np.allclose(matrix, matrix.T, atol=1e-08)
+    return is_symmetric
+
+
 def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_local_fields=False, global_path=None, recalculate=False, max_cut=False):
 
     if global_path:
@@ -44,7 +50,7 @@ def generate_graph(N_verts, N_edges=None, seed=None, REGULAR=False, d=None, no_l
 
     # Samples the couplings from uniform distribution between 0 and 1
     Jij = np.random.rand(N_edges)
-    
+
     if max_cut:
         Jij[:] = 1.0
 
@@ -227,6 +233,7 @@ def compress_mpo(mpo):
         mpo[i-1] = Ar
     # return mpo
 
+
 def anonimize_mpo(mpo):
     n = len(mpo)
     nrm = np.linalg.norm(mpo[0])
@@ -235,11 +242,35 @@ def anonimize_mpo(mpo):
     for i in range(n-1):
         Al = mpo[i]
         Ar = mpo[i+1]
-        D = Ar.shape[0] 
+        D = Ar.shape[0]
         Ol = ortho_group.rvs(D)
         Or = Ol.T
-        Al = np.einsum("...i,ij->...j",Al,Ol)
-        Ar = np.einsum("ij,j...->i...",Or,Ar)
+        Al = np.einsum("...i,ij->...j", Al, Ol)
+        Ar = np.einsum("ij,j...->i...", Or, Ar)
         mpo[i] = Al*new_nrm
         mpo[i+1] = Ar
-    mpo[n-1]=mpo[n-1]*new_nrm
+    mpo[n-1] = mpo[n-1]*new_nrm
+
+
+def Wishart(n, alpha, seed=None):
+    m = int(alpha*n)
+    S = np.sqrt(n/(n-1))*(np.eye(n)-np.ones([n, n])/n)
+    rng = np.random.default_rng(seed)
+    W = rng.multivariate_normal(
+        np.zeros(n), np.eye(n), m, method='cholesky') @ S
+    J = W.T @ W / n / alpha
+    J = J - np.diag(np.diag(J))
+
+    # Inside the function
+    assert is_symmetric(J), "Non symmetric input matrix J: stop"
+    check_on_diagonal_J = not any(np.diag(J) != 0)
+    assert check_on_diagonal_J, "Some diagonal elements of J are non zero: stop"
+
+    Jz = []
+    for i in range(n):
+        for j in range(i):
+            Jz.append([j, i, 2*J[j, i]])
+    Jz = np.array(Jz)
+    hz = np.zeros(n)
+
+    return Jz, hz, J
