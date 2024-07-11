@@ -24,7 +24,8 @@ def get_simulation_data(filename_path):
 
 
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr,
-                           dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap, max_cut, auto_grad, nitime, cyclic_path, inith):
+                           dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap,
+                           max_cut, auto_grad, nitime, cyclic_path, inith, seed0=None, alpha0=None):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -39,7 +40,9 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
 
-    postfix += "_h0_{inith}" 
+    postfix += f"_h0_{inith}"
+    if inith == "wishart":
+        postfix += f"_{seed0}_{alpha0}"
 
     if rand_xy:
         postfix += "_xy"
