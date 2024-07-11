@@ -154,9 +154,13 @@ def longitudinal_mpo(n, theta):
     return mpo
 
 
-def transverse_mpo(Jz, hz, n):
+def transverse_mpo(Jz, hz, n, rotate_to_x = False):
     d = 2
     sz = np.array([[1, 0], [0, -1]])
+    if rotate_to_x:
+        # we rotate the MPO to the x direction
+        sz = np.array([[0, 1], [1, 0]])
+
     i2 = np.eye(d)
     A = np.zeros([n+1, d, d, n+1])
     A[0, :, :, 0] = i2
@@ -208,7 +212,6 @@ def transverse_mpo(Jz, hz, n):
         mpo[i] = np.reshape(v, [Dl, d, d, Dr])
         Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
         mpo[i-1] = Ar
-
     return mpo
 
 
@@ -259,8 +262,6 @@ def Wishart(n, alpha, seed=None):
     W = rng.multivariate_normal(
         np.zeros(n), np.eye(n), m, method='cholesky') @ S
 
-    print("n, m, m/n, alpha : ", n, m, m/n, alpha)
-
     J = W.T @ W / n / alpha
     J = J - np.diag(np.diag(J))
 
@@ -276,4 +277,43 @@ def Wishart(n, alpha, seed=None):
     Jz = np.array(Jz)
     hz = np.zeros(n)
 
+    print("n, m, m/n, alpha : ", n, m, m/n, alpha, np.sum(J))
+
     return Jz, hz, J
+
+
+def flat_sx_H0(n):
+    # H0
+    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
+    ix = np.array([[1, 1], [1, 1]])/2.
+    i2 = np.eye(2)
+    A[0, :, :, 1] = -i2
+    A[1, :, :, 1] = i2
+    A[1, :, :, 3] = i2
+    A[0, :, :, 2] = ix
+    A[2, :, :, 2] = ix
+    A[2, :, :, 3] = ix
+    mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
+    return mpo0
+
+def search_mpos(n, state):
+    # n is the number of spins
+    # state is the designed spin configuration
+    mpo0 = flat_sx_H0(n)
+    
+    # H1
+    A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
+    A[0, :, :, 1] = i2
+    A[1, :, :, 1] = i2
+    A[1, :, :, 3] = i2
+    mpo1 = []
+    for s in state:
+        Ai = A.copy()
+        Ai[0, s, s, 2] = -1.0
+        Ai[2, s, s, 2] = 1.0
+        Ai[2, s, s, 3] = 1.0
+        mpo1.append(Ai)
+    mpo1[0] = mpo1[0][:1]
+    mpo1[-1] = mpo1[-1][:, :, :, -1:]
+
+    return mpo0, mpo1
