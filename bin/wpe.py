@@ -38,6 +38,9 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
 
+    if rand_init:
+        postfix += f"_{seed0}"
+
     postfix += f"_h0_{inith}"
     if inith=="wishart":
         postfix += f"_{seed0}_{alpha0}"
@@ -171,6 +174,10 @@ if __name__ == "__main__":
     seed0 = args_dict["seed0"]
     alpha0 = args_dict["alpha0"]
 
+    if seed0 is None:
+        seed0 = np.random.randint(10000)
+        print(f"Using a initial random seed {seed0}.")
+
     # TDVP annealing parameters
     double_precision = args_dict["double_precision"]
     seed_tdvp = args_dict["seed_tdvp"]
@@ -208,9 +215,11 @@ if __name__ == "__main__":
 
     theta = np.array([[np.pi/2., 0]]*n)
     if rand_init:
-        np.random.seed(seed_tdvp)
-        theta = np.array(
-            [[np.random.rand()*0.1+np.pi/2, 2*np.random.rand()*np.pi] for i in range(n)])
+        # np.random.seed(seed0)
+        rng = np.random.default_rng(seed0)
+        theta = np.array([[rng.uniform()*0.1-0.05+np.pi/2, 2*rng.uniform()*np.pi] for i in range(n)])
+        # theta = np.array([[rng.uniform()*np.pi, 2*rng.uniform()*np.pi] for i in range(n)])
+        
         if rand_xy:
             theta[:, 0] = np.pi/2.
 
@@ -233,10 +242,14 @@ if __name__ == "__main__":
 
     if inith == "flatsx":
         mpox = flat_sx_H0(n)
+        # we make the largest energy extensive
+        # mpox[0] = mpox[0]*n 
     elif inith == "sx":
         mpox = longitudinal_mpo(n, theta)
     elif inith == "wishart":
         Jx, hx, _ = Wishart(n, alpha0, seed0)
+        Jx[:,-1]=-Jx[:,-1]
+        # We have to reverse the sign of Jx since the first hamiltonian comes with the - sign in front
         mpox = transverse_mpo(Jx, hx, n, rotate_to_x=True)
     else:
         mpox = longitudinal_mpo(n, theta)

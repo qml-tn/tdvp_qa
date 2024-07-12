@@ -277,7 +277,7 @@ def Wishart(n, alpha, seed=None):
     Jz = np.array(Jz)
     hz = np.zeros(n)
 
-    print("n, m, m/n, alpha : ", n, m, m/n, alpha, np.sum(J))
+    print("n, m, m/n, alpha, E0: ", n, m, m/n, alpha, np.sum(J))
 
     return Jz, hz, J
 

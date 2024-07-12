@@ -40,6 +40,9 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
 
+    if rand_init:
+        postfix += f"_{seed0}"
+
     postfix += f"_h0_{inith}"
     if inith == "wishart":
         postfix += f"_{seed0}_{alpha0}"
@@ -55,7 +58,6 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -154,7 +156,14 @@ if __name__ == "__main__":
     parser.add_argument('--cyclic_path',
                         action='store_true',
                         help='If set we make a cyclic path and the final point is the same as the initial point.')
-
+    parser.add_argument('--seed0',
+                        type=int,
+                        action="store",
+                        help='Seed for the graph generator.')
+    parser.add_argument('--alpha0',
+                        type=float,
+                        default=0.9,
+                        help='Initial Wishart planted ensemble parameter which specifies the number-of-equations–to–number-of-variables ratio. 0.25 (default)')
     parse_args, unknown = parser.parse_known_args()
 
     args_dict = parse_args.__dict__
@@ -188,6 +197,13 @@ if __name__ == "__main__":
     if seed is None:
         seed = np.random.randint(10000)
         print(f"Using a random seed {seed}.")
+
+    seed0 = args_dict["seed0"]
+    alpha0 = args_dict["alpha0"]
+
+    if seed0 is None:
+        seed0 = np.random.randint(10000)
+        print(f"Using a initial random seed {seed0}.")
 
     # TDVP annealing parameters
     double_precision = args_dict["double_precision"]
@@ -234,23 +250,27 @@ if __name__ == "__main__":
 
     theta = np.array([[np.pi/2., 0]]*n)
     if rand_init:
-        np.random.seed(seed_tdvp)
+        # np.random.seed(seed_tdvp)
+        # theta = np.array([[np.random.rand()*np.pi, 2*np.random.rand()*np.pi] for i in range(n)])
+        rng = np.random.default_rng(seed0)
         theta = np.array(
-            [[np.random.rand()*np.pi, 2*np.random.rand()*np.pi] for i in range(n)])
+            [[rng.uniform()*np.pi, 2*rng.uniform()*np.pi] for i in range(n)])
         if rand_xy:
             theta[:, 0] = np.pi/2.
 
     filename = generate_tdvp_filename(
         N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic,
         double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad,
-        nitime=nitime, cyclic_path=cyclic_path, inith=inith)
+        nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0)
 
     if inith == "flatsx":
         mpox = flat_sx_H0(n)
     elif inith == "sx":
         mpox = longitudinal_mpo(n, theta)
     elif inith == "wishart":
-        Jx, hx, _ = Wishart(n, 0.9)
+        Jx, hx, _ = Wishart(n, alpha=alpha0, seed=seed0)
+        # We have to reverse the sign of Jx since the first hamiltonian comes with the - sign in front
+        Jx[:, -1] = -Jx[:, -1]  
         mpox = transverse_mpo(Jx, hx, n, rotate_to_x=True)
     else:
         mpox = longitudinal_mpo(n, theta)
