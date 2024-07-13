@@ -217,8 +217,9 @@ if __name__ == "__main__":
     if rand_init:
         # np.random.seed(seed0)
         rng = np.random.default_rng(seed0)
-        theta = np.array([[rng.uniform()*0.1-0.05+np.pi/2, 2*rng.uniform()*np.pi] for i in range(n)])
-        # theta = np.array([[rng.uniform()*np.pi, 2*rng.uniform()*np.pi] for i in range(n)])
+        # theta = np.array([[rng.uniform(-1,1)*0.1+np.pi/2, 2*rng.uniform()*np.pi] for i in range(n)])
+        # print(theta[:,0])
+        theta = np.array([[rng.uniform()*np.pi, 2*rng.uniform()*np.pi] for i in range(n)])
         
         if rand_xy:
             theta[:, 0] = np.pi/2.
@@ -296,6 +297,7 @@ if __name__ == "__main__":
         E0 = np.sum(Jz_matrix)
         print(f"Var_gs energy: {sol @ Jz_matrix @ sol}")
         print(f"Ground state energy: {E0}")
+        print("Haddamard distance", (n-abs(np.sum(sol)))/2)
         s_up = np.ones(n)
         print(
             f"Residual energy state energy: {(sol @ Jz_matrix @ sol - E0 )/n}")
