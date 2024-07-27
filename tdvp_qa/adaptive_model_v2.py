@@ -154,9 +154,7 @@ class TDVP_QA_V2():
         if self.scale_gap:
             val = (val-val[0])/(gap + 1e-10)
 
-        if np.imag(dt) <= -10.0 or self.T==0:
-            A = vec[:, 0]
-        if self.T>0:
+        if self.T and self.T>0:
             key, subkey = random.split(self.key)
             probs = jnp.exp(-val/self.T)
             cprob = jnp.cumsum(probs)
@@ -167,6 +165,8 @@ class TDVP_QA_V2():
                 if r<cp:
                     A = vec[:,i]
                     break
+        elif np.imag(dt) <= -10.0 or self.T==0:
+            A = vec[:, 0]
         else:
             A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
             A = jnp.einsum("i,i->i", jnp.exp(-1j*val*dt), A)
