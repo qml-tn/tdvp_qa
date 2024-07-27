@@ -33,7 +33,7 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     postfix = f"n_{n}_s_{seed}_a_{alpha}"
 
-    if T or np.isclose(T,0.0):
+    if T is not None:
         postfix += f"_{annealing_schedule}_D_{Dmax}_T_{T}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     elif nitime > 1:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
