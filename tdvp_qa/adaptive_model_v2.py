@@ -13,13 +13,15 @@ from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_ha
 
 
 class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
         self.mps = MPS(tensors, key)
         self.mps.right_canonical()
+
+        self.T = Tmc
 
         self.cyclic_path = cyclic_path
         self.lambda_max = 1
@@ -61,6 +63,7 @@ class TDVP_QA_V2():
     def get_dt(self):
         key, subkey = random.split(self.key)
         dtr = jnp.real(self.dt)
+        # dti = jnp.imag(self.dt) * random.uniform(subkey)
         dti = jnp.imag(self.dt) * random.uniform(subkey)
         dt = dtr + 1j*dti
         self.key = key
@@ -151,8 +154,19 @@ class TDVP_QA_V2():
         if self.scale_gap:
             val = (val-val[0])/(gap + 1e-10)
 
-        if np.imag(dt) <= -10.0:
+        if np.imag(dt) <= -10.0 or self.T==0:
             A = vec[:, 0]
+        if self.T>0:
+            key, subkey = random.split(self.key)
+            probs = jnp.exp(-val/self.T)
+            cprob = jnp.cumsum(probs)
+            r = random.uniform(subkey) * cprob[-1]
+            self.key = key
+            
+            for i,cp in enumerate(cprob):
+                if r<cp:
+                    A = vec[:,i]
+                    break
         else:
             A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
             A = jnp.einsum("i,i->i", jnp.exp(-1j*val*dt), A)

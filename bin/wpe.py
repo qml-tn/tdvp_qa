@@ -24,7 +24,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None):
+                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None, T=None):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe/')
@@ -33,7 +33,9 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     postfix = f"n_{n}_s_{seed}_a_{alpha}"
 
-    if nitime > 1:
+    if T or np.isclose(T,0.0):
+        postfix += f"_{annealing_schedule}_D_{Dmax}_T_{T}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    elif nitime > 1:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
@@ -149,6 +151,10 @@ if __name__ == "__main__":
                         default="sx",
                         type=str,
                         help='Choice of the initial Hamiltonian. sx (default), flatsx, wishart')
+    parser.add_argument('--T',
+                        type=float,
+                        action="store",
+                        help='If set we use use a Monte Carlo sampling with the temperature T of the eigenstates of the Heff instead of the real/imaginary time evolution.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -190,6 +196,7 @@ if __name__ == "__main__":
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
+    Tmc = args_dict["T"]
 
     cyclic_path = args_dict["cyclic_path"]
 
@@ -226,7 +233,7 @@ if __name__ == "__main__":
 
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0)
+                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0, Tmc)
 
     if recalculate:
         data = None
@@ -266,7 +273,7 @@ if __name__ == "__main__":
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
-                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path)
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, Tmc=Tmc)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
