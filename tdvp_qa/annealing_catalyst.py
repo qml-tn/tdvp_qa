@@ -9,30 +9,37 @@ import numpy as np
 
 
 from tdvp_qa.mps import MPS
-from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
+from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter, right_context_mps
+from tdvp_qa.utils import effective_hamiltonian_A_MPS, left_hamiltonian_mps, right_hamiltonian_mps, effective_hamiltonian_C_MPS
 
 
 class TDVP_MULTI_MPS():
-    def __init__(self, mpo0, mpo1, tensors, nmps, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False):
+    def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
-        
-        self.mps = MPS(tensors, key)
-        self.mps.right_canonical()
 
-        self.mpslist = [self.mps.copy() for i in range(nmps)]
+        self.nmps = nmps
+        self.reorder_mps = reorder_mps
+
+        self.mpslist = []
+        for tensors in tensorslist:
+            mps = MPS(tensors, key)
+            mps.right_canonical()
+            self.mpslist.append(mps)
+
+        self.T = Tmc
 
         self.cyclic_path = cyclic_path
         self.lambda_max = 1
         if cyclic_path:
             self.lambda_max = 2
 
-        self.entropy = 0
+        self.entropy = [0 for _ in range(nmps)]
 
-        self.n = self.mps.n
-        self.d = self.mps.d
+        self.n = self.mpslist[0].n
+        self.d = self.mpslist[0].d
         self.omega0 = 1
         self.scale_gap = scale_gap
         self.auto_grad = auto_grad
@@ -49,15 +56,17 @@ class TDVP_MULTI_MPS():
         self.compute_states = compute_states
         self.ds = ds
 
-        self.Hright0 = right_context(self.mps, self.mpo0)
-        self.Hright1 = right_context(self.mps, self.mpo1)
-        self.Hleft0 = None
-        self.Hleft1 = None
+        self.Hright0 = [right_context(mps, self.mpo0) for mps in self.mpslist]
+        self.Hright1 = [right_context(mps, self.mpo1) for mps in self.mpslist]
+        self.Hleft0 = [None for _ in range(self.nmps)]
+        self.Hleft1 = [None for _ in range(self.nmps)]
 
-        self.Hrlist0 = [right_context(self.mps, self.mpo0) for mps in self.mpslist]
-        self.Hrlist1 = [right_context(self.mps, self.mpo1) for mps in self.mpslist]
-        self.Hllist0 = [None]*self.n
-        self.Hllist1 = [None]*self.n
+        self.HrightMPS = []
+        for imps in range(self.nmps):
+            hr = [right_context_mps(self.mpslist[imps], self.mpslist[j])
+                  for j in range(imps)]
+            self.HrightMPS.append(hr)
+        self.HleftMPS = [None for _ in range(self.nmps)]
 
         self.dmax = np.max([A.shape[0] for A in tensors])
 
@@ -67,12 +76,12 @@ class TDVP_MULTI_MPS():
         self.killer = GracefulKiller()
 
     def get_dt(self):
-        key, subkey = random.split(self.key)
-        dtr = jnp.real(self.dt)
-        dti = jnp.imag(self.dt) * random.uniform(subkey)
-        dt = dtr + 1j*dti
-        self.key = key
-        return dt
+        # key, subkey = random.split(self.key)
+        # dtr = jnp.real(self.dt)
+        # dti = jnp.imag(self.dt) * random.uniform(subkey)
+        # dt = dtr + 1j*dti
+        # self.key = key
+        return self.dt
 
     def update_lambda(self):
         self.lamb = np.clip(self.lamb + self.slope, 0, self.lambda_max)
@@ -87,19 +96,24 @@ class TDVP_MULTI_MPS():
 
         a = np.max([1 - wlamb, 0.])
         b = np.min([wlamb, 1.])
-        return -a, b
+        c = 4*np.clip((1-wlamb)*wlamb, 0., 1.)
+        return -a, b, c
 
     def energy_right_canonical(self, lamb=None):
         Hl0 = jnp.array([[[1.]]])
         Hl1 = jnp.array([[[1.]]])
-        Hr0 = self.Hright0[0]
-        Hr1 = self.Hright1[0]
         H0 = self.mpo0[0]
         H1 = self.mpo1[0]
 
-        A = self.mps.get_tensor(0)
-        a, b = self.get_couplings(lamb)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
+        elist = []
+        for imps in range(self.nmps):
+            Hr0 = self.Hright0[imps][0]
+            Hr1 = self.Hright1[imps][0]
+            A = self.mpslist[imps].get_tensor(0)
+            a, b, _ = self.get_couplings(lamb)
+            elist.append(annealing_energy_canonical(
+                Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A))
+        return elist
 
     def energy_left_canonical(self, lamb=None):
         Hr0 = jnp.array([[[1.]]])
@@ -109,10 +123,14 @@ class TDVP_MULTI_MPS():
         H0 = self.mpo0[-1]
         H1 = self.mpo1[-1]
 
+        elist = []
         n = self.n
-        A = self.mps.get_tensor(n-1)
-        a, b = self.get_couplings(lamb)
-        return annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A)
+        for imps in range(self.nmps):
+            A = self.mpslist[imps].get_tensor(n-1)
+            a, b = self.get_couplings(lamb)
+            elist.append(annealing_energy_canonical(
+                Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A))
+        return elist
 
     def energy_mpo(self, mpo, mps):
         e = jnp.array([[[1.0]]])
@@ -132,25 +150,13 @@ class TDVP_MULTI_MPS():
         nrm = jnp.real(nrm[0, 0])
         return e/nrm
 
-    def evolve_with_local_H(self, A, H, Hdiff, dt, omega0, omega_scale):
+    def evolve_with_local_H(self, A, H, dt, omega0, omega_scale):
         if np.imag(dt) >= 1.0:
             return A, omega0, omega_scale
 
         val, vec = jnp.linalg.eigh(H)
         if len(val) <= 1:
             return A, omega0, omega_scale
-
-        # calculate gaps
-        # n = len(val)
-        # n = 2
-        # for i in range(n-1):
-        #     j = i+1
-        #     v1 = vec[:, i]
-        #     v2 = vec[:, j]
-        #     e1 = val[i]
-        #     e2 = val[j]
-        #     overlap = jnp.abs(jnp.conj(v1)@Hdiff@v2/(abs(e2-e1)+1e-12))
-        #     omega_scale = np.max([omega_scale, overlap])
 
         gap = abs(val[1]-val[0])
         omega0 = np.min([omega0, gap])
@@ -159,9 +165,27 @@ class TDVP_MULTI_MPS():
         if self.scale_gap:
             val = (val-val[0])/(gap + 1e-10)
 
-        if np.imag(dt) <= -10.0:
+        if self.T and self.T > 0:
+            key, subkey = random.split(self.key)
+            val = val - jnp.min(val)
+            probs = jnp.exp(-val/self.T)
+            cprob = jnp.cumsum(probs)
+            r = random.uniform(subkey) * cprob[-1]
+            self.key = key
+
+            for i, cp in enumerate(cprob):
+                if r < cp:
+                    A = vec[:, i]
+                    break
+        elif np.imag(dt) <= -10.0 or self.T and np.isclose(self.T, 0.):
             A = vec[:, 0]
         else:
+            max_abs = 100
+            val = val - jnp.min(val)
+            max_val = jnp.max(jnp.abs(val))
+            if max_val > max_abs:
+                val = max_abs*val/max_val
+
             A = jnp.einsum("ji,j->i", jnp.conj(vec), A)
             A = jnp.einsum("i,i->i", jnp.exp(-1j*val*dt), A)
             A = jnp.einsum("ij,j->i", vec, A)
@@ -172,11 +196,19 @@ class TDVP_MULTI_MPS():
         return A, omega0, omega_scale
 
     def right_sweep(self, dt, lamb=None):
+        for imps in np.arange(self.nmps):
+            omega0, omega_scale = self.right_sweep_imps(
+                dt, lamb=lamb, imps=imps)
+        return omega0, omega_scale
+
+    def right_sweep_imps(self, dt, lamb=None, imps=0):
         Hleft0 = [jnp.array([[[1.]]])]
         Hleft1 = [jnp.array([[[1.]]])]
+
+        HleftMPS = [[jnp.array([[1.0]])] for _ in range(imps)]
         # Assumes that the Hright is already prepared and that the state is in the right canonical form
 
-        a, b = self.get_couplings(lamb)
+        a, b, c = self.get_couplings(lamb)
         omega0 = jnp.inf
         omega_scale = 0
 
@@ -185,37 +217,58 @@ class TDVP_MULTI_MPS():
         for i in range(n-1):
             Hl0 = Hleft0[i]
             Hl1 = Hleft1[i]
-            Hr0 = self.Hright0[i]
-            Hr1 = self.Hright1[i]
+            Hr0 = self.Hright0[imps][i]
+            Hr1 = self.Hright1[imps][i]
             H0 = self.mpo0[i]
             H1 = self.mpo1[i]
 
-            A = self.mps.get_tensor(i)
+            A = self.mpslist[imps].get_tensor(i)
             Dl, d, Dr = A.shape
 
             # Effective Hamiltonian for A
             dd = Dl*d*Dr
             Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
             Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
+
             Ha = a * Ha0 + b * Ha1
-            Hdiff = Ha0 - Ha1
+
+            # Adding the MPS-catalyst parts
+            if imps > 0:
+                Hmps = 0
+                for j in range(imps):
+                    hl = HleftMPS[j][i]
+                    hr = self.HrightMPS[imps][j][i]
+                    B = self.mpslist[j].get_tensor(i)
+                    Hmps += jnp.reshape(effective_hamiltonian_A_MPS(hl,
+                                        B, hr), [dd, dd])
+                Ha += c * Hmps
+
             A = jnp.reshape(A, [dd])
 
             # Updating A
             A, omega0, omega_scale = self.evolve_with_local_H(
-                A, Ha, Hdiff, dt, omega0, omega_scale)
+                A, Ha, dt, omega0, omega_scale)
 
             A = jnp.reshape(A, [Dl, d, Dr])
+
             A = A/jnp.linalg.norm(A)
-            self.mps.set_tensor(i, A)
-            r, Ar = self.mps.move_right(i)
+            self.mpslist[imps].set_tensor(i, A)
+            r, Ar = self.mpslist[imps].move_right(i)
 
             # Calculating new Hleft
-            A = self.mps.get_tensor(i)
+            A = self.mpslist[imps].get_tensor(i)
             Hl0 = left_hamiltonian(A, Hleft0[i], H0)
             Hl1 = left_hamiltonian(A, Hleft1[i], H1)
             Hleft0.append(Hl0)
             Hleft1.append(Hl1)
+
+            # New HleftMPS
+            if imps > 0:
+                for j in range(imps):
+                    B = self.mpslist[j].get_tensor(i)
+                    Hlmps = HleftMPS[j][i]
+                    Hlmps = left_hamiltonian_mps(Hlmps, B, A)
+                    HleftMPS[j].append(Hlmps)
 
             # Effective Hamiltonian for C
             Dl, Dr = r.shape
@@ -224,30 +277,40 @@ class TDVP_MULTI_MPS():
             Hc1 = jnp.reshape(effective_hamiltonian_C(
                 Hl1, Hr1), [Dl*Dr, Dl*Dr])
 
-            C = jnp.reshape(r, [Dl*Dr])
             Hc = a * Hc0 + b * Hc1
-            Hdiff = Hc0 - Hc1
+
+            # Adding the MPS-catalyst part
+            if imps > 0:
+                Hmps = 0
+                for j in range(imps):
+                    hl = HleftMPS[j][-1]
+                    hr = self.HrightMPS[imps][j][i]
+                    Hmps += jnp.reshape(effective_hamiltonian_C_MPS(hl,
+                                        hr), [Dl*Dr, Dl*Dr])
+                Hc += c*Hmps
+
+            C = jnp.reshape(r, [Dl*Dr])
 
             # Updating C
             C, omega0, omega_scale = self.evolve_with_local_H(
-                C, Hc, Hdiff, -dt, omega0, omega_scale)
+                C, Hc, -dt, omega0, omega_scale)
 
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
             Ar = jnp.einsum("ij,jkl->ikl", C, Ar)
-            self.mps.set_tensor(i+1, Ar)
+            self.mpslist[imps].set_tensor(i+1, Ar)
 
         #  Handling the last site update
 
         i = n-1
         Hl0 = Hleft0[i]
         Hl1 = Hleft1[i]
-        Hr0 = self.Hright0[i]
-        Hr1 = self.Hright1[i]
+        Hr0 = self.Hright0[imps][i]
+        Hr1 = self.Hright1[imps][i]
         H0 = self.mpo0[i]
         H1 = self.mpo1[i]
 
-        A = self.mps.get_tensor(i)
+        A = self.mpslist[imps].get_tensor(i)
         Dl, d, Dr = A.shape
 
         # Effective Hamiltonian for A
@@ -255,42 +318,61 @@ class TDVP_MULTI_MPS():
         Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
         Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
         Ha = a * Ha0 + b * Ha1
-        Hdiff = Ha0 - Ha1
+
+        # Adding the MPS-catalyst parts
+        if imps > 0:
+            Hmps = 0
+            for j in range(imps):
+                hl = HleftMPS[j][-1]
+                hr = self.HrightMPS[imps][j][i]
+                B = self.mpslist[j].get_tensor(i)
+                Hmps += jnp.reshape(effective_hamiltonian_A_MPS(hl,
+                                    B, hr), [dd, dd])
+            Ha += c * Hmps
+
         A = jnp.reshape(A, [dd])
 
         # Updating A
         A, omega0, omega_scale = self.evolve_with_local_H(
-            A, Ha, Hdiff, dt, omega0, omega_scale)
+            A, Ha, dt, omega0, omega_scale)
 
         A = jnp.reshape(A, [Dl, d, Dr])
         A = A/jnp.linalg.norm(A)
-        self.mps.set_tensor(i, A)
+        self.mpslist[imps].set_tensor(i, A)
 
         # Setting left effective Hamiltonians
-        self.Hleft0 = Hleft0
-        self.Hleft1 = Hleft1
+        self.Hleft0[imps] = Hleft0
+        self.Hleft1[imps] = Hleft1
+        self.HleftMPS[imps] = HleftMPS
 
         return omega0, omega_scale
 
     def left_sweep(self, dt, lamb=None):
+        for imps in np.arange(self.nmps):
+            omega0, omega_scale = self.left_sweep_imps(
+                dt, lamb=lamb, imps=imps)
+        return omega0, omega_scale
+
+    def left_sweep_imps(self, dt, lamb=None, imps=0):
         Hright0 = [jnp.array([[[1.]]])]
         Hright1 = [jnp.array([[[1.]]])]
+        HrightMPS = [[jnp.array([[1.]])] for _ in range(imps)]
         # Assumes that the Hleft is already prepared and that the state is in the left canonical form
 
         n = self.n
-        a, b = self.get_couplings(lamb)
+        a, b, c = self.get_couplings(lamb)
         omega0 = jnp.inf
         omega_scale = 0
 
         for i in range(n-1, 0, -1):
-            Hl0 = self.Hleft0[i]
-            Hl1 = self.Hleft1[i]
+            Hl0 = self.Hleft0[imps][i]
+            Hl1 = self.Hleft1[imps][i]
             Hr0 = Hright0[0]
             Hr1 = Hright1[0]
             H0 = self.mpo0[i]
             H1 = self.mpo1[i]
 
-            A = self.mps.get_tensor(i)
+            A = self.mpslist[imps].get_tensor(i)
             Dl, d, Dr = A.shape
 
             # Effective Hamiltonian for A
@@ -298,24 +380,44 @@ class TDVP_MULTI_MPS():
             Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
             Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
             Ha = a * Ha0 + b * Ha1
-            Hdiff = Ha0 - Ha1
+
+            # Adding the MPS-catalyst parts
+            if imps > 0:
+                Hmps = 0
+                for j in range(imps):
+                    hr = HrightMPS[j][0]
+                    hl = self.HleftMPS[imps][j][i]
+                    B = self.mpslist[j].get_tensor(i)
+                    Hmps += jnp.reshape(effective_hamiltonian_A_MPS(hl,
+                                        B, hr), [dd, dd])
+                Ha += c * Hmps
+
             A = jnp.reshape(A, [dd])
 
             # Updating A
             A, omega0, omega_scale = self.evolve_with_local_H(
-                A, Ha, Hdiff, dt, omega0, omega_scale)
+                A, Ha, dt, omega0, omega_scale)
 
             A = jnp.reshape(A, [Dl, d, Dr])
+
             A = A/jnp.linalg.norm(A)
-            self.mps.set_tensor(i, A)
-            Al, r = self.mps.move_left(i)
+            self.mpslist[imps].set_tensor(i, A)
+            Al, r = self.mpslist[imps].move_left(i)
 
             # Calculating new Hright
-            A = self.mps.get_tensor(i)
+            A = self.mpslist[imps].get_tensor(i)
             Hr0 = right_hamiltonian(A, Hr0, H0)
             Hr1 = right_hamiltonian(A, Hr1, H1)
             Hright0 = [Hr0] + Hright0
             Hright1 = [Hr1] + Hright1
+
+            # New HrightMPS
+            if imps > 0:
+                for j in range(imps):
+                    B = self.mpslist[j].get_tensor(i)
+                    Hrmps = HrightMPS[j][0]
+                    Hrmps = right_hamiltonian_mps(Hrmps, B, A)
+                    HrightMPS[j] = [Hrmps] + HrightMPS[j]
 
             # Effective Hamiltonian for C
             Dl, Dr = r.shape
@@ -323,13 +425,23 @@ class TDVP_MULTI_MPS():
                 Hl0, Hr0), [Dl*Dr, Dl*Dr])
             Hc1 = jnp.reshape(effective_hamiltonian_C(
                 Hl1, Hr1), [Dl*Dr, Dl*Dr])
-            C = jnp.reshape(r, [Dl*Dr])
             Hc = a * Hc0 + b * Hc1
-            Hdiff = Hc0 - Hc1
+
+            # Adding the MPS-catalyst part
+            if imps > 0:
+                Hmps = 0
+                for j in range(imps):
+                    hr = HrightMPS[j][0]
+                    hl = self.HleftMPS[imps][j][i]
+                    Hmps += jnp.reshape(effective_hamiltonian_C_MPS(hl,
+                                        hr), [Dl*Dr, Dl*Dr])
+                Hc += c*Hmps
+
+            C = jnp.reshape(r, [Dl*Dr])
 
             # Updating C
             C, omega0, omega_scale = self.evolve_with_local_H(
-                C, Hc, Hdiff, -dt, omega0, omega_scale)
+                C, Hc, -dt, omega0, omega_scale)
 
             C = jnp.reshape(C, [Dl, Dr])
             C = C/jnp.linalg.norm(C)
@@ -338,20 +450,20 @@ class TDVP_MULTI_MPS():
             # Calculating the entropy on the fly
             if i == n//2:
                 _, s, _ = svd(C)
-                self.entropy = -np.log(s) @ s
+                self.entropy[imps] = -np.log(s) @ s
 
-            self.mps.set_tensor(i-1, Al)
+            self.mpslist[imps].set_tensor(i-1, Al)
 
         # Updating the first site
         i = 0
-        Hl0 = self.Hleft0[i]
-        Hl1 = self.Hleft0[i]
+        Hl0 = self.Hleft0[imps][i]
+        Hl1 = self.Hleft0[imps][i]
         Hr0 = Hright0[0]
         Hr1 = Hright1[0]
         H0 = self.mpo0[i]
         H1 = self.mpo1[i]
 
-        A = self.mps.get_tensor(i)
+        A = self.mpslist[imps].get_tensor(i)
         Dl, d, Dr = A.shape
 
         # Effective Hamiltonian for A
@@ -359,20 +471,32 @@ class TDVP_MULTI_MPS():
         Ha0 = jnp.reshape(effective_hamiltonian_A(Hl0, Hr0, H0), [dd, dd])
         Ha1 = jnp.reshape(effective_hamiltonian_A(Hl1, Hr1, H1), [dd, dd])
         Ha = a * Ha0 + b * Ha1
-        Hdiff = Ha0 - Ha1
+
+        # Adding the MPS-catalyst parts
+        if imps > 0:
+            Hmps = 0
+            for j in range(imps):
+                hr = HrightMPS[j][0]
+                hl = self.HleftMPS[imps][j][i]
+                B = self.mpslist[j].get_tensor(i)
+                Hmps += jnp.reshape(effective_hamiltonian_A_MPS(hl,
+                                    B, hr), [dd, dd])
+            Ha += c * Hmps
+
         A = jnp.reshape(A, [dd])
 
         # Updating A
         A, omega0, omega_scale = self.evolve_with_local_H(
-            A, Ha, Hdiff, dt, omega0, omega_scale)
+            A, Ha, dt, omega0, omega_scale)
 
         A = jnp.reshape(A, [Dl, d, Dr])
         A = A/jnp.linalg.norm(A)
-        self.mps.set_tensor(i, A)
+        self.mpslist[imps].set_tensor(i, A)
 
         # Setting right effective Hamiltonians
-        self.Hright0 = Hright0
-        self.Hright1 = Hright1
+        self.Hright0[imps] = Hright0
+        self.Hright1[imps] = Hright1
+        self.HrightMPS[imps] = HrightMPS
 
         return omega0, omega_scale
 
@@ -382,46 +506,50 @@ class TDVP_MULTI_MPS():
         return np.min([omega0l, omega0r]), np.max([omega_scalel, omega_scaler, 1.0])
 
     def apply_gradients(self, gradients, lr=1e-3):
-        n = self.n
-        for i in range(n):
-            A = self.mps.get_tensor(i)
-            A = A - lr*gradients[i]
-            self.mps.set_tensor(i, A)
-        self.mps.normalize()
+        raise NotImplementedError
+        # n = self.n
+        # for i in range(n):
+        #     A = self.mps.get_tensor(i)
+        #     A = A - lr*gradients[i]
+        #     self.mps.set_tensor(i, A)
+        # self.mps.normalize()
 
     def single_step(self, dt, lamb, energy, energy_gradient):
         if self.auto_grad:
-            ec = energy(self.mps.tensors)
-            k = 0
-            # self.mps.right_canonical()
-            # self.Hright0 = right_context(self.mps, self.mpo0)
-            # self.Hright1 = right_context(self.mps, self.mpo1)
-            # omega0, omega_scale = self.right_left_sweep(dt, lamb)
-            for _ in range(1000):
-                gradients = energy_gradient(self.mps.tensors)
-                self.apply_gradients(gradients, lr=5e-2)
-                mg = np.max([jnp.linalg.norm(g) for g in gradients])
-                omega0 = 1.
-                omega_scale = 1.
-                ec_prev = ec
-                ec = energy(self.mps.tensors)
-                k += 1
-                # print(k,mg,abs(ec-ec_prev))
-                if mg < 1e-3:
-                    break
+            raise NotImplementedError
         else:
             omega0, omega_scale = self.right_left_sweep(dt, lamb)
-            ec = self.energy_right_canonical(lamb)
-            if abs(np.imag(dt)) >= 0:
-                for istep in range(self.nitime-1):
-                    ec_prev = ec
+            eclist = self.energy_right_canonical(lamb)
+            if abs(np.imag(dt)) > 0 or self.T and np.isclose(self.T, 0.):
+                for _ in range(self.nitime-1):
+                    ec_prev = np.min(eclist)
                     omega0, omega_scale = self.right_left_sweep(dt, lamb)
-                    ec = self.energy_right_canonical(lamb)
+                    eclist = self.energy_right_canonical(lamb)
+                    ec = np.min(eclist)
                     if abs(ec-ec_prev) < 1e-6:
                         # print(istep, abs(ec-ec_prev))
                         break
+
+        eclist = self.reorder_mpslist(eclist)
         omega_scale = max([abs(omega_scale), 1e-8])
-        return omega0, omega_scale, ec
+        return omega0, omega_scale, eclist
+
+    def reorder_mpslist(self, eclist):
+        elist = [float(np.real(ec)) for ec in eclist]
+        if not self.reorder_mps:
+            return elist
+        nmps = self.nmps
+        mpslist = [None for _ in range(nmps)]
+        entropy = [None for _ in range(nmps)]
+        eclist = [None for _ in range(nmps)]
+        inds = np.argsort(elist)
+        for i in range(nmps):
+            mpslist[i] = self.mpslist[inds[i]]
+            entropy[i] = self.entropy[inds[i]]
+            eclist[i] = elist[inds[i]]
+        self.mpslist = mpslist
+        self.entropy = entropy
+        return eclist
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "omega_scale", "entropy",
@@ -443,49 +571,8 @@ class TDVP_MULTI_MPS():
         else:
             k = int(np.ceil(self.lamb/self.ds))
 
-        mps_prev = self.mps.copy()
-        mps0 = self.mps.copy()
-
-        if self.auto_grad:
-            @jit
-            def energy0(mps):
-                e0 = self.energy_mpo(self.mpo0, mps)
-                return e0
-
-            @jit
-            def energy1(mps):
-                e1 = self.energy_mpo(self.mpo1, mps)
-                return e1
-
-            def energy(mps):
-                e0 = energy0(mps)
-                e1 = energy1(mps)
-                a, b = self.get_couplings()
-                e = a*e0+b*e1
-                return e
-
-            energy_gradient0 = jit(grad(energy0))
-            energy_gradient1 = jit(grad(energy1))
-
-            def energy_gradient(mps):
-                a, b = self.get_couplings()
-                gradients0 = energy_gradient0(mps)
-                gradients1 = energy_gradient1(mps)
-                return [a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
-        else:
-            energy = None
-            energy_gradient = None
-
-        # print("=================================")
-
-        # lspec = linearised_specter(
-        #     self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb=0)
-
-        # ec=self.energy_right_canonical(lamb=0)
-
-        # print(ec,lspec[0])
-
-        # print("=================================")
+        energy = None
+        energy_gradient = None
 
         pbar = tqdm(total=self.lambda_max, position=0, leave=True)
         pbar.update(self.lamb)
@@ -494,29 +581,9 @@ class TDVP_MULTI_MPS():
             dt = self.get_dt()
             # full step update right
             lamb = np.clip(self.lamb + self.slope, 0, self.lambda_max)
-            omega0, omega_scale, ec = self.single_step(
+            omega0, omega_scale, eclist = self.single_step(
                 dt, lamb, energy, energy_gradient)
             self.omega0 = omega0
-
-            if (self.dmax <= 0):
-                lspec = linearised_specter(
-                    self.mps.tensors, self.mpo0, self.mpo1, self.Hright0, self.Hright1, lamb)
-                gap = np.real(lspec[0][0]-ec)
-                data["gap"].append(gap)
-                spec = np.real(lspec[0])
-                gaps = np.diff(spec)
-                lgap = gaps[0]
-                min_gap = np.min(gaps)
-                data["lgap"].append(lgap)
-                data["min_gap"].append(min_gap)
-                # omega_scale = np.abs(lgap)
-
-                # print("omega", omega0, gap, lgap, min_gap,  omega0 - np.real(lspec[0][0]-ec))
-
-            # print("init overlap",1-abs(self.mps.overlap(mps0)))
-            # print(lamb,np.real(ec),lspec[0])
-            # print(ec, energy(self.mps.tensors))
-            # print("gradient", [jnp.linalg.norm(g) for g in energy_gradient(self.mps.tensors)])
 
             if self.adaptive and not self.auto_grad:
                 self.slope = np.clip(
@@ -526,24 +593,18 @@ class TDVP_MULTI_MPS():
             data["omega_scale"].append(float(np.real(omega_scale)))
 
             if lamb >= k*self.ds:
-                data["energy"].append(float(np.real(ec)))
-                data["entropy"].append(
-                    float(np.real(self.entropy/np.log(2.0))))
+                data["energy"].append(eclist)
+                data["entropy"].append([
+                    float(np.real(ent/np.log(2.0))) for ent in self.entropy])
                 data["s"].append(lamb)
-                data["ds_overlap"].append(abs(self.mps.overlap(mps_prev)))
-                data["init_overlap"].append(abs(self.mps.overlap(mps0)))
-                mps_prev = self.mps.copy()
+                # data["ds_overlap"].append(abs(self.mps.overlap(mps_prev)))
+                # data["init_overlap"].append(abs(self.mps.overlap(mps0)))
+                # mps_prev = self.mps.copy()
                 k = k+1
                 if self.compute_states:
-                    dmrg_mps = self.mps.copy()
-                    dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
-                                  self.Hright0, self.Hright1, sweeps=20)
-                    # data["var_gs"].append(np.array(dmrg_mps.construct_state()))
-                    data["state"].append([np.array(A)
-                                         for A in self.mps.tensors])
-                    data["var_gs"].append([np.array(A)
-                                          for A in dmrg_mps.tensors])
-                    # print(lamb, ec, self.slope, self.omega0, omega_scale)
+                    data["state"].append(
+                        [self.mpslist[imps].tensors for imps in range(self.nmps)])
+                    # raise NotImplementedError
             data["slope"].append(float(np.real(self.slope)))
             pbar.update(float(np.real(self.slope)))
             # self.update_lambda()
@@ -553,6 +614,15 @@ class TDVP_MULTI_MPS():
                 print(
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
-        data["mps"] = [np.array(A) for A in self.mps.tensors]
         pbar.close()
+
+        # Adding the variational ground state obtained with DMRG when starting from the final state 
+        data["last_var_gs"] = []
+        for imps in range(self.nmps):
+            dmrg_mps = self.mpslist[imps].copy()
+            dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
+                            self.Hright0[imps], self.Hright1[imps], sweeps=20)
+            # data["var_gs"].append(np.array(dmrg_mps.construct_state()))
+            data["last_var_gs"].append([np.array(A)
+                                    for A in dmrg_mps.tensors])
         return data

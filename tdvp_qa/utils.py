@@ -34,6 +34,20 @@ def left_hamiltonian(A, Hl0, H0):
     return Hl
 
 
+@jit
+def left_hamiltonian_mps(Hlmps, B, A):
+    Hlmps = jnp.einsum("Ll,LsR->Rls", Hlmps, jnp.conj(B))
+    Hlmps = jnp.einsum("Rls,lsr->Rr", Hlmps, A)
+    return Hlmps
+
+
+@jit
+def right_hamiltonian_mps(Hrmps, B, A):
+    Hrmps = jnp.einsum("LsR,Rr->Lsr", jnp.conj(B), Hrmps)
+    Hrmps = jnp.einsum("Lsr,lsr->Ll", Hrmps, A)
+    return Hrmps
+
+
 def right_context_c(mpsc, mpo):
     # we assume that the MPS is in the central canonical form:
     raise NotImplementedError
@@ -56,11 +70,39 @@ def right_context(mps, mpo):
     return Hright
 
 
+def right_context_mps(mps, Hmps):
+    # Here we assume that the mps is already in the right canonical form
+    n = mps.n
+    Hright = [jnp.array([[1.]])]
+    for i in range(n-1, 0, -1):
+        H0 = Hright[0]
+        A = mps.get_tensor(i)
+        B = Hmps.get_tensor(i)
+        Hr = jnp.einsum("LsR,lsr,Rr->Ll", jnp.conj(B), A, H0)
+        Hright = [Hr] + Hright
+    return Hright
+
+
+@jit
+def effective_hamiltonian_A_MPS(hl, A, hr):
+    B = jnp.einsum("Ll,LsR->lsR", hl, A)
+    B = jnp.einsum("lsR,Rr->lsr", B, hr)
+    B = jnp.einsum("LSR,lsr->LSRlsr", jnp.conj(B), B)
+    return B
+
+
 @jit
 def effective_hamiltonian_A(Hl, Hr, H0):
     Heff = jnp.einsum("umd,mijn->diujn", Hl, H0)
     Heff = jnp.einsum("diujn,anb->dibuja", Heff, Hr)
     return Heff
+
+
+@jit
+def effective_hamiltonian_C_MPS(hl, hr):
+    H = jnp.einsum("Ll,Rr->lr", hl, hr)
+    H = jnp.einsum("LR,lr->LRlr", jnp.conj(H), H)
+    return H
 
 
 @jit
