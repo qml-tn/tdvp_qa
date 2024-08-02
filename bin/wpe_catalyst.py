@@ -258,7 +258,7 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                                       rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith,
-                                      alpha0, seed0, Tmc, nmps, reorder_mps)
+                                      alpha0, seed0, Tmc, nmps, reorder_mps, shuffle=shuffle)
 
     if recalculate:
         data = None
