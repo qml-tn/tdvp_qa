@@ -266,10 +266,13 @@ def Wishart(n, alpha, seed=None, shuffle=False):
     J = J - np.diag(np.diag(J))
     E0 = np.sum(J)
 
+    gs_sol = np.ones(n)
+
     if shuffle:
         S = np.diag(np.sign(0.5-rng.uniform(size=n)))
         J = S @ J @ S
-
+        gs_sol = np.diag(S)
+    print(gs_sol)
     # Inside the function
     assert is_symmetric(J), "Non symmetric input matrix J: stop"
     check_on_diagonal_J = not any(np.diag(J) != 0)
@@ -284,7 +287,7 @@ def Wishart(n, alpha, seed=None, shuffle=False):
 
     print("n, m, m/n, alpha, E0: ", n, m, m/n, alpha, E0)
 
-    return Jz, hz, J, np.diag(S)
+    return Jz, hz, J, gs_sol
 
 
 def flat_sx_H0(n):
