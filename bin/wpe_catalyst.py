@@ -268,10 +268,18 @@ if __name__ == "__main__":
     if data is None:
         Jz, hz, Jz_matrix, gs_sol = Wishart(n, alpha, seed, shuffle=shuffle)
     else:
-        Jz = data["Jz"]
-        hz = data["hz"]
-        Jz_matrix = data["Jz_matrix"]
-        gs_sol = data["gs_sol"]
+        try:
+            Jz = data["Jz"]
+            hz = data["hz"]
+            Jz_matrix = data["Jz_matrix"]
+            gs_sol = data["gs_sol"]
+        except:
+            Jz, hz, Jz_matrix, gs_sol = Wishart(
+                n, alpha, seed, shuffle=shuffle)
+            data["Jz"] = Jz
+            data["hz"] = hz
+            data["Jz_matrix"] = Jz_matrix
+            data["gs_sol"] = gs_sol
     mpoz = transverse_mpo(Jz, hz, n)
 
     if inith == "flatsx":
