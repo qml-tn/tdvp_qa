@@ -154,7 +154,7 @@ def longitudinal_mpo(n, theta):
     return mpo
 
 
-def transverse_mpo(Jz, hz, n, rotate_to_x = False):
+def transverse_mpo(Jz, hz, n, rotate_to_x=False):
     d = 2
     sz = np.array([[1, 0], [0, -1]])
     if rotate_to_x:
@@ -255,7 +255,7 @@ def anonimize_mpo(mpo):
     mpo[n-1] = mpo[n-1]*new_nrm
 
 
-def Wishart(n, alpha, seed=None):
+def Wishart(n, alpha, seed=None, shuffle=False):
     m = int(alpha*n)
     S = np.sqrt(n/(n-1))*(np.eye(n)-np.ones([n, n])/n)
     rng = np.random.default_rng(seed)
@@ -264,6 +264,11 @@ def Wishart(n, alpha, seed=None):
 
     J = W.T @ W / n / alpha
     J = J - np.diag(np.diag(J))
+    E0 = np.sum(J)
+
+    if shuffle:
+        S = np.diag(np.sign(0.5-rng.uniform(size=n)))
+        J = S @ J @ S
 
     # Inside the function
     assert is_symmetric(J), "Non symmetric input matrix J: stop"
@@ -277,9 +282,9 @@ def Wishart(n, alpha, seed=None):
     Jz = np.array(Jz)
     hz = np.zeros(n)
 
-    print("n, m, m/n, alpha, E0: ", n, m, m/n, alpha, np.sum(J))
+    print("n, m, m/n, alpha, E0: ", n, m, m/n, alpha, E0)
 
-    return Jz, hz, J
+    return Jz, hz, J, np.diag(S)
 
 
 def flat_sx_H0(n):
@@ -296,11 +301,12 @@ def flat_sx_H0(n):
     mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
     return mpo0
 
+
 def search_mpos(n, state):
     # n is the number of spins
     # state is the designed spin configuration
     mpo0 = flat_sx_H0(n)
-    
+
     # H1
     A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
     A[0, :, :, 1] = i2

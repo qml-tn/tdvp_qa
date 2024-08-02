@@ -26,7 +26,7 @@ def get_simulation_data(filename_path):
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                            rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None,
-                           seed0=None, T=None, nmps=10, reorder_mps=True):
+                           seed0=None, T=None, nmps=10, reorder_mps=True, shuffle=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe_catalyst/')
@@ -62,6 +62,9 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     if reorder_mps:
         postfix += "_reord"
+
+    if shuffle:
+        postfix += "_shuffle"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -161,6 +164,9 @@ if __name__ == "__main__":
     parser.add_argument('--cyclic_path',
                         action='store_true',
                         help='If set we make a cyclic path and the final point is the same as the initial point.')
+    parser.add_argument('--shuffle',
+                        action='store_true',
+                        help='If set we shuffle the ground state to be a random strin not a fully polarised one.')
     parser.add_argument('--inith',
                         default="sx",
                         type=str,
@@ -194,6 +200,7 @@ if __name__ == "__main__":
     inith = args_dict["inith"]
     seed0 = args_dict["seed0"]
     alpha0 = args_dict["alpha0"]
+    shuffle = args_dict["shuffle"]
 
     if seed0 is None:
         seed0 = np.random.randint(10000)
@@ -259,11 +266,12 @@ if __name__ == "__main__":
         data = get_simulation_data(filename)
 
     if data is None:
-        Jz, hz, Jz_matrix = Wishart(n, alpha, seed)
+        Jz, hz, Jz_matrix, gs_sol = Wishart(n, alpha, seed, shuffle=shuffle)
     else:
         Jz = data["Jz"]
         hz = data["hz"]
         Jz_matrix = data["Jz_matrix"]
+        gs_sol = data["gs_sol"]
     mpoz = transverse_mpo(Jz, hz, n)
 
     if inith == "flatsx":
@@ -273,14 +281,15 @@ if __name__ == "__main__":
     elif inith == "sx":
         mpox = longitudinal_mpo(n, theta)
     elif inith == "wishart":
-        Jx, hx, _ = Wishart(n, alpha0, seed0)
+        Jx, hx, _, _ = Wishart(n, alpha0, seed0, shuffle=False)
         Jx[:, -1] = -Jx[:, -1]
         # We have to reverse the sign of Jx since the first hamiltonian comes with the - sign in front
         mpox = transverse_mpo(Jx, hx, n, rotate_to_x=True)
     else:
         mpox = longitudinal_mpo(n, theta)
 
-    tensorslist = [initial_state_theta(n, Dmax, theta=theta)]*nmps
+    tensorslist = [initial_state_theta(
+        n, Dmax, theta=theta) for _ in range(nmps)]
 
     lamb = 0
     if data is not None:
@@ -300,6 +309,7 @@ if __name__ == "__main__":
         data["Jz"] = Jz
         data["hz"] = hz
         data["Jz_matrix"] = Jz_matrix
+        data["gs_sol"] = gs_sol
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
@@ -310,9 +320,9 @@ if __name__ == "__main__":
 
         print(f"Final energy is: {data['energy'][-1]}")
 
-        E0 = np.sum(Jz_matrix)
+        E0 = gs_sol@Jz_matrix@gs_sol
 
-        psilist = data["state"][-1]
+        psilist = data["last_var_gs"]
 
         efin = []
         for psi in psilist:
