@@ -290,7 +290,7 @@ def Wishart(n, alpha, seed=None, shuffle=False):
     return Jz, hz, J, gs_sol
 
 
-def flat_sx_H0(n):
+def flat_sx_H0(n, inits=None, ext=False):
     # H0
     A = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
     ix = np.array([[1, 1], [1, 1]])/2.
@@ -301,7 +301,28 @@ def flat_sx_H0(n):
     A[0, :, :, 2] = ix
     A[2, :, :, 2] = ix
     A[2, :, :, 3] = ix
-    mpo0 = [A[:1, :, :, :]] + [A]*(n-2) + [A[:, :, :, -1:]]
+    K = 1
+    if ext:
+        K = n
+    if inits is not None:
+        Am = np.zeros([4, 2, 2, 4], dtype=np.cdouble)
+        ixm = np.array([[1, -1], [-1, 1]])/2.
+        Am[0, :, :, 1] = -i2
+        Am[1, :, :, 1] = i2
+        Am[1, :, :, 3] = i2
+        Am[0, :, :, 2] = ixm
+        Am[2, :, :, 2] = ixm
+        Am[2, :, :, 3] = ixm
+        mpo0 = []
+        for s in inits:
+            if s > 0:
+                mpo0.append(A)
+            else:
+                mpo0.append(Am)
+        mpo0[0] = mpo0[0][:1]*K
+        mpo0[n-1] = mpo0[n-1][:, :, :, -1:]
+    else:
+        mpo0 = [A[:1, :, :, :]*K] + [A]*(n-2) + [A[:, :, :, -1:]]
     return mpo0
 
 

@@ -13,6 +13,17 @@ from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_ha
 from tdvp_qa.utils import effective_hamiltonian_A_MPS, left_hamiltonian_mps, right_hamiltonian_mps, effective_hamiltonian_C_MPS
 
 
+@jit
+def _energy_mpo(A, O, e, nrm):
+    e = jnp.einsum("umd,uiU->Umid", e, A)
+    e = jnp.einsum("Umid,djD->UmijD", e, jnp.conj(A))
+    e = jnp.einsum("UmijD,mijM->UMD", e, O)
+
+    nrm = jnp.einsum("ud,uiU->Uid", nrm, A)
+    nrm = jnp.einsum("Uid,diD->UD", nrm, jnp.conj(A))
+    return e, nrm
+
+
 class TDVP_MULTI_MPS():
     def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
@@ -139,12 +150,7 @@ class TDVP_MULTI_MPS():
         for i in range(n):
             A = mps[i]
             O = mpo[i]
-            e = jnp.einsum("umd,uiU->Umid", e, A)
-            e = jnp.einsum("Umid,djD->UmijD", e, jnp.conj(A))
-            e = jnp.einsum("UmijD,mijM->UMD", e, O)
-
-            nrm = jnp.einsum("ud,uiU->Uid", nrm, A)
-            nrm = jnp.einsum("Uid,diD->UD", nrm, jnp.conj(A))
+            e, nrm = _energy_mpo(A, O, e, nrm)
 
         e = jnp.real(e[0, 0, 0])
         nrm = jnp.real(nrm[0, 0])
@@ -553,7 +559,7 @@ class TDVP_MULTI_MPS():
 
     def evolve(self, data=None):
         keys = ["energy", "omega0", "omega_scale", "entropy",
-                "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap"]
+                "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap", "var_e"]
         if data is None:
             data = {}
             for key in keys:
@@ -602,6 +608,19 @@ class TDVP_MULTI_MPS():
                 # mps_prev = self.mps.copy()
                 k = k+1
                 if self.compute_states:
+                    vargs = []
+                    ves = []
+                    for i, mps in enumerate(self.mpslist):
+                        dmrg_mps = mps.copy()
+                        dmrg_mps.dmrg(1, self.mpo0, self.mpo1,
+                                      self.Hright0[i], self.Hright1[i], sweeps=20)
+                        vargs.append([np.array(A)
+                                      for A in dmrg_mps.tensors])
+                        ve = self.energy_mpo(self.mpo1, dmrg_mps.tensors)
+                        ves.append(ve)
+
+                    data["var_gs"].append(vargs)
+                    data["var_e"].append(ves)
                     data["state"].append(
                         [self.mpslist[imps].tensors for imps in range(self.nmps)])
                     # raise NotImplementedError
@@ -616,13 +635,13 @@ class TDVP_MULTI_MPS():
                 break
         pbar.close()
 
-        # Adding the variational ground state obtained with DMRG when starting from the final state 
+        # Adding the variational ground state obtained with DMRG when starting from the final state
         data["last_var_gs"] = []
         for imps in range(self.nmps):
             dmrg_mps = self.mpslist[imps].copy()
             dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
-                            self.Hright0[imps], self.Hright1[imps], sweeps=20)
+                          self.Hright0[imps], self.Hright1[imps], sweeps=20)
             # data["var_gs"].append(np.array(dmrg_mps.construct_state()))
             data["last_var_gs"].append([np.array(A)
-                                    for A in dmrg_mps.tensors])
+                                        for A in dmrg_mps.tensors])
         return data

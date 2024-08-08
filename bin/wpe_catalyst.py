@@ -89,7 +89,7 @@ if __name__ == "__main__":
                         help='Wishart planted ensemble parameter which specifies the number-of-equations–to–number-of-variables ratio. 0.25 (default)')
     parser.add_argument('--alpha0',
                         type=float,
-                        default=0.9,
+                        default=0.99,
                         help='Initial Wishart planted ensemble parameter which specifies the number-of-equations–to–number-of-variables ratio. 0.25 (default)')
     parser.add_argument('--dmax',
                         type=int,
@@ -283,7 +283,12 @@ if __name__ == "__main__":
     mpoz = transverse_mpo(Jz, hz, n)
 
     if inith == "flatsx":
-        mpox = flat_sx_H0(n)
+        inits = None
+        if rand_init:
+            # For now we align the final solution with the initial state in x
+            inits = gs_sol
+            theta = np.array([[np.pi/2., np.pi*(1-s)/2.] for s in gs_sol])
+        mpox = flat_sx_H0(n, inits=inits, ext=True)
         # we make the largest energy extensive
         # mpox[0] = mpox[0]*n
     elif inith == "sx":
@@ -328,7 +333,7 @@ if __name__ == "__main__":
 
         print(f"Final energy is: {data['energy'][-1]}")
 
-        E0 = gs_sol@Jz_matrix@gs_sol
+        E0 = gs_sol @ Jz_matrix @ gs_sol
 
         psilist = data["last_var_gs"]
 
