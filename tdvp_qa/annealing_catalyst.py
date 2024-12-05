@@ -25,7 +25,7 @@ def _energy_mpo(A, O, e, nrm):
 
 
 class TDVP_MULTI_MPS():
-    def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False):
+    def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False, cat_strength=4):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -72,6 +72,8 @@ class TDVP_MULTI_MPS():
         self.Hleft0 = [None for _ in range(self.nmps)]
         self.Hleft1 = [None for _ in range(self.nmps)]
 
+        self.cat_strength = cat_strength
+
         self.HrightMPS = []
         for imps in range(self.nmps):
             hr = [right_context_mps(self.mpslist[imps], self.mpslist[j])
@@ -107,7 +109,7 @@ class TDVP_MULTI_MPS():
 
         a = np.max([1 - wlamb, 0.])
         b = np.min([wlamb, 1.])
-        c = 4*np.clip((1-wlamb)*wlamb, 0., 1.)
+        c = self.cat_strength*np.clip((1-wlamb)*wlamb, 0., 1.)
         return -a, b, c
 
     def energy_right_canonical(self, lamb=None):
