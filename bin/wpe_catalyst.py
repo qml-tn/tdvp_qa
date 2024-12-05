@@ -26,7 +26,7 @@ def get_simulation_data(filename_path):
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                            rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None,
-                           seed0=None, T=None, nmps=10, reorder_mps=True, shuffle=False):
+                           seed0=None, T=None, nmps=10, reorder_mps=True, shuffle=False, cat_strength=4):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe_catalyst/')
@@ -59,9 +59,9 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
         postfix += "_cycle"
 
     postfix += f"_nmps_{nmps}"
-
     if reorder_mps:
         postfix += "_reord"
+    postfix += f"_cs_{cat_strength}"
 
     if shuffle:
         postfix += "_shuffle"
@@ -175,6 +175,11 @@ if __name__ == "__main__":
                         type=float,
                         action="store",
                         help='If set we use use a Monte Carlo sampling with the temperature T of the eigenstates of the Heff instead of the real/imaginary time evolution.')
+    parser.add_argument('--cat_strength',
+                        type=float,
+                        default=4.0,
+                        help='Maximum strength of the catalyst hamiltonian.')
+
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -187,6 +192,7 @@ if __name__ == "__main__":
     n = args_dict['n']
     alpha = args_dict['alpha']
     nmps = args_dict["nmps"]
+    cat_strength = args_dict["cat_strength"]
 
     # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path = args_dict['path']
@@ -258,7 +264,7 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                                       rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith,
-                                      alpha0, seed0, Tmc, nmps, reorder_mps, shuffle=shuffle)
+                                      alpha0, seed0, Tmc, nmps, reorder_mps, shuffle=shuffle, cat_strength=cat_strength)
 
     if recalculate:
         data = None
@@ -314,7 +320,7 @@ if __name__ == "__main__":
         tdvpqa = TDVP_MULTI_MPS(mpox, mpoz, tensorslist, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                                 adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
                                 ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path,
-                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps)
+                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps, cat_strength=cat_strength)
 
         data = tdvpqa.evolve(data=data)
         data["mpslist"] = [[np.array(A) for A in mps.tensors]
