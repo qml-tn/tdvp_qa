@@ -140,9 +140,9 @@ if __name__ == "__main__":
     parser.add_argument('--recalculate',
                         action='store_true',
                         help='We restart the simulation and overwrite existing data.')
-    parser.add_argument('--double_precision',
+    parser.add_argument('--single_precision',
                         action='store_true',
-                        help='If set we use double precision jax calculations.')
+                        help='If set we use single precision jax calculations.')
     parser.add_argument('--comp_state',
                         action='store_true',
                         help='If set we also compute the states.')
@@ -184,7 +184,6 @@ if __name__ == "__main__":
                         default=47.0,
                         help='Maximum number of hours that the simulation will run. After that the state will be sotred and simulation will finish.')
 
-
     parse_args, unknown = parser.parse_known_args()
 
     args_dict = parse_args.__dict__
@@ -198,7 +197,7 @@ if __name__ == "__main__":
     n = args_dict['n']
     alpha = args_dict['alpha']
     nmps = args_dict["nmps"]
-    cat_strength = args_dict["cat_strength"] 
+    cat_strength = args_dict["cat_strength"]
 
     # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path = args_dict['path']
@@ -218,8 +217,10 @@ if __name__ == "__main__":
         seed0 = np.random.randint(10000)
         print(f"Using a initial random seed {seed0}.")
 
-    # TDVP annealing parameters
-    double_precision = args_dict["double_precision"]
+    # TDVP annealing parametersw
+    double_precision = not args_dict["single_precision"]
+
+    print("double_precision", double_precision)
     seed_tdvp = args_dict["seed_tdvp"]
     stochastic = args_dict["stochastic"]
     adaptive = args_dict["adaptive"]
@@ -249,6 +250,7 @@ if __name__ == "__main__":
     compute_states = args_dict["comp_state"]
 
     if double_precision:
+        print("Using double precision jax.")
         config.update("jax_enable_x64", True)
 
     annealing_schedule = "linear"
@@ -326,7 +328,7 @@ if __name__ == "__main__":
         tdvpqa = TDVP_MULTI_MPS(mpox, mpoz, tensorslist, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                                 adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
                                 ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path,
-                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps, cat_strength=cat_strength,max_hours=max_hours)
+                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps, cat_strength=cat_strength, max_hours=max_hours)
 
         data = tdvpqa.evolve(data=data)
         data["mpslist"] = [[np.array(A) for A in mps.tensors]
