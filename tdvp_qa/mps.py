@@ -82,6 +82,7 @@ class MPS():
         self.n = n
         self.d = tensors[0].shape[1]
         self.tensors = [jnp.array(A.copy()) for A in tensors]
+        self.dmax = np.max([A.shape[0] for A in tensors])
         self.key = random.PRNGKey(key)
 
     def norm(self):
@@ -114,14 +115,35 @@ class MPS():
         # assert i<self.n, f"Can not access tensor {i}. Size of the MPS is {self.n}"
         self.tensors[i] = A
 
-    def move_right(self, i):
+    def move_right(self, i, reduce_entropy=False, normalize=False):
         # assert i<self.n-1, f"Can not move site {i} to the right. Size of the MPS is {self.n}."
         Al = self.get_tensor(i)
         Ar = self.get_tensor(i+1)
         Dl, d, Dr = Al.shape
         dl = Dl*d
-        q, r = qr(np.reshape(Al, [dl, Dr]), mode='full')
+        q, r = qr(jnp.reshape(Al, [dl, Dr]), mode='full')
         Dr = np.min([q.shape[1], Dr])
+        if normalize:
+            r = r/jnp.linalg.norm(r)
+
+        if self.dmax > 1 and reduce_entropy and (Dr >= self.dmax and dl > self.dmax):
+            u, s, vt = jnp.linalg.svd(r, full_matrices=False)
+            mins = jnp.min(s)
+            if (mins > 1e-7):
+                snew = np.zeros(len(s), dtype=np.float64)
+                print(
+                    f"Sampling singular values! min(s)={mins}, position={i}")
+                # print(self.dmax, dl, Dl, d, Dr)
+                cprobs = jnp.cumsum(s)/jnp.sum(s)
+                key, subkey = random.split(self.key)
+                rnd = random.uniform(subkey)
+                self.key = key
+                for j, cp in enumerate(cprobs):
+                    if rnd < cp:
+                        snew[j] = 1.0
+                        break
+                r = jnp.einsum("ij,j,jk->ik", u, snew, vt)
+
         Alnew = jnp.reshape(q[:, :Dr], [Dl, d, Dr])
         Arnew = jnp.einsum("ij,jkl->ikl", r[:Dr], Ar)
         self.set_tensor(i, Alnew)
@@ -129,14 +151,16 @@ class MPS():
         return r[:Dr], Ar
 
     # @partial(jax.jit, static_argnums=0)
-    def move_left(self, i):
+    def move_left(self, i, normalize=False):
         Al = self.get_tensor(i-1)
         Ar = self.get_tensor(i)
         Dl, d, Dr = Ar.shape
         dr = d*Dr
-        qt, rt = qr(np.reshape(Ar, [Dl, dr]).T, mode='full')
+        qt, rt = qr(jnp.reshape(Ar, [Dl, dr]).T, mode='full')
         q = qt.T
         r = rt.T
+        if normalize:
+            r = r/jnp.linalg.norm(r)
         Dl = np.min([q.shape[0], Dl])
         Arnew = jnp.reshape(q[:Dl, :], [Dl, d, Dr])
         Alnew = jnp.einsum("ijk,kl->ijl", Al, r[:, :Dl])
@@ -144,15 +168,15 @@ class MPS():
         self.set_tensor(i, Arnew)
         return Al, r[:, :Dl]
 
-    def right_canonical(self):
+    def right_canonical(self, normalize=False):
         n = self.n
         for i in range(n-1, 0, -1):
-            self.move_left(i)
+            self.move_left(i, normalize=normalize)
 
-    def left_canonical(self):
+    def left_canonical(self, normalize=False):
         n = self.n
         for i in range(n-1):
-            self.move_right(i)
+            self.move_right(i, normalize=normalize)
 
     def construct_state(self):
         assert self.n <= 12, f"Can not construct a state with more than 12 spins. The state has {self.n} spins"
@@ -353,3 +377,40 @@ def sample_tensors(mps, key=42):
             sample[i] = 1
             Al = A[:, 1, :]/jnp.sqrt(p1)
     return sample
+
+
+def truncated_mps_tensors(mps: MPS, dmax=1):
+    mps.right_canonical()
+    tensors = mps.tensors
+    n = len(tensors)
+    M = mps.dmax
+    for i in range(M-dmax):
+        current_dmax = dmax
+        for i in range(n-1):
+            A = tensors[i]
+            [Dl, d, Dr] = A.shape
+            A = jnp.reshape(A, [Dl*d, -1])
+            u, s, v = jnp.linalg.svd(A, full_matrices=False)
+            dnew = np.max([dmax, Dr-1])
+            dnew = np.min([dnew, len(s)])
+            current_dmax = np.max([current_dmax, dnew])
+            tensors[i] = jnp.reshape(u[:, :dnew], [Dl, d, -1])
+            v = jnp.einsum("i,ij->ij", s[:dnew], v[:dnew])
+            A = jnp.einsum("ia,ajk->ijk", v, tensors[i+1])
+            tensors[i+1] = A
+
+        for i in range(n-1, 0, -1):
+            A = tensors[i]
+            [Dl, d, Dr] = A.shape
+            A = jnp.reshape(A, [-1, d*Dr])
+            u, s, v = jnp.linalg.svd(A, full_matrices=False)
+            dnew = np.max([dmax, Dl-1])
+            dnew = np.min([dnew, len(s)])
+            current_dmax = np.max([current_dmax, dnew])
+            tensors[i] = jnp.reshape(v[:dnew], [-1, d, Dr])
+            u = jnp.einsum("ij,j->ij", u[:, :dnew], s[:dnew])
+            A = jnp.einsum("ijk,kb->ijb", tensors[i-1], u)
+            tensors[i-1] = A
+        if (current_dmax == dmax):
+            break
+    return tensors
