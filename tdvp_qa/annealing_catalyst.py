@@ -38,7 +38,7 @@ class TDVP_MULTI_MPS():
         self.mpslist = []
         for tensors in tensorslist:
             mps = MPS(tensors, key)
-            mps.right_canonical()
+            mps.right_canonical(normalize=True)
             self.mpslist.append(mps)
 
         self.T = Tmc
