@@ -23,13 +23,14 @@ def _energy_mpo(A, O, e, nrm):
     nrm = jnp.einsum("Uid,diD->UD", nrm, jnp.conj(A))
     return e, nrm
 
-
 class TDVP_MULTI_MPS():
-    def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False, cat_strength=4):
+    def __init__(self, mpo0, mpo1, tensorslist, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, nmps=1, reorder_mps=False, cat_strength=4, max_hours=47):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
+
+        self.max_hours = max_hours
 
         self.nmps = nmps
         self.reorder_mps = reorder_mps
@@ -631,7 +632,7 @@ class TDVP_MULTI_MPS():
             # self.update_lambda()
 
             tcurrent = time.time()
-            if tcurrent-self.tstart > 3600*47 or self.killer.kill_now:
+            if tcurrent-self.tstart > 3600*self.max_hours or self.killer.kill_now:
                 print(
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break

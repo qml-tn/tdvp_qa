@@ -179,6 +179,10 @@ if __name__ == "__main__":
                         type=float,
                         default=4.0,
                         help='Maximum strength of the catalyst hamiltonian.')
+    parser.add_argument('--max_hours',
+                        type=float,
+                        default=47.0,
+                        help='Maximum number of hours that the simulation will run. After that the state will be sotred and simulation will finish.')
 
 
     parse_args, unknown = parser.parse_known_args()
@@ -188,11 +192,13 @@ if __name__ == "__main__":
     if len(unknown) > 0:
         print('Unknown arguments: {}'.format(unknown))
 
+    max_hours = args_dict['max_hours']
+
     # Model generator parameters
     n = args_dict['n']
     alpha = args_dict['alpha']
     nmps = args_dict["nmps"]
-    cat_strength = args_dict["cat_strength"]
+    cat_strength = args_dict["cat_strength"] 
 
     # Integer-valued degree of the regular graph. It fixes the number of edges: the value of N_edges is overwritten
     global_path = args_dict['path']
@@ -320,7 +326,7 @@ if __name__ == "__main__":
         tdvpqa = TDVP_MULTI_MPS(mpox, mpoz, tensorslist, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                                 adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
                                 ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path,
-                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps, cat_strength=cat_strength)
+                                Tmc=Tmc, nmps=nmps, reorder_mps=reorder_mps, cat_strength=cat_strength,max_hours=max_hours)
 
         data = tdvpqa.evolve(data=data)
         data["mpslist"] = [[np.array(A) for A in mps.tensors]
