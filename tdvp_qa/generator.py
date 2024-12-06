@@ -186,10 +186,15 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False):
 
     # Bring the mpo in the left canonical form
     Al = mpo[0]
+    norms = [ ]
     for i in range(n-1):
         Dl, _, _, Dr = Al.shape
         Al = np.reshape(Al, [-1, Dr])
         q, r = np.linalg.qr(Al, mode="reduced")
+        nrm = np.linalg.norm(r)
+        # We remove the norms and store them in order to avoid overflow
+        r=r/nrm
+        norms.append(nrm)
         Dr = q.shape[-1]
         mpo[i] = np.reshape(q, [Dl, d, d, Dr])
         Al = np.einsum("ij,jklm->iklm", r, mpo[i+1])
@@ -209,7 +214,8 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False):
         v = v[inds]
         u = u[:, inds]
         Dl = len(s)
-        mpo[i] = np.reshape(v, [Dl, d, d, Dr])
+        # We bring back the norms to restore the norm of the entire MPO
+        mpo[i] = np.reshape(v, [Dl, d, d, Dr])*norms[i-1]
         Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
         mpo[i-1] = Ar
     return mpo
