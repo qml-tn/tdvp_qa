@@ -25,7 +25,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap,
-                           max_cut, auto_grad, nitime, cyclic_path, inith, seed0=None, alpha0=None, sin_lambda=False, permute=False):
+                           max_cut, auto_grad, nitime, cyclic_path, inith, seed0=None, alpha0=None, Tmc=None, sin_lambda=False, permute=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -35,7 +35,9 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     postfix = generate_postfix(
         REGULAR, N_verts, N_edges, d, seed, no_local_fields, max_cut=max_cut)
 
-    if nitime > 1:
+    if Tmc is not None:
+        postfix += f"_{annealing_schedule}_D_{Dmax}_T_{Tmc}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    elif nitime > 1:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
@@ -97,6 +99,10 @@ if __name__ == "__main__":
                         type=int,
                         default=1,
                         help='Number of repetitions of the same step if dti>0.')
+    parser.add_argument('--T',
+                        type=float,
+                        action="store",
+                        help='If set we use use a Monte Carlo sampling with the temperature T of the eigenstates of the Heff instead of the real/imaginary time evolution.')
     parser.add_argument('--stochastic',
                         action='store_true',
                         help='If set we sample the imaginary component of dt in the range [0, dti].')
@@ -228,6 +234,7 @@ if __name__ == "__main__":
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
+    Tmc = args_dict["T"]
     n = N_verts
     permute = args_dict["permute"]
 
@@ -285,7 +292,7 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(
         N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic,
         double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad,
-        nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0, sin_lambda=sin_lambda, permute=permute)
+        nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0, Tmc=Tmc, sin_lambda=sin_lambda, permute=permute)
 
     if inith == "flatsx":
         mpox = flat_sx_H0(n)
@@ -316,7 +323,7 @@ if __name__ == "__main__":
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
-                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda)
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, Tmc=Tmc, sin_lambda=sin_lambda)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
