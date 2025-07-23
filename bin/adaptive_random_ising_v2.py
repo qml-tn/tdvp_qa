@@ -320,8 +320,8 @@ if __name__ == "__main__":
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
-        data["Jz"] = Jz
-        data["hz"] = hz
+        data["Jz"] = np.array(Jz)
+        data["hz"] = np.array(hz)
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)

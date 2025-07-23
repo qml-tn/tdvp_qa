@@ -521,8 +521,8 @@ class TDVP_QA_V2():
                 gaps = np.diff(spec)
                 lgap = gaps[0]
                 min_gap = np.min(gaps)
-                data["lgap"].append(lgap)
-                data["min_gap"].append(min_gap)
+                data["lgap"].append(np.real(lgap))
+                data["min_gap"].append(np.real(min_gap))
                 # omega_scale = np.abs(lgap)
 
                 # print("omega", omega0, gap, lgap, min_gap,  omega0 - np.real(lspec[0][0]-ec))
@@ -544,8 +544,8 @@ class TDVP_QA_V2():
                 data["entropy"].append(
                     float(np.real(self.entropy/np.log(2.0))))
                 data["s"].append(lamb)
-                data["ds_overlap"].append(abs(self.mps.overlap(mps_prev)))
-                data["init_overlap"].append(abs(self.mps.overlap(mps0)))
+                data["ds_overlap"].append(float(abs(self.mps.overlap(mps_prev))))
+                data["init_overlap"].append(float(abs(self.mps.overlap(mps0))))
                 mps_prev = self.mps.copy()
                 k = k+1
                 if self.compute_states:
