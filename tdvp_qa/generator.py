@@ -175,8 +175,10 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False):
             mpo[j][i, :, :, i] += i2
     # Interaction
     for k in range(len(Jz)):
-        i = int(Jz[k, 0])
-        j = int(Jz[k, 1])
+        # i = int(Jz[k, 0])
+        # j = int(Jz[k, 1])
+        i = int(np.min(Jz[k,:2]))
+        j = int(np.max(Jz[k,:2]))
         Jij = Jz[k, 2]
         mpo[i][0, :, :, j] += sz*Jij
 
@@ -186,14 +188,14 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False):
 
     # Bring the mpo in the left canonical form
     Al = mpo[0]
-    norms = [ ]
+    norms = []
     for i in range(n-1):
         Dl, _, _, Dr = Al.shape
         Al = np.reshape(Al, [-1, Dr])
         q, r = np.linalg.qr(Al, mode="reduced")
         nrm = np.linalg.norm(r)
         # We remove the norms and store them in order to avoid overflow
-        r=r/nrm
+        r = r/nrm
         norms.append(nrm)
         Dr = q.shape[-1]
         mpo[i] = np.reshape(q, [Dl, d, d, Dr])
@@ -261,7 +263,7 @@ def anonimize_mpo(mpo):
     mpo[n-1] = mpo[n-1]*new_nrm
 
 
-def Wishart(n, alpha, seed=None, shuffle=False):
+def Wishart(n, alpha, seed=None, shuffle=False, permutation=None):
     m = int(alpha*n)
     S = np.sqrt(n/(n-1))*(np.eye(n)-np.ones([n, n])/n)
     rng = np.random.default_rng(seed)
@@ -278,7 +280,17 @@ def Wishart(n, alpha, seed=None, shuffle=False):
         S = np.diag(np.sign(0.5-rng.uniform(size=n)))
         J = S @ J @ S
         gs_sol = np.diag(S)
+
+    if permutation is None:
+        permutation = range(n)
+
+    gs_sol = gs_sol[permutation]
+    J = J[permutation, :]
+    J = J[:,permutation]
+
+    print(J)
     print(gs_sol)
+
     # Inside the function
     assert is_symmetric(J), "Non symmetric input matrix J: stop"
     check_on_diagonal_J = not any(np.diag(J) != 0)

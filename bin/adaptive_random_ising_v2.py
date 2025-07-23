@@ -4,7 +4,7 @@ import os
 import pickle
 
 from tdvp_qa.generator import generate_graph, export_graphs, Wishart, transverse_mpo, longitudinal_mpo, flat_sx_H0
-from tdvp_qa.model import generate_postfix
+from tdvp_qa.generator import generate_postfix
 from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
 
@@ -25,7 +25,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega, rand_init, rand_xy, scale_gap,
-                           max_cut, auto_grad, nitime, cyclic_path, inith, seed0=None, alpha0=None):
+                           max_cut, auto_grad, nitime, cyclic_path, inith, seed0=None, alpha0=None, sin_lambda=False, permute=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'adaptive_data_v2/')
@@ -47,6 +47,8 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
     if inith == "wishart":
         postfix += f"_{seed0}_{alpha0}"
 
+    if permute:
+        postfix += f"_perm_{seed0}"
     if rand_xy:
         postfix += "_xy"
     if scale_gap:
@@ -55,9 +57,12 @@ def generate_tdvp_filename(N_verts, N_edges, seed, REGULAR, d, no_local_fields, 
         postfix += "_ag"
     if cyclic_path:
         postfix += "_cycle"
+    if sin_lambda:
+        postfix += "_sin"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -153,6 +158,12 @@ if __name__ == "__main__":
     parser.add_argument('--auto_grad',
                         action='store_true',
                         help='If set we automatic_gradient.')
+    parser.add_argument('--sin_lambda',
+                        action='store_true',
+                        help='If set we use cos(0.5*lambda*pi) and sin(0.5*lambda*pi) prefactors of H0 and H1.')
+    parser.add_argument('--permute',
+                        action='store_true',
+                        help='If set we permute Jz and hz in the final Hamiltonian.')
     parser.add_argument('--cyclic_path',
                         action='store_true',
                         help='If set we make a cyclic path and the final point is the same as the initial point.')
@@ -218,8 +229,10 @@ if __name__ == "__main__":
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
     n = N_verts
+    permute = args_dict["permute"]
 
     cyclic_path = args_dict["cyclic_path"]
+    sin_lambda = args_dict["sin_lambda"]
 
     if dti > 0:
         nitime = args_dict["nitime"]
@@ -242,7 +255,18 @@ if __name__ == "__main__":
 
     assert connect != 0,  "Zero connectivity graph: it corresponds to two isolated subgraphs. The graph will not be saved and the solution will not be computed."
 
-    hz = loc_fields[:, 1]
+    if permute:
+        rng = np.random.default_rng(seed0)
+        inds = rng.permutation(n)
+        Jz_perm = []
+        for i, j, J in Jz:
+            i = int(i)
+            j = int(j)
+            Jz_perm.append([inds[i], inds[j], J])
+        Jz = np.array(Jz_perm)
+        hz = loc_fields[inds, 1]
+    else:
+        hz = loc_fields[:, 1]
 
     annealing_schedule = "linear"
     if adaptive:
@@ -261,7 +285,7 @@ if __name__ == "__main__":
     filename = generate_tdvp_filename(
         N_verts, N_edges, seed, REGULAR, d, no_local_fields, global_path, annealing_schedule, Dmax, dtr, dti, slope, seed_tdvp=seed_tdvp, stochastic=stochastic,
         double_precision=double_precision, slope_omega=slope_omega, rand_init=rand_init, rand_xy=rand_xy, scale_gap=scale_gap, max_cut=max_cut, auto_grad=auto_grad,
-        nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0)
+        nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0, sin_lambda=sin_lambda, permute=permute)
 
     if inith == "flatsx":
         mpox = flat_sx_H0(n)
@@ -270,7 +294,7 @@ if __name__ == "__main__":
     elif inith == "wishart":
         Jx, hx, _ = Wishart(n, alpha=alpha0, seed=seed0)
         # We have to reverse the sign of Jx since the first hamiltonian comes with the - sign in front
-        Jx[:, -1] = -Jx[:, -1]  
+        Jx[:, -1] = -Jx[:, -1]
         mpox = transverse_mpo(Jx, hx, n, rotate_to_x=True)
     else:
         mpox = longitudinal_mpo(n, theta)
@@ -292,7 +316,7 @@ if __name__ == "__main__":
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
-                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path)
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda)
 
         data = tdvpqa.evolve(data=data)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
@@ -301,7 +325,7 @@ if __name__ == "__main__":
 
         with open(filename, 'wb') as f:
             pickle.dump(data, f)
-
+        print(f"Data saved: {filename}")
         export_graphs(Jz, loc_fields, N_verts, N_edges, seed,
                       connect, REGULAR, d, no_local_fields, global_path, max_cut)
         if max_cut:
@@ -310,4 +334,4 @@ if __name__ == "__main__":
         else:
             print(f"Final energy is: {data['energy'][-1]}")
     else:
-        print("The simulation is already finished!")
+        print(f"The simulation is already finished!: {filename}")

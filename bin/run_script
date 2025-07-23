@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # Define the command to be run
-CMD="python3 wpe.py --double_precision --comp_state --slope=0.005 --seed=1 --alpha=0.5 --dti=0.2 --nitime=10 --dmax=4 --inith=wishart --alpha0=0.5"
+# CMD="python3 wpe.py --double_precision --comp_state --slope=0.005 --seed=1 --alpha=0.5 --dmax=4 --inith=sx --alpha0=0.25"
 
-# Loop to run the command 10 times
-for i in {1..3}
+CMD="python3 wpe.py --double_precision --comp_state --n=32 --dmax=2 --seed=3 --alpha=0.5 --T=0.2 --inith=wishart --alpha0=0.9 --slope=0.01 --seed_tdvp="
+
+
+# Loop to run the command x times
+for i in {1..100}
 do
   echo "Running iteration $i"
-  $CMD
+  echo "$CMD$i"
+  $CMD$i
 done
 
 echo "All iterations completed."

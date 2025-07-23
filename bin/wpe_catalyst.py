@@ -26,7 +26,7 @@ def get_simulation_data(filename_path):
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                            rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None,
-                           seed0=None, T=None, nmps=10, reorder_mps=True, shuffle=False, cat_strength=4):
+                           seed0=None, T=None, nmps=10, reorder_mps=True, shuffle=False, cat_strength=4, permute=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe_catalyst/')
@@ -65,6 +65,8 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     if shuffle:
         postfix += "_shuffle"
+    if permute:
+        postfix += f"_perm_{seed_tdvp}"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed_tdvp',
                         type=int,
                         default=42,
-                        help='Seed for the mps and tdvp evolution. Used for sampling and stochastic TDVP.')
+                        help='Seed for the mps and tdvp evolution. Used for sampling and stochastic TDVP. Seed TDVP is also used for permuting the final hamiltonian.')
     parser.add_argument('--nmps',
                         type=int,
                         default=3,
@@ -167,6 +169,9 @@ if __name__ == "__main__":
     parser.add_argument('--shuffle',
                         action='store_true',
                         help='If set we shuffle the ground state to be a random strin not a fully polarised one.')
+    parser.add_argument('--permute',
+                        action='store_true',
+                        help='If set we permute the sites of the final hamiltonian. The ground state is permuted with the same permutation.')
     parser.add_argument('--inith',
                         default="sx",
                         type=str,
@@ -212,6 +217,7 @@ if __name__ == "__main__":
     seed0 = args_dict["seed0"]
     alpha0 = args_dict["alpha0"]
     shuffle = args_dict["shuffle"]
+    permute = args_dict["permute"]
 
     if seed0 is None:
         seed0 = np.random.randint(10000)
@@ -269,10 +275,16 @@ if __name__ == "__main__":
         if rand_xy:
             theta[:, 0] = np.pi/2.
 
+    if permute:
+        rng = np.random.default_rng(seed_tdvp)
+        permutation = rng.permutation(n)
+    else:
+        permutation = range(n)
+
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
                                       rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith,
-                                      alpha0, seed0, Tmc, nmps, reorder_mps, shuffle=shuffle, cat_strength=cat_strength)
+                                      alpha0, seed0, Tmc, nmps, reorder_mps, shuffle=shuffle, cat_strength=cat_strength, permute=permute)
 
     if recalculate:
         data = None
@@ -280,7 +292,8 @@ if __name__ == "__main__":
         data = get_simulation_data(filename)
 
     if data is None:
-        Jz, hz, Jz_matrix, gs_sol = Wishart(n, alpha, seed, shuffle=shuffle)
+        Jz, hz, Jz_matrix, gs_sol = Wishart(
+            n, alpha, seed, shuffle=shuffle, permutation=permutation)
     else:
         try:
             Jz = data["Jz"]
@@ -289,11 +302,12 @@ if __name__ == "__main__":
             gs_sol = data["gs_sol"]
         except:
             Jz, hz, Jz_matrix, gs_sol = Wishart(
-                n, alpha, seed, shuffle=shuffle)
+                n, alpha, seed, shuffle=shuffle, permutation=permutation)
             data["Jz"] = Jz
             data["hz"] = hz
             data["Jz_matrix"] = Jz_matrix
             data["gs_sol"] = gs_sol
+            data["P"] = permutation
     mpoz = transverse_mpo(Jz, hz, n)
 
     if inith == "flatsx":

@@ -12,16 +12,14 @@ from tdvp_qa.mps import MPS
 from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
 
 
-class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, sin_lambda=False):
+class TDVP_QA_V3():
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
         # The MPS at initialization should be in the right canonical form
         self.mps = MPS(tensors, key)
         self.mps.right_canonical()
-
-        self.sin_lambda = sin_lambda
 
         self.T = Tmc
 
@@ -82,13 +80,8 @@ class TDVP_QA_V2():
         if self.cyclic_path and wlamb > 1:
             wlamb = 2 - wlamb
 
-        if self.sin_lambda:
-            a = np.cos(0.5*np.pi*wlamb)
-            b = np.sin(0.5*np.pi*wlamb)
-        else:
-            a = np.max([1 - wlamb, 0.])
-            b = np.min([wlamb, 1.])
-
+        a = np.max([1 - wlamb, 0.])
+        b = np.min([wlamb, 1.])
         return -a, b
 
     def energy_right_canonical(self, lamb=None):
@@ -221,7 +214,7 @@ class TDVP_QA_V2():
             A = jnp.reshape(A, [Dl, d, Dr])
             A = A/jnp.linalg.norm(A)
             self.mps.set_tensor(i, A)
-            r, Ar = self.mps.move_right(i, reduce_entropy=False)
+            r, Ar = self.mps.move_right(i, reduce_entropy=True)
 
             # Calculating new Hleft
             A = self.mps.get_tensor(i)
@@ -351,8 +344,7 @@ class TDVP_QA_V2():
             # Calculating the entropy on the fly
             if i == n//2:
                 _, s, _ = svd(C)
-                s2 = s**2
-                self.entropy = -np.log2(s2) @ s2
+                self.entropy = -np.log(s) @ s
 
             self.mps.set_tensor(i-1, Al)
 

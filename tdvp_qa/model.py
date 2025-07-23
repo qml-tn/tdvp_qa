@@ -12,8 +12,6 @@ from tenpy.algorithms import tdvp
 from tenpy.tools.hdf5_io import Hdf5Saver, Hdf5Loader
 from tenpy.tools.misc import setup_logging
 
-from tdvp_qa.generator import generate_postfix
-
 from scipy.interpolate import interp1d
 
 np.set_printoptions(precision=5, suppress=True, linewidth=120)

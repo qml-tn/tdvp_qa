@@ -3,6 +3,30 @@ import jax.numpy as jnp
 from numpy import max, min, prod
 
 
+# @jit
+def construct_state(mps):
+    n = len(mps)
+    assert n <= 12, f"Can not construct a state with more than 12 spins. The state has {n} spins"
+    psi = mps[0]
+    print(len(mps))
+    for i in range(1, n):
+        psi = jnp.einsum("...i,ijk", psi, mps[i])
+    return jnp.reshape(psi, [-1])
+
+
+def construct_operator(mpo):
+    n = len(mpo)
+    assert n <= 12, f"Can not construct a state with more than 12 spins. The state has {n} spins"
+    psi = mpo[0]
+    for i in range(1, n):
+        psi = jnp.einsum("...i,ijkl->...jkl", psi, mpo[i])
+    psi = jnp.squeeze(psi)
+    dims = psi.shape
+    ord = [2*i for i in range(n)] + [2*i+1 for i in range(n)]
+    psi = jnp.transpose(psi, ord)
+    return jnp.reshape(psi, [-1, prod(dims[::2])])
+
+
 def annealing_energy_canonical(Hl0, Hl1, Hr0, Hr1, H0, H1, a, b, A):
     Dl, d, Dr = A.shape
     # a = -max([1 - lamb, 0.])
