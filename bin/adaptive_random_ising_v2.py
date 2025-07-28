@@ -314,7 +314,7 @@ if __name__ == "__main__":
     else:
         data = get_simulation_data(filename)
 
-    lamb = 0
+    lamb = -slope
     if data is not None:
         tensors = data["mps"]
         slope = data["slope"][-1]

@@ -6,7 +6,7 @@ from tqdm import tqdm
 from GracefulKiller import GracefulKiller
 import time
 import numpy as np
-
+import optax
 
 from tdvp_qa.mps import MPS
 from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
@@ -395,13 +395,16 @@ class TDVP_QA_V2():
         omega0l, omega_scalel = self.left_sweep(dt/2., lamb)
         return np.min([omega0l, omega0r]), np.max([omega_scalel, omega_scaler, 1.0])
 
-    def apply_gradients(self, gradients, lr=1e-3):
-        n = self.n
-        for i in range(n):
-            A = self.mps.get_tensor(i)
-            A = A - lr*gradients[i]
-            self.mps.set_tensor(i, A)
-        self.mps.normalize()
+    def apply_gradients(self, gradients):
+        # n = self.n
+        # for i in range(n):
+        #     A = self.mps.get_tensor(i)
+        #     A = A - lr*gradients[i]
+        #     self.mps.set_tensor(i, A)
+        # self.mps.normalize()
+        updates,self.opt_state = self.opt.update(gradients,self.opt_state)
+        tensors = optax.apply_updates(self.mps.tensors, updates)
+        self.mps.set_tensors(tensors)
 
     def single_step(self, dt, lamb, energy, energy_gradient):
         if self.auto_grad:
@@ -411,17 +414,18 @@ class TDVP_QA_V2():
             # self.Hright0 = right_context(self.mps, self.mpo0)
             # self.Hright1 = right_context(self.mps, self.mpo1)
             # omega0, omega_scale = self.right_left_sweep(dt, lamb)
-            for _ in range(1000):
-                gradients = energy_gradient(self.mps.tensors)
-                self.apply_gradients(gradients, lr=5e-2)
-                mg = np.max([jnp.linalg.norm(g) for g in gradients])
+            a, b = self.get_couplings()
+            for _ in range(self.nitime):
+                gradients = energy_gradient(self.mps.tensors, a, b)
+                self.apply_gradients(gradients)
+                # mg = np.max([jnp.linalg.norm(g) for g in gradients])
                 omega0 = 1.
                 omega_scale = 1.
                 ec_prev = ec
                 ec = energy(self.mps.tensors)
                 k += 1
-                # print(k,mg,abs(ec-ec_prev))
-                if mg < 1e-3:
+                # print(k,mg,abs(ec-ec_prev),ec_prev,ec)
+                if abs(ec-ec_prev) < abs(dt)/10:
                     break
         else:
             omega0, omega_scale = self.right_left_sweep(dt, lamb)
@@ -481,11 +485,15 @@ class TDVP_QA_V2():
             energy_gradient0 = jit(grad(energy0))
             energy_gradient1 = jit(grad(energy1))
 
-            def energy_gradient(mps):
-                a, b = self.get_couplings()
+            @jit
+            def energy_gradient(mps, a, b):
+                # a, b = self.get_couplings()
                 gradients0 = energy_gradient0(mps)
                 gradients1 = energy_gradient1(mps)
                 return [a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
+            
+            self.opt = optax.adam(learning_rate=abs(self.dt))
+            self.opt_state = self.opt.init(self.mps.tensors)
         else:
             energy = None
             energy_gradient = None
@@ -544,7 +552,8 @@ class TDVP_QA_V2():
                 data["entropy"].append(
                     float(np.real(self.entropy/np.log(2.0))))
                 data["s"].append(lamb)
-                data["ds_overlap"].append(float(abs(self.mps.overlap(mps_prev))))
+                data["ds_overlap"].append(
+                    float(abs(self.mps.overlap(mps_prev))))
                 data["init_overlap"].append(float(abs(self.mps.overlap(mps0))))
                 mps_prev = self.mps.copy()
                 k = k+1
