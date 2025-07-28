@@ -401,10 +401,10 @@ class TDVP_QA_V2():
         #     A = self.mps.get_tensor(i)
         #     A = A - lr*gradients[i]
         #     self.mps.set_tensor(i, A)
-        # self.mps.normalize()
         updates,self.opt_state = self.opt.update(gradients,self.opt_state)
         tensors = optax.apply_updates(self.mps.tensors, updates)
         self.mps.set_tensors(tensors)
+        self.mps.normalize()
 
     def single_step(self, dt, lamb, energy, energy_gradient):
         if self.auto_grad:
@@ -425,7 +425,7 @@ class TDVP_QA_V2():
                 ec = energy(self.mps.tensors)
                 k += 1
                 # print(k,mg,abs(ec-ec_prev),ec_prev,ec)
-                if abs(ec-ec_prev) < abs(dt)/10:
+                if abs(ec-ec_prev) < abs(np.imag(dt)):
                     break
         else:
             omega0, omega_scale = self.right_left_sweep(dt, lamb)
@@ -456,8 +456,8 @@ class TDVP_QA_V2():
             if key not in dkeys:
                 data[key] = []
 
-        if self.lamb == 0:
-            k = 1
+        if self.lamb < 0:
+            k = 0
         else:
             k = int(np.ceil(self.lamb/self.ds))
 
@@ -492,7 +492,7 @@ class TDVP_QA_V2():
                 gradients1 = energy_gradient1(mps)
                 return [a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
             
-            self.opt = optax.adam(learning_rate=abs(self.dt))
+            self.opt = optax.adam(learning_rate=abs(np.real(self.dt)))
             self.opt_state = self.opt.init(self.mps.tensors)
         else:
             energy = None
