@@ -1,4 +1,4 @@
-from jax.scipy.linalg import qr
+from jax.scipy.linalg import qr, svd
 from jax import jit
 import jax.numpy as jnp
 from jax import random
@@ -177,6 +177,26 @@ class MPS():
         n = self.n
         for i in range(n-1):
             self.move_right(i, normalize=normalize)
+
+    def central_canonical(self, k, normalize=False):
+        n = self.n
+        for i in range(k):
+            self.move_right(i, normalize=normalize)
+        for i in range(n-1, k, -1):
+            self.move_left(i, normalize=normalize)
+
+    def get_entropy(self):
+        k = self.n//2
+        self.central_canonical(k)
+        A = self.get_tensor(k)
+        dims = A.shape
+        A = jnp.reshape(A, [dims[0]*dims[1], dims[2]])
+        _, s, _ = svd(A, full_matrices=False)
+        s2 = s**2
+        s2 = s2/jnp.sum(s2)
+        ent = -np.log2(s2) @ s2
+        self.entropy = ent
+        return ent
 
     def construct_state(self):
         assert self.n <= 12, f"Can not construct a state with more than 12 spins. The state has {self.n} spins"

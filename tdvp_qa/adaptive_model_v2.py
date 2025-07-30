@@ -401,31 +401,32 @@ class TDVP_QA_V2():
         #     A = self.mps.get_tensor(i)
         #     A = A - lr*gradients[i]
         #     self.mps.set_tensor(i, A)
-        updates,self.opt_state = self.opt.update(gradients,self.opt_state)
+        updates, self.opt_state = self.opt.update(
+            gradients, self.opt_state, self.mps.tensors)
         tensors = optax.apply_updates(self.mps.tensors, updates)
         self.mps.set_tensors(tensors)
-        self.mps.normalize()
+        # self.mps.normalize()
 
     def single_step(self, dt, lamb, energy, energy_gradient):
         if self.auto_grad:
-            ec = energy(self.mps.tensors)
+            a, b = self.get_couplings()
+            ec = energy(self.mps.tensors, a, b)
             k = 0
             # self.mps.right_canonical()
             # self.Hright0 = right_context(self.mps, self.mpo0)
             # self.Hright1 = right_context(self.mps, self.mpo1)
             # omega0, omega_scale = self.right_left_sweep(dt, lamb)
-            a, b = self.get_couplings()
-            for _ in range(self.nitime):
+            for istep in range(self.nitime):
                 gradients = energy_gradient(self.mps.tensors, a, b)
                 self.apply_gradients(gradients)
                 # mg = np.max([jnp.linalg.norm(g) for g in gradients])
                 omega0 = 1.
                 omega_scale = 1.
                 ec_prev = ec
-                ec = energy(self.mps.tensors)
+                ec = energy(self.mps.tensors, a, b)
                 k += 1
                 # print(k,mg,abs(ec-ec_prev),ec_prev,ec)
-                if abs(ec-ec_prev) < abs(np.imag(dt)):
+                if istep > 5 and abs(ec-ec_prev) < abs(np.imag(dt)):
                     break
         else:
             omega0, omega_scale = self.right_left_sweep(dt, lamb)
@@ -475,10 +476,10 @@ class TDVP_QA_V2():
                 e1 = self.energy_mpo(self.mpo1, mps)
                 return e1
 
-            def energy(mps):
+            @jit
+            def energy(mps, a, b):
                 e0 = energy0(mps)
                 e1 = energy1(mps)
-                a, b = self.get_couplings()
                 e = a*e0+b*e1
                 return e
 
@@ -491,8 +492,8 @@ class TDVP_QA_V2():
                 gradients0 = energy_gradient0(mps)
                 gradients1 = energy_gradient1(mps)
                 return [a*g0+b*g1 for g0, g1 in zip(gradients0, gradients1)]
-            
-            self.opt = optax.adam(learning_rate=abs(np.real(self.dt)))
+
+            self.opt = optax.adamw(learning_rate=abs(np.real(self.dt)))
             self.opt_state = self.opt.init(self.mps.tensors)
         else:
             energy = None
@@ -548,9 +549,12 @@ class TDVP_QA_V2():
             data["omega_scale"].append(float(np.real(omega_scale)))
 
             if lamb >= k*self.ds:
+                if self.auto_grad:
+                    self.mps.normalize()
+                    self.entropy = self.mps.get_entropy()
                 data["energy"].append(float(np.real(ec)))
                 data["entropy"].append(
-                    float(np.real(self.entropy/np.log(2.0))))
+                    float(np.real(self.entropy)))
                 data["s"].append(lamb)
                 data["ds_overlap"].append(
                     float(abs(self.mps.overlap(mps_prev))))
