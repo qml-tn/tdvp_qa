@@ -177,6 +177,9 @@ if __name__ == "__main__":
                         type=int,
                         action="store",
                         help='Seed for the graph generator.')
+    parser.add_argument('--checkpoint',
+                        action='store_true',
+                        help='If set we save the solution at every 0.01 increase in s.')
     parser.add_argument('--alpha0',
                         type=float,
                         default=0.9,
@@ -237,6 +240,7 @@ if __name__ == "__main__":
     Tmc = args_dict["T"]
     n = N_verts
     permute = args_dict["permute"]
+    checkpoint = args_dict["checkpoint"]
 
     cyclic_path = args_dict["cyclic_path"]
     sin_lambda = args_dict["sin_lambda"]
@@ -325,7 +329,8 @@ if __name__ == "__main__":
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
                             ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, Tmc=Tmc, sin_lambda=sin_lambda)
 
-        data = tdvpqa.evolve(data=data)
+        data = tdvpqa.evolve(data=data, filename=filename,
+                             checkpoint=checkpoint)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = np.array(Jz)
         data["hz"] = np.array(hz)

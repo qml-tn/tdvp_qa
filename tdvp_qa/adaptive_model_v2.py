@@ -7,6 +7,7 @@ from GracefulKiller import GracefulKiller
 import time
 import numpy as np
 import optax
+import pickle
 
 from tdvp_qa.mps import MPS
 from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, right_context, effective_hamiltonian_A, effective_hamiltonian_C, linearised_specter
@@ -442,7 +443,7 @@ class TDVP_QA_V2():
         omega_scale = max([abs(omega_scale), 1e-8])
         return omega0, omega_scale, ec
 
-    def evolve(self, data=None):
+    def evolve(self, data=None, filename="", checkpoint=False):
         keys = ["energy", "omega0", "omega_scale", "entropy",
                 "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap"]
         if data is None:
@@ -571,6 +572,11 @@ class TDVP_QA_V2():
                     data["var_gs"].append([np.array(A)
                                           for A in dmrg_mps.tensors])
                     # print(lamb, ec, self.slope, self.omega0, omega_scale)
+                if checkpoint:
+                    data["mps"] = [np.array(A) for A in self.mps.tensors]
+                    with open(filename, 'wb') as f:
+                        pickle.dump(data, f)
+
             data["slope"].append(float(np.real(self.slope)))
             pbar.update(float(np.real(self.slope)))
             # self.update_lambda()
