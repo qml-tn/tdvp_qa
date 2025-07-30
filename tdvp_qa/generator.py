@@ -177,8 +177,8 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False):
     for k in range(len(Jz)):
         # i = int(Jz[k, 0])
         # j = int(Jz[k, 1])
-        i = int(np.min(Jz[k,:2]))
-        j = int(np.max(Jz[k,:2]))
+        i = int(np.min(Jz[k, :2]))
+        j = int(np.max(Jz[k, :2]))
         Jij = Jz[k, 2]
         mpo[i][0, :, :, j] += sz*Jij
 
@@ -286,7 +286,7 @@ def Wishart(n, alpha, seed=None, shuffle=False, permutation=None):
 
     gs_sol = gs_sol[permutation]
     J = J[permutation, :]
-    J = J[:,permutation]
+    J = J[:, permutation]
 
     print(J)
     print(gs_sol)
@@ -316,7 +316,7 @@ def flat_sx_H0(n, inits=None, ext=False):
     A[0, :, :, 1] = -i2
     A[1, :, :, 1] = i2
     A[1, :, :, 3] = i2
-    A[0, :, :, 2] = ix
+    A[0, :, :, 2] = 2*ix
     A[2, :, :, 2] = ix
     A[2, :, :, 3] = ix
     K = 1
@@ -328,7 +328,7 @@ def flat_sx_H0(n, inits=None, ext=False):
         Am[0, :, :, 1] = -i2
         Am[1, :, :, 1] = i2
         Am[1, :, :, 3] = i2
-        Am[0, :, :, 2] = ixm
+        Am[0, :, :, 2] = 2*ixm
         Am[2, :, :, 2] = ixm
         Am[2, :, :, 3] = ixm
         mpo0 = []
