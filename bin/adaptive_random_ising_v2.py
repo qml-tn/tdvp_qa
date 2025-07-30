@@ -184,6 +184,10 @@ if __name__ == "__main__":
                         type=float,
                         default=0.9,
                         help='Initial Wishart planted ensemble parameter which specifies the number-of-equations–to–number-of-variables ratio. 0.25 (default)')
+    parser.add_argument('--max_hours',
+                        type=float,
+                        default=40,
+                        help='Maximum number of hours after which the simulation of the evolution will stop.')
     parse_args, unknown = parser.parse_known_args()
 
     args_dict = parse_args.__dict__
@@ -241,6 +245,7 @@ if __name__ == "__main__":
     n = N_verts
     permute = args_dict["permute"]
     checkpoint = args_dict["checkpoint"]
+    max_training_hours=args_dict["max_hours"]
 
     cyclic_path = args_dict["cyclic_path"]
     sin_lambda = args_dict["sin_lambda"]
@@ -330,7 +335,7 @@ if __name__ == "__main__":
                             ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, Tmc=Tmc, sin_lambda=sin_lambda)
 
         data = tdvpqa.evolve(data=data, filename=filename,
-                             checkpoint=checkpoint)
+                             checkpoint=checkpoint, max_training_hours=max_training_hours)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = np.array(Jz)
         data["hz"] = np.array(hz)

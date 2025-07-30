@@ -443,7 +443,7 @@ class TDVP_QA_V2():
         omega_scale = max([abs(omega_scale), 1e-8])
         return omega0, omega_scale, ec
 
-    def evolve(self, data=None, filename="", checkpoint=False):
+    def evolve(self, data=None, filename="", checkpoint=False, max_training_hours=40):
         keys = ["energy", "omega0", "omega_scale", "entropy",
                 "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap"]
         if data is None:
@@ -582,7 +582,7 @@ class TDVP_QA_V2():
             # self.update_lambda()
 
             tcurrent = time.time()
-            if tcurrent-self.tstart > 3600*47 or self.killer.kill_now:
+            if tcurrent-self.tstart > 3600*max_training_hours or self.killer.kill_now:
                 print(
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
