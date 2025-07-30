@@ -304,7 +304,7 @@ if __name__ == "__main__":
         nitime=nitime, cyclic_path=cyclic_path, inith=inith, alpha0=alpha0, seed0=seed0, Tmc=Tmc, sin_lambda=sin_lambda, permute=permute)
 
     if inith == "flatsx":
-        mpox = flat_sx_H0(n)
+        mpox = flat_sx_H0(n,ext=True)
     elif inith == "sx":
         mpox = longitudinal_mpo(n, theta)
     elif inith == "wishart":
