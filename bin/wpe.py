@@ -24,7 +24,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None):
+                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None, permute=False, sin_lambda=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe/')
@@ -45,6 +45,8 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
     if inith == "wishart":
         postfix += f"_{seed0}_{alpha0}"
 
+    if permute:
+        postfix += f"_perm_{seed0}"
     if rand_xy:
         postfix += "_xy"
     if scale_gap:
@@ -53,6 +55,8 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
         postfix += "_ag"
     if cyclic_path:
         postfix += "_cycle"
+    if sin_lambda:
+        postfix += "_sin"
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
@@ -149,6 +153,19 @@ if __name__ == "__main__":
                         default="sx",
                         type=str,
                         help='Choice of the initial Hamiltonian. sx (default), flatsx, wishart')
+    parser.add_argument('--checkpoint',
+                        action='store_true',
+                        help='If set we save the solution at every 0.01 increase in s.')
+    parser.add_argument('--sin_lambda',
+                        action='store_true',
+                        help='If set we use cos(0.5*lambda*pi) and sin(0.5*lambda*pi) prefactors of H0 and H1.')
+    parser.add_argument('--permute',
+                        action='store_true',
+                        help='If set we permute Jz and hz in the final Hamiltonian.')
+    parser.add_argument('--max_hours',
+                        type=float,
+                        default=40,
+                        help='Maximum number of hours after which the simulation of the evolution will stop.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -205,6 +222,11 @@ if __name__ == "__main__":
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
     compute_states = args_dict["comp_state"]
+    checkpoint = args_dict["checkpoint"]
+    permute = args_dict["permute"]
+    sin_lambda = args_dict["sin_lambda"]
+
+    max_training_hours = args_dict["max_hours"]
 
     if double_precision:
         config.update("jax_enable_x64", True)
@@ -227,7 +249,7 @@ if __name__ == "__main__":
 
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0)
+                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0, sin_lambda=sin_lambda, permute=permute)
 
     if recalculate:
         data = None
@@ -267,9 +289,10 @@ if __name__ == "__main__":
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
-                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path)
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda)
 
-        data = tdvpqa.evolve(data=data)
+        data = tdvpqa.evolve(data=data,  filename=filename,
+                             checkpoint=checkpoint, max_training_hours=max_training_hours)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = Jz
         data["hz"] = hz
