@@ -136,8 +136,8 @@ def h0_theta(theta=None):
     return np.array([[np.cos(th), np.sin(th)*np.exp(1j*fi)], [np.sin(th)*np.exp(-1j*fi), -np.cos(th)]])
 
 
-def longitudinal_mpo(n, theta):
-    A = np.zeros([2, 2, 2, 2], dtype=np.cdouble)
+def longitudinal_mpo(n, theta, dtype=np.cdouble):
+    A = np.zeros([2, 2, 2, 2], dtype=dtype)
     i2 = np.eye(2)
     A[0, :, :, 0] = i2
     A[1, :, :, 1] = i2
@@ -154,15 +154,15 @@ def longitudinal_mpo(n, theta):
     return mpo
 
 
-def transverse_mpo(Jz, hz, n, rotate_to_x=False):
+def transverse_mpo(Jz, hz, n, rotate_to_x=False, dtype=np.cdouble):
     d = 2
-    sz = np.array([[1, 0], [0, -1]])
+    sz = np.array([[1, 0], [0, -1]], dtype=dtype)
     if rotate_to_x:
         # we rotate the MPO to the x direction
-        sz = np.array([[0, 1], [1, 0]])
+        sz = np.array([[0, 1], [1, 0]], dtype=dtype)
 
-    i2 = np.eye(d)
-    A = np.zeros([n+1, d, d, n+1])
+    i2 = np.eye(d, dtype=dtype)
+    A = np.zeros([n+1, d, d, n+1], dtype=dtype)
     A[0, :, :, 0] = i2
     A[-1, :, :, -1] = i2
     mpo = [A.copy() for i in range(n)]
@@ -263,7 +263,7 @@ def anonimize_mpo(mpo):
     mpo[n-1] = mpo[n-1]*new_nrm
 
 
-def Wishart(n, alpha, seed=None, shuffle=False, permutation=None):
+def Wishart(n, alpha, seed=None, shuffle=False, permutation=None, dtype=np.float64):
     m = int(alpha*n)
     S = np.sqrt(n/(n-1))*(np.eye(n)-np.ones([n, n])/n)
     rng = np.random.default_rng(seed)
@@ -288,9 +288,6 @@ def Wishart(n, alpha, seed=None, shuffle=False, permutation=None):
     J = J[permutation, :]
     J = J[:, permutation]
 
-    print(J)
-    print(gs_sol)
-
     # Inside the function
     assert is_symmetric(J), "Non symmetric input matrix J: stop"
     check_on_diagonal_J = not any(np.diag(J) != 0)
@@ -300,8 +297,9 @@ def Wishart(n, alpha, seed=None, shuffle=False, permutation=None):
     for i in range(n):
         for j in range(i):
             Jz.append([j, i, 2*J[j, i]])
-    Jz = np.array(Jz)
-    hz = np.zeros(n)
+    Jz = np.array(Jz, dtype=dtype)
+    hz = np.zeros(n, dtype=dtype)
+    J = np.array(J, dtype=dtype)
 
     print("n, m, m/n, alpha, E0: ", n, m, m/n, alpha, E0)
 
