@@ -417,12 +417,13 @@ class TDVP_QA_V2():
             # self.Hright0 = right_context(self.mps, self.mpo0)
             # self.Hright1 = right_context(self.mps, self.mpo1)
             # omega0, omega_scale = self.right_left_sweep(dt, lamb)
+            omega0 = 1.
+            omega_scale = 1.
+            # print(self.nitime)
             for istep in range(self.nitime):
                 gradients = energy_gradient(self.mps.tensors, a, b)
                 self.apply_gradients(gradients)
                 # mg = np.max([jnp.linalg.norm(g) for g in gradients])
-                omega0 = 1.
-                omega_scale = 1.
                 ec_prev = ec
                 ec = energy(self.mps.tensors, a, b)
                 k += 1
@@ -443,7 +444,7 @@ class TDVP_QA_V2():
         omega_scale = max([abs(omega_scale), 1e-8])
         return omega0, omega_scale, ec
 
-    def evolve(self, data=None, filename="", checkpoint=False, max_training_hours=40):
+    def evolve(self, data=None, filename="", checkpoint=False, max_training_hours=40, data_callback=None, **kwargs):
         keys = ["energy", "omega0", "omega_scale", "entropy",
                 "slope", "state", "var_gs", "s", "ds_overlap", "init_overlap", "gap", "lgap", "min_gap"]
         if data is None:
@@ -572,6 +573,8 @@ class TDVP_QA_V2():
                     data["var_gs"].append([np.array(A)
                                           for A in dmrg_mps.tensors])
                     # print(lamb, ec, self.slope, self.omega0, omega_scale)
+                if data_callback is not None:
+                    data = data_callback(data, self.mps.tensors, **kwargs)
                 if checkpoint:
                     data["mps"] = [np.array(A) for A in self.mps.tensors]
                     with open(filename, 'wb') as f:
