@@ -8,6 +8,7 @@ from tdvp_qa.adaptive_model_v2 import TDVP_QA_V2
 from tdvp_qa.mps import initial_state_theta
 
 from jax import config
+import jax.numpy as jnp
 
 
 def get_simulation_data(filename_path):
@@ -24,7 +25,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None, permute=False, sin_lambda=False):
+                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0=None, seed0=None, permute=False, sin_lambda=False, T=None):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'wpe/')
@@ -33,7 +34,9 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     postfix = f"n_{n}_s_{seed}_a_{alpha}"
 
-    if nitime > 1:
+    if T is not None:
+        postfix += f"_{annealing_schedule}_D_{Dmax}_T_{T}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
+    elif nitime > 1:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_{nitime}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
     else:
         postfix += f"_{annealing_schedule}_D_{Dmax}_dt_{dtr}_{dti}_dp_{double_precision}_sl_{slope}_st_{stochastic}_sr_{seed_tdvp}_so_{slope_omega}_ri_{rand_init}"
@@ -60,6 +63,24 @@ def generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax
 
     filename_data = os.path.join(path_data, 'data'+postfix+'.pkl')
     return filename_data
+
+
+def gs_overlap(tensors, s0, sol):
+    overlap = jnp.array([1.0])
+    for A, s in zip(tensors, sol):
+        overlap = jnp.einsum("i,ij->j", overlap, A[:, int(np.mod(s+s0, 2)), :])
+    overlap = jnp.abs(overlap[0])
+    overlap = float(overlap)
+    # print("overlap", overlap)
+    return overlap
+
+
+def data_callback(data, tensors, sol):
+    if "final_overlap" not in data.keys():
+        data["final_overlap"] = []
+    data["final_overlap"].append(
+        [gs_overlap(tensors, 0, sol), gs_overlap(tensors, 1, sol)])
+    return data
 
 
 if __name__ == "__main__":
@@ -166,6 +187,13 @@ if __name__ == "__main__":
                         type=float,
                         default=40,
                         help='Maximum number of hours after which the simulation of the evolution will stop.')
+    parser.add_argument('--shuffle',
+                        action='store_true',
+                        help='If set we shuffle the ground state to be a random strin not a fully polarised one.')
+    parser.add_argument('--T',
+                        type=float,
+                        action="store",
+                        help='If set we use use a Monte Carlo sampling with the temperature T of the eigenstates of the Heff instead of the real/imaginary time evolution.')
 
     parse_args, unknown = parser.parse_known_args()
 
@@ -190,6 +218,8 @@ if __name__ == "__main__":
     inith = args_dict["inith"]
     seed0 = args_dict["seed0"]
     alpha0 = args_dict["alpha0"]
+    shuffle = args_dict["shuffle"]
+    Tmc = args_dict["T"]
 
     if seed0 is None:
         seed0 = np.random.randint(10000)
@@ -207,17 +237,17 @@ if __name__ == "__main__":
     dtr = args_dict["dtr"]
     dti = args_dict["dti"]
     dt = dtr - 1j*dti
+    auto_grad = args_dict["auto_grad"]
 
     cyclic_path = args_dict["cyclic_path"]
 
-    if dti > 0:
+    if dti > 0 or auto_grad:
         nitime = args_dict["nitime"]
     else:
         nitime = 0
 
     rand_init = args_dict["rand_init"]
     rand_xy = args_dict["rand_xy"]
-    auto_grad = args_dict["auto_grad"]
 
     Dmax = args_dict["dmax"]
     recalculate = args_dict["recalculate"]
@@ -249,7 +279,7 @@ if __name__ == "__main__":
 
     filename = generate_tdvp_filename(n, seed, alpha, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0, sin_lambda=sin_lambda, permute=permute)
+                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, inith, alpha0, seed0, sin_lambda=sin_lambda, permute=permute, T=Tmc)
 
     if recalculate:
         data = None
@@ -257,11 +287,14 @@ if __name__ == "__main__":
         data = get_simulation_data(filename)
 
     if data is None:
-        Jz, hz, Jz_matrix, gs_sol = Wishart(n, alpha, seed)
+        Jz, hz, Jz_matrix, gs_sol = Wishart(
+            n, alpha, seed, shuffle=shuffle)
+        gs_sol = (np.array(gs_sol)+1)/2
     else:
         Jz = data["Jz"]
         hz = data["hz"]
         Jz_matrix = data["Jz_matrix"]
+
     mpoz = transverse_mpo(Jz, hz, n)
 
     if inith == "flatsx":
@@ -289,10 +322,11 @@ if __name__ == "__main__":
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpox, mpoz, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
-                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda)
+                            ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda, Tmc=Tmc)
 
+        kwargs = {"sol": gs_sol}
         data = tdvpqa.evolve(data=data,  filename=filename,
-                             checkpoint=checkpoint, max_training_hours=max_training_hours)
+                             checkpoint=checkpoint, max_training_hours=max_training_hours, data_callback=data_callback, **kwargs)
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = Jz
         data["hz"] = hz
