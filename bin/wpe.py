@@ -294,6 +294,7 @@ if __name__ == "__main__":
         Jz = data["Jz"]
         hz = data["hz"]
         Jz_matrix = data["Jz_matrix"]
+        gs_sol = data["gs_sol"]
 
     mpoz = transverse_mpo(Jz, hz, n)
 
@@ -331,6 +332,7 @@ if __name__ == "__main__":
         data["Jz"] = Jz
         data["hz"] = hz
         data["Jz_matrix"] = Jz_matrix
+        data["gs_sol"] = gs_sol
 
         print(f"Saving: {filename}")
         with open(filename, 'wb') as f:
