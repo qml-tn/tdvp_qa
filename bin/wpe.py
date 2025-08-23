@@ -287,14 +287,20 @@ if __name__ == "__main__":
         data = get_simulation_data(filename)
 
     if data is None:
+        permutation = None
+        if permute:
+            permutation = np.random.default_rng(seed0).permutation(n)
+            print("Using permutation:", permutation)
         Jz, hz, Jz_matrix, gs_sol = Wishart(
-            n, alpha, seed, shuffle=shuffle)
+            n, alpha, seed, shuffle=shuffle, permutation=permutation)
         gs_sol = (np.array(gs_sol)+1)/2
     else:
         Jz = data["Jz"]
         hz = data["hz"]
         Jz_matrix = data["Jz_matrix"]
         gs_sol = data["gs_sol"]
+        permutation = data["permutation"] if "permutation" in data.keys(
+        ) else None
 
     mpoz = transverse_mpo(Jz, hz, n)
 
@@ -333,6 +339,7 @@ if __name__ == "__main__":
         data["hz"] = hz
         data["Jz_matrix"] = Jz_matrix
         data["gs_sol"] = gs_sol
+        data["permutation"] = permutation
 
         print(f"Saving: {filename}")
         with open(filename, 'wb') as f:
