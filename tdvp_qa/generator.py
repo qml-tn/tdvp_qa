@@ -223,6 +223,73 @@ def transverse_mpo(Jz, hz, n, rotate_to_x=False, dtype=np.cdouble):
     return mpo
 
 
+def ising_with_field_mpo(Jz, hz, hx, n, dtype=np.cdouble):
+    d = 2
+    sz = np.array([[1, 0], [0, -1]], dtype=dtype)
+    sx = np.array([[0, 1], [1, 0]], dtype=dtype)
+
+    i2 = np.eye(d, dtype=dtype)
+    A = np.zeros([n+1, d, d, n+1], dtype=dtype)
+    A[0, :, :, 0] = i2
+    A[-1, :, :, -1] = i2
+    mpo = [A.copy() for i in range(n)]
+    # Local fields
+    for i in range(n):
+        mpo[i][0, :, :, -1] += sz*hz[i]+sx*hx[i]
+        if i > 0:
+            mpo[i][i, :, :, -1] += sz
+        for j in range(1, i):
+            mpo[j][i, :, :, i] += i2
+    # Interaction
+    for k in range(len(Jz)):
+        # i = int(Jz[k, 0])
+        # j = int(Jz[k, 1])
+        i = int(np.min(Jz[k, :2]))
+        j = int(np.max(Jz[k, :2]))
+        Jij = Jz[k, 2]
+        mpo[i][0, :, :, j] += sz*Jij
+
+    # Taking only the output state of the last mpo tensor
+    mpo[0] = mpo[0][:1]
+    mpo[-1] = mpo[-1][:, :, :, -1:]
+
+    # Bring the mpo in the left canonical form
+    Al = mpo[0]
+    norms = []
+    for i in range(n-1):
+        Dl, _, _, Dr = Al.shape
+        Al = np.reshape(Al, [-1, Dr])
+        q, r = np.linalg.qr(Al, mode="reduced")
+        nrm = np.linalg.norm(r)
+        # We remove the norms and store them in order to avoid overflow
+        r = r/nrm
+        norms.append(nrm)
+        Dr = q.shape[-1]
+        mpo[i] = np.reshape(q, [Dl, d, d, Dr])
+        Al = np.einsum("ij,jklm->iklm", r, mpo[i+1])
+        mpo[i+1] = Al
+
+    # Compress MPO
+    Ar = mpo[-1]
+    eps = 1e-12
+    for i in range(n-1, 0, -1):
+        Dl, _, _, Dr = Ar.shape
+        Ar = np.reshape(Ar, [Dl, -1])
+        u, s, v = np.linalg.svd(Ar, full_matrices=False)
+        smax = np.max(s)
+        snorm = s/smax
+        inds = snorm > eps
+        s = s[inds]
+        v = v[inds]
+        u = u[:, inds]
+        Dl = len(s)
+        # We bring back the norms to restore the norm of the entire MPO
+        mpo[i] = np.reshape(v, [Dl, d, d, Dr])*norms[i-1]
+        Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
+        mpo[i-1] = Ar
+    return mpo
+
+
 def compress_mpo(mpo):
     # Compress MPO
     Ar = mpo[-1]
