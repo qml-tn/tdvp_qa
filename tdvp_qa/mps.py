@@ -7,6 +7,27 @@ import numpy as np
 from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_hamiltonian, full_effective_hamiltonian_A
 
 
+def operator_profile(O,tensors):
+    n = len(tensors)
+    """
+    O: local operator
+    tensors: MPS tensors - We assume right canonical form
+    """
+    profile = np.zeros(n)
+    R = jnp.array([[1.]])
+    for i in range(n):
+        A = tensors[i]
+        A = jnp.einsum("ai,ijk->ajk", R, A)
+
+        o = jnp.einsum("ijk,jl->ilk", jnp.conj(A), O)
+        o = jnp.einsum("ilk,ilk->", o, A)
+        profile[i] = np.real(o)
+        
+        Dr = A.shape[2] 
+        _, R = qr(jnp.reshape(A, [-1, Dr]), mode='full')
+    return profile
+
+
 def mps_overlap(tensors1, tensors2):
     overlap = jnp.array([[1.]])
     n = len(tensors1)

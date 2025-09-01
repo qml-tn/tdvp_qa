@@ -14,7 +14,7 @@ from tdvp_qa.utils import annealing_energy_canonical, right_hamiltonian, left_ha
 
 
 class TDVP_QA_V2():
-    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, sin_lambda=False):
+    def __init__(self, mpo0, mpo1, tensors, slope, dt, lamb=0, max_slope=0.05, min_slope=1e-6, adaptive=False, compute_states=False, key=42, slope_omega=1e-3, ds=0.01, scale_gap=False, nitime=10, auto_grad=False, cyclic_path=False, Tmc=None, sin_lambda=False, coupling_fn=None):
         # mpo0, mpo1 are simple nxMxdxdxM tensors containing the MPO representations of H0 and H1
         self.mpo0 = [jnp.array(A) for A in mpo0]
         self.mpo1 = [jnp.array(A) for A in mpo1]
@@ -50,6 +50,7 @@ class TDVP_QA_V2():
         self.adaptive = adaptive
         self.compute_states = compute_states
         self.ds = ds
+        self.coupling_fn = coupling_fn
 
         self.Hright0 = right_context(self.mps, self.mpo0)
         self.Hright1 = right_context(self.mps, self.mpo1)
@@ -78,10 +79,12 @@ class TDVP_QA_V2():
     def get_couplings(self, lamb=None):
         if lamb is None:
             lamb = self.lamb
-
         wlamb = lamb
         if self.cyclic_path and wlamb > 1:
             wlamb = 2 - wlamb
+
+        if self.coupling_fn is not None:
+            return self.coupling_fn(wlamb)
 
         if self.sin_lambda:
             a = np.cos(0.5*np.pi*wlamb)

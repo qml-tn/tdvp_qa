@@ -136,20 +136,20 @@ def h0_theta(theta=None):
     return np.array([[np.cos(th), np.sin(th)*np.exp(1j*fi)], [np.sin(th)*np.exp(-1j*fi), -np.cos(th)]])
 
 
-def longitudinal_mpo(n, theta, dtype=np.cdouble):
+def longitudinal_mpo(n, theta, dtype=np.cdouble, g=1.0):
     A = np.zeros([2, 2, 2, 2], dtype=dtype)
     i2 = np.eye(2)
     A[0, :, :, 0] = i2
     A[1, :, :, 1] = i2
     Ai = A.copy()
-    Ai[0, :, :, 1] = h0_theta(theta[0])
+    Ai[0, :, :, 1] = h0_theta(theta[0])*g
     mpo = [Ai[:1]]
     for i in range(1, n-1):
         Ai = A.copy()
-        Ai[0, :, :, 1] = h0_theta(theta[i])
+        Ai[0, :, :, 1] = h0_theta(theta[i])*g
         mpo.append(Ai)
     Ai = A.copy()
-    Ai[0, :, :, 1] = h0_theta(theta[n-1])
+    Ai[0, :, :, 1] = h0_theta(theta[n-1])*g
     mpo.append(Ai[:, :, :, -1:])
     return mpo
 
@@ -272,6 +272,7 @@ def ising_with_field_mpo(Jz, hz, hx, n, dtype=np.cdouble):
     # Compress MPO
     Ar = mpo[-1]
     eps = 1e-12
+    dmax = 0
     for i in range(n-1, 0, -1):
         Dl, _, _, Dr = Ar.shape
         Ar = np.reshape(Ar, [Dl, -1])
@@ -283,10 +284,12 @@ def ising_with_field_mpo(Jz, hz, hx, n, dtype=np.cdouble):
         v = v[inds]
         u = u[:, inds]
         Dl = len(s)
+        dmax = max(dmax, Dl)
         # We bring back the norms to restore the norm of the entire MPO
         mpo[i] = np.reshape(v, [Dl, d, d, Dr])*norms[i-1]
         Ar = np.einsum("ijkl,lm,m->ijkm", mpo[i-1], u, s)
         mpo[i-1] = Ar
+    print("Max bond dimension of the MPO:", dmax)
     return mpo
 
 
@@ -328,6 +331,30 @@ def anonimize_mpo(mpo):
         mpo[i] = Al*new_nrm
         mpo[i+1] = Ar
     mpo[n-1] = mpo[n-1]*new_nrm
+
+
+def TFIM(nx, ny, J, hx, hz, permutation=None):
+    Jz = []
+    n = nx*ny
+    if permutation is None:
+        permutation = range(n)
+    for ix in range(nx):
+        for iy in range(ny):
+            i = ix*ny+iy
+            pi = permutation[i]
+            if ix < nx-1:
+                j = (ix+1)*ny+iy
+                pj = permutation[j]
+                Jz.append([pi, pj, J])
+            if iy < ny-1:
+                j = ix*ny+(iy+1)
+                pj = permutation[j]
+                Jz.append([pi, pj, J])
+    Jz = np.array(Jz)
+    # Since the fields are uniform we do not need to permute them
+    hz = np.ones(n)*hz
+    hx = np.ones(n)*hx
+    return Jz, hz, hx, permutation
 
 
 def Wishart(n, alpha, seed=None, shuffle=False, permutation=None, dtype=np.float64):
