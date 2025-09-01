@@ -561,12 +561,14 @@ class TDVP_QA_V2():
                 data["entropy"].append(
                     float(np.real(self.entropy)))
                 data["s"].append(lamb)
-                data["ds_overlap"].append(
-                    float(abs(self.mps.overlap(mps_prev))))
-                data["init_overlap"].append(float(abs(self.mps.overlap(mps0))))
-                mps_prev = self.mps.copy()
                 k = k+1
                 if self.compute_states:
+                    mps_prev = self.mps.copy()
+                    data["ds_overlap"].append(
+                        float(abs(self.mps.overlap(mps_prev))))
+                    data["init_overlap"].append(
+                        float(abs(self.mps.overlap(mps0))))
+
                     dmrg_mps = self.mps.copy()
                     dmrg_mps.dmrg(lamb, self.mpo0, self.mpo1,
                                   self.Hright0, self.Hright1, sweeps=20)

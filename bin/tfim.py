@@ -76,8 +76,10 @@ def data_callback(data, tensors):
         data["mx"] = []
     if "mz" not in data.keys():
         data["mz"] = []
-    data["mx"].append(operator_profile(jnp.array([[0, 1], [1, 0]]), tensors))
-    data["mz"].append(operator_profile(jnp.array([[1, 0], [0, -1]]), tensors))
+    data["mx"].append(np.array(operator_profile(
+        jnp.array([[0, 1], [1, 0]]), tensors)))
+    data["mz"].append(np.array(operator_profile(
+        jnp.array([[1, 0], [0, -1]]), tensors)))
     return data
 
 
