@@ -21,7 +21,7 @@ def hamiltonian_from_mpo(mpo):
 
 def state_from_mps(tensors):
     n = len(tensors)
-    assert n < 17, f"Can not construct a state with more than 17 spins. The state has {n} spins"
+    assert n < 25, f"Can not construct a state with more than 25 spins. The state has {n} spins"
     psi = tensors[0]
     for i in range(1, n):
         psi = np.einsum("...i,ijk", psi, tensors[i])
