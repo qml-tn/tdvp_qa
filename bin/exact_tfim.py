@@ -118,6 +118,9 @@ def main():
     parser.add_argument('--permute',
                         action='store_true',
                         help='If set we permute the qubits randomly.')
+    parser.add_argument('--save_all',
+                        action='store_true',
+                        help='If set we save all ground states, otherwise save only the last ground state at s=1')
 
     args = parser.parse_args()
 
@@ -146,7 +149,8 @@ def main():
         E_GS, psi_GS = H.eigsh(k=2, time=s, which="SA")
 
         energies.append(E_GS)
-        states.append(psi_GS[:, 0])
+        if args.save_all:
+            states.append(psi_GS[:, 0])
         times.append(s)
 
         tcurrent = time()
@@ -155,8 +159,11 @@ def main():
                 f"Killing program after {int(tcurrent-tstart)} seconds.")
             break
 
+    if not args.save_all:
+        states = [psi_GS]
     np.savez(filename, energies=np.array(energies),
              states=np.array(states), times=np.array(times))
+
     print(f"Done {n}, {args.seed}, {ds}, {filename}.")
 
 
