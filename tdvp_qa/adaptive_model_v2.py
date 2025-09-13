@@ -594,6 +594,8 @@ class TDVP_QA_V2():
                 print(
                     f"Killing program after {int(tcurrent-self.tstart)} seconds.")
                 break
+        self.mps.normalize()
+        self.mps.right_canonical()
         data["mps"] = [np.array(A) for A in self.mps.tensors]
         pbar.close()
         return data
