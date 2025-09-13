@@ -1,31 +1,38 @@
 #!/bin/bash
 
-# Usage: ./run_qubo.sh <path> <T> <slope> <dmax>
-# Example: ./run_qubo.sh data/qubo/exact/40 0.1 0.01 4
+# Usage:
+#   ./run_qubo.sh --path=data/rudolf/instances/exact/40 --T=0.1 --slope=0.01 --dmax=16 --nitime=1 --double_precision --sin_lambda
+#
+# The script will run qubo.py for every .json file in the provided path
 
-# Check arguments
-if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <path> <T> <slope> <dmax>"
+# Collect all arguments
+ARGS=("$@")
+
+# Extract path argument (needed to find JSON files)
+DATA_PATH=""
+for arg in "$@"; do
+    case $arg in
+        --path=*)
+            DATA_PATH="${arg#*=}"
+            ;;
+    esac
+done
+
+# Check that path is provided
+if [ -z "$DATA_PATH" ]; then
+    echo "Error: --path must be provided."
     exit 1
 fi
-
-DATA_PATH=$1
-T=$2
-slope=$3
-dmax=$4
-
 
 # Iterate over each JSON file in the folder
 for json_file in "$DATA_PATH"/*.json; do
     filename=$(basename "$json_file")
-    echo "Running on $filename ..."
-    python3 qubo.py \
-        --double_precision \
-        --sin_lambda \
-        --path="$DATA_PATH" \
-        --filename="$filename" \
-        --T="$T" \
-        --nitime=1 \
-        --slope="$slope" \
-        --dmax="$dmax"
+
+    CMD=(python3 qubo.py "${ARGS[@]}" --filename="$filename")
+
+    # Print the full command
+    echo "${CMD[@]}"
+
+    # Run it
+    "${CMD[@]}"
 done
