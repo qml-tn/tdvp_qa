@@ -58,7 +58,7 @@ def get_simulation_data(filename_path):
 
 def generate_tdvp_filename(filename, global_path, annealing_schedule, Dmax, dtr,
                            dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, seed0=None, permute=False, sin_lambda=False, T=None):
+                           rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, seed0=None, permute=False, sin_lambda=False, T=None, scaled=False):
     if global_path is None:
         global_path = os.getcwd()
     path_data = os.path.join(global_path, 'solutions')
@@ -89,6 +89,8 @@ def generate_tdvp_filename(filename, global_path, annealing_schedule, Dmax, dtr,
         postfix += "_cycle"
     if sin_lambda:
         postfix += "_sin"
+    if scaled:
+        postfix += "_scaled"
 
     filename_data = os.path.join(path_data, postfix+'.pkl')
     return filename_data
@@ -185,6 +187,9 @@ if __name__ == "__main__":
     parser.add_argument('--shuffle',
                         action='store_true',
                         help='If set we shuffle the ground state to be a random strin not a fully polarised one.')
+    parser.add_argument('--scale_energy',
+                        action='store_true',
+                        help='If set we scale the energy of the final hamiltonian by first calculating the approximate final ground state energy.')
     parser.add_argument('--T',
                         type=float,
                         action="store",
@@ -259,7 +264,7 @@ if __name__ == "__main__":
 
     filename = generate_tdvp_filename(filename, global_path, annealing_schedule, Dmax, dtr,
                                       dti, slope, seed_tdvp, stochastic, double_precision, slope_omega,
-                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, seed0, sin_lambda=sin_lambda, permute=permute, T=Tmc)
+                                      rand_init, rand_xy, scale_gap, auto_grad, nitime, cyclic_path, seed0, sin_lambda=sin_lambda, permute=permute, T=Tmc, scaled=scaled)
 
     if recalculate:
         data = None
@@ -271,12 +276,14 @@ if __name__ == "__main__":
         # get_instance_data(filename)
         file_path = os.path.join(global_path, args_dict['filename'])
         Jz, hz, c, n, Aqubo = get_instance_data(file_path)
+        scale = 1
     else:
         Jz = data["Jz"]
         hz = data["hz"]
         c = data["c"]
         n = data["n"]
         Aqubo = data["A"]
+        scale = data["scale"]
 
     mpo0 = longitudinal_mpo(n, [None]*n)
     mpo1 = transverse_mpo(Jz, hz, n)
@@ -289,6 +296,26 @@ if __name__ == "__main__":
         tensors = data["mps"]
         slope = data["slope"][-1]
         lamb = np.sum(data["slope"])
+
+    if args_dict["scale_energy"] and lamb == 0 and scale == 1:
+        # Scaling the final hamiltonian such that the final energy is approximately extensive!
+        # We save the scaling factor to get the correct final energy
+        tensors0 = initial_state_theta(n, Dmax=4, theta=theta)
+        tdvpqa0 = TDVP_QA_V2(mpo0, mpo1, tensors0, slope=0.001, dt=0.001+1j*0.001, lamb=0, max_slope=0.05, min_slope=1e-8,
+                             adaptive=False, compute_states=False, key=seed_tdvp, slope_omega=slope_omega,
+                             ds=0.1, auto_grad=True, nitime=1, cyclic_path=False, sin_lambda=True)
+        data_scale = tdvpqa0.evolve()
+        # Only scale if the energy is not close to 1 to avid problems of division with zero.
+        if abs(data_scale["energy"][-1]) > 0.01:
+            scale = abs(data_scale["energy"][-1])/n
+            print(
+                f"The approximate final energy is {data_scale['energy'][-1]}.")
+            print(f"Scale factor is {scale}")
+
+        # Scale the final MPO
+        Jz[:, 2] = Jz[:, 2]/scale
+        hz = hz / scale
+        mpo1 = transverse_mpo(Jz, hz, n)
 
     if lamb < 1:
         tdvpqa = TDVP_QA_V2(mpo0, mpo1, tensors, slope, dt, lamb=lamb, max_slope=0.05, min_slope=1e-8,
@@ -303,6 +330,7 @@ if __name__ == "__main__":
         data["n"] = n
         data["c"] = c
         data["A"] = Aqubo
+        data["scale"] = scale
 
         print(f"Saving: {filename}")
         with open(filename, 'wb') as f:
@@ -310,7 +338,7 @@ if __name__ == "__main__":
 
         print(f"Final energy is: {data['energy'][-1]}")
         print(
-            f"Corresponding QUBO cost function value is: {data['energy'][-1] + c}")
+            f"Corresponding QUBO cost function value is: {scale*data['energy'][-1] + c}")
         print("Done!")
 
         # Generate samples from the final state
