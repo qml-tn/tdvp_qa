@@ -252,6 +252,7 @@ if __name__ == "__main__":
     checkpoint = args_dict["checkpoint"]
     permute = args_dict["permute"]
     sin_lambda = args_dict["sin_lambda"]
+    scaled = args_dict["scale_energy"]
 
     max_training_hours = args_dict["max_hours"]
 
