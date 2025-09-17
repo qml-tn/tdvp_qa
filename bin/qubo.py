@@ -11,6 +11,7 @@ from jax import config
 import json
 
 from tqdm import tqdm
+import time
 
 
 def get_instance_data(filename):
@@ -323,8 +324,11 @@ if __name__ == "__main__":
                             adaptive=adaptive, compute_states=compute_states, key=seed_tdvp, slope_omega=slope_omega,
                             ds=0.01, scale_gap=scale_gap, auto_grad=auto_grad, nitime=nitime, cyclic_path=cyclic_path, sin_lambda=sin_lambda, Tmc=Tmc)
 
+        t1 = time.time()
         data = tdvpqa.evolve(data=data,  filename=filename,
                              checkpoint=checkpoint, max_training_hours=max_training_hours)
+        t2 = time.time()
+        tts = t2-t1
         data["mps"] = [np.array(A) for A in tdvpqa.mps.tensors]
         data["Jz"] = Jz
         data["hz"] = hz
@@ -332,6 +336,7 @@ if __name__ == "__main__":
         data["c"] = c
         data["A"] = Aqubo
         data["scale"] = scale
+        data["tts"] = tts
 
         print(f"Saving: {filename}")
         with open(filename, 'wb') as f:
@@ -361,7 +366,7 @@ if __name__ == "__main__":
         samples = np.array(samples)
         solution_list = samples.tolist()
         solution_dict = {"x": list(best_sample),
-                         "cost": best_energy, "samples": solution_list}
+                         "cost": best_energy, "samples": solution_list, "tts": tts}
         with open(filename.replace('.pkl', '.json'), 'w') as f_json:
             json.dump(solution_dict, f_json)
         print(f"Best sample cost {best_energy}")
